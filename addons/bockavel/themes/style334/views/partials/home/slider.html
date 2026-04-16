@@ -1,0 +1,43 @@
+<style>
+    .image-text-container {
+        position: absolute;
+
+        background-color: rgba(0, 0, 0, 0.62);
+        padding: 5px 2px 4px 13px;
+        color: #bfbfbf;
+    }
+
+    .image-text-container h4 {
+        color: #efefef;
+        margin-bottom: 5px;
+    }
+
+    .image-text-container p {
+        font-size: 14px;
+        line-height: 16px;
+    }
+</style>
+
+
+<div id="slider-wrapper">
+    <div id="slider" style="width: 750px; height:350px;">
+        {{ streams:cycle stream="slider" order_by="ordering_count" sort="asc"}}
+        {{ if active:key }}
+        <div class="ls-slide" data-ls="{{ transition }}">
+            <img src="{{ url:site }}files/large/{{ image:filename }}" class="ls-bg" alt="{{ title }}"/>
+
+
+            {{ html }}
+        </div>
+        {{ endif }}
+        {{ /streams:cycle }}
+    </div>
+</div>
+
+<script>
+    $("#slider").layerSlider({
+        pauseOnHover: false,
+        showCircleTimer: false,
+        skinsPath: '{{theme:image_url}}slider/skins/'
+    });
+</script>

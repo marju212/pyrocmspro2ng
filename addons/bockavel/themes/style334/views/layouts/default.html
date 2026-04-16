@@ -1,0 +1,67 @@
+{{ theme:partial name="html_header" }}
+
+
+<script>
+    var cache = [];
+    var responsiveClass = 'pyro-responsive';
+    var limit = 680;
+    var WindowsSize = function () {
+
+        var width = $(window).width();
+
+        if (width < limit) {
+            smallerThanLimit();
+        }
+        if (width > limit) {
+            greaterThanLimit();
+        }
+        console.log(5);
+    };
+    $(document).ready(function () {
+        WindowsSize();
+    });
+    $(window).resize(function () {
+        WindowsSize();
+    });
+
+
+    function smallerThanLimit() {
+        $('*[data-pyroimage="true"]').each(function (i) {
+            if (!$(this).hasClass(responsiveClass)) {
+                cache[i] = $(this).attr('style');
+                $(this).attr('style', 'margin:15px 0');
+                $(this).addClass(responsiveClass);
+            }
+        });
+    }
+    function greaterThanLimit() {
+        $('*[data-pyroimage="true"]').each(function (i) {
+            if ($(this).hasClass(responsiveClass)) {
+                $(this).removeClass(responsiveClass);
+                $(this).attr('style', '' + cache[i]);
+                //$(this).attr('style', cache[i]);
+            }
+        });
+    }
+
+</script>
+
+
+<body>
+
+<div class="container main-container">
+
+    {{ theme:partial name="header/index" }}
+    {{ theme:partial name="navbar/index" }}
+    {{ theme:partial name="misc/messages" }}
+    {{ if page:is_home }}
+    {{ theme:partial name="home/index" }}
+    {{ endif }}
+    {{ theme:partial name="content/twocolumn" }}
+    {{ theme:partial name="footer/index" }}
+
+</div>
+
+{{ theme:partial name="misc/facebook" }}
+
+</body>

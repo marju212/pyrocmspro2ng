@@ -1,0 +1,75 @@
+
+ 
+<div id="full-slider-wrapper">
+		<div id="layerslider" style="width:100%;height:460px;">
+
+    <!-- this is a slide -->
+
+   <div class="ls-slide" data-ls="slidedelay:5000; transition2d: 11;">
+
+                {{ asset:image file="slider/kolv1.png"  class="ls-bg"}}
+                <h3 class="ls-l" style="color:white;top: 190px;left: 780px; " data-ls="durationin:1500;showuntil:1000;durationout:3000;  ">Tumhålskolv</h3>
+                <h4 class="ls-l" style="color:white;top: 225px;left: 780px;" data-ls="durationin:2000;showuntil:1000;durationout:3100;  ">4 olika valnötskvalitér, kolvkam som tillval.</h4>
+
+
+   </div>
+            <div class="ls-slide" data-ls="slidedelay:5000; transition2d: 11;">
+
+                {{ asset:image file="slider/damp_new.jpg"  class="ls-bg"}}
+
+                <h3 class="ls-l" style="color:white;top: 110px;left: 300px; " data-ls="durationin:1500;showuntil:1000;durationout:3000;  ">Rekyldämparen</h3>
+                <h4 class="ls-l" style="color:white;top: 150px;left: 300px;" data-ls="durationin:2000;showuntil:1000;durationout:3100;  ">Minskad rekyl</h4>
+                <h4 class="ls-l" style="color:white;top: 175px;left: 300px;" data-ls="durationin:2500;showuntil:1000;durationout:3200;  ">Nästan obefintligt uppslag</h4>
+
+            </div>
+            <!--
+<div class="ls-slide" data-ls="slidedelay:5000; transition2d: 11;">
+
+     {{ asset:image file="slider/actionvideo2.jpg"  class="ls-bg"}}
+       <h3 class="ls-l" style="color:white;top: 55px;left: 800px; " data-ls="durationin:1500;showuntil:1000;durationout:3000;  ">Kamerafästet </h3>
+      <h4 class="ls-l" style="color:white;top: 90px;left: 800px;" data-ls="durationin:2000;showuntil:1000;durationout:3100;  ">För action- eller videokamera</h4>
+
+
+ </div>
+
+                    <div class="ls-slide" data-ls="slidedelay:5000; transition2d: 11;">
+
+                        {{ asset:image file="slider/action.jpg"  class="ls-bg"}}
+
+
+
+
+                        <h3 class="ls-l" style="color:white;top: 40px;left: 850px; " data-ls="durationin:1500;showuntil:1000;durationout:3000;  ">Kamerafästet </h3>
+                        <h4 class="ls-l" style="color:white;top: 75px;left: 850px;" data-ls="durationin:2000;showuntil:1000;durationout:3100;  ">Finns för hagel och kikarsikte</h4>
+
+
+
+                    </div>
+
+
+          <div class="ls-slide" data-ls="slidedelay:5000; transition2d: 11;">
+
+              {{ asset:image file="slider/vilthop.jpg"  class="ls-bg"}}
+                    <h3 class="ls-l" style="color:white;top: 160px;left: 200px; " data-ls="durationin:1500;showuntil:1000;durationout:3000;  ">Viltbäraren</h3>
+               <h4 class="ls-l" style="color:white;top: 195px;left: 200px;" data-ls="durationin:2000;showuntil:1000;durationout:3100;  ">Hopfällbar, lätt att ta med</h4>
+
+          </div>
+          -->
+   
+</div>   
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){      
+        $('#layerslider').layerSlider({            
+              responsive: false,
+            responsiveUnder: 1280,
+            layersContainer: 1280,
+            skin: 'fullwidth',
+            pauseOnHover: false,
+            skinsPath: '{{ theme:css_url}}layerslider/skins/',
+            autoStart: true,
+            firstLayer: 1          
+        });
+    });
+ 
+</script>

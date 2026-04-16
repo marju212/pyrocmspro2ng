@@ -1,0 +1,30 @@
+
+<style>
+  .flexslider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.slides {
+  position: relative;
+  width: 100%;
+}  
+</style>
+
+
+<div class="flexslider-container">
+    <div id="slider" class="flexslider">
+        <ul class="slides">
+            {{ streams:cycle stream="imageslider" where="((`language`='<?php echo CURRENT_LANGUAGE; ?>' OR `language`='all')) AND `visible`= 1 "  order_by="ordering_count" sort="ASC" no_results="No Images"}}
+            {{ entries }} 
+            <li>{{ slider_image:img }} <!-- <p class="flex-caption"><b>{{ title }}&nbsp;</b>&nbsp;{{ description }}</p></li>  -->
+            {{ /entries }}
+            {{ /streams:cycle }}
+        </ul>
+    </div>
+
+</div>
+                           
+
+

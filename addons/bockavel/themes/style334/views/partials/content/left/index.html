@@ -1,0 +1,19 @@
+{{# user:variable user_id="4" #}}
+
+    {{ if { url:segments segment="2" }=="show" }}
+        {{ theme:partial name="content/left/salelistall" }}
+
+    {{ elseif { url:segments segment="2" }=="contact"}}
+
+        {{ theme:partial name="content/left/salelistall" }}
+    {{ else }}
+        {{ theme:partial name="content/left/latestnews" }}
+        {{ theme:partial name="content/left/salelist" }}
+    {{ endif }}
+
+
+{{# theme:partial name="content/left/sponsors" #}}
+{{# theme:partial name="content/left/sale" #}}
+
+
+{{# theme:partial name="content/left/sponsors" #}}

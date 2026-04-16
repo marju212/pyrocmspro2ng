@@ -1,0 +1,45 @@
+
+
+<div class="validation">
+    <p>Oops! Please correct the highlighted fields...</p>
+</div>
+
+<div class="success">
+    <p>Thanks! I'll get back to you shortly.</p>
+</div>
+<style>
+ .contact-button{display: none;}  
+</style>
+
+
+
+{{ contact:form contact_name="text|required" contact_email="text|required|valid_email"  contact_phone="text" contact_subject="dropdown|Produkter|Besök|Återförsäljare|Annat" contact_message="textarea" }}
+
+    <div class="row">
+        <p>
+            <label for="contact_name">Namn</label>
+            {{ contact_name }}
+        </p>
+        <p>
+            <label for="contact_phone">Telefon</label>
+            {{ contact_phone }}
+        </p>
+    </div>
+
+    <div class="row">
+        <p>
+            <label for="contact_email">E-post</label>
+            {{ contact_email }}
+        </p>
+        {{ contact_subject }}
+    </div>
+    <p>
+        <label for="contact_message">Meddelande</label>
+        
+        {{contact_message}}
+    </p>    
+
+
+    <input type="submit" class="button white" value="Send Email &rarr;" />
+{{ /contact:form }}
+

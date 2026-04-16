@@ -1,0 +1,39 @@
+
+
+
+
+
+
+        {{ streams:cycle stream="products" where=" `category` LIKE '%<?php echo $this->uri->segment(3, 0);?>' " order_by="title" sort="ASC" no_results="Inga produkter inlagda i denna kategori"}}
+        {{ entries }}
+    {{ if language:key =="<?php echo $this->uri->segment(1, 'all');?>" OR language:key =="all"}}
+
+
+            {{ if image:image  }}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+        <div class="-mb-6 lg:mb-0 pb-0 lg:pb-10">
+            <img class="w-full shadow-xl rounded" src="{{ image:image }}"/>
+
+        </div>
+            {{ else }}
+            <div class="grid grid-cols-1  gap-6 pb-6">
+            {{ endif }}
+
+        <div class="lg:-mt-1.5 pb-12 lg:pb-0" >
+            <h4>{{ title }}</h4>
+            <h5 style="line-height: 1.4;">{{ description }}</h5> <p>
+               <!--   <h5 style="text-align:right;"> {{ price }} SEK / Kg</h5> -->
+                <h5 style="text-align:right;">
+                    {{ if mailorder:value == 'Ja' }}
+                    Kan skickas med post
+                      {{ else }}
+                   <!-- Kan inte beställas via hemsidan -->
+                    {{ endif }} </h5>
+            </p>
+        </div>
+        </div>
+    {{ endif }}
+         {{ /entries }}
+         {{ /streams:cycle }}  
+ </div>
+

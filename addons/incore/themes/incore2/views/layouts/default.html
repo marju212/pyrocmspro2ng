@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="{{ lang:code }}">
+    <head>
+        <meta charset="utf-8">
+
+        <base href="{{ url:base }}">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {{ template:metadata }}
+        <title>
+            {{ settings:site_name }} - {{ template:title }}
+        </title>
+
+        {{ asset:js file="theme::vendor/modernizr-2.6.2-respond-1.1.0.min.js" group="global_top" }}
+        {{ asset:js file="theme::vendor/jquery-1.11.0.min.js" group="global_top" }}
+
+
+        {{ asset:js file="theme::vendor/bootstrap.min.js" group="global" }}
+        {{ asset:js file="theme::plugins.js" group="global" }}
+        {{ asset:js file="theme::main.js" group="global" }}
+
+
+
+        {{ theme:css file="layerslider/layerslider.css" group="global" }}
+
+        {{ asset:css file="theme::bstr.css" group="global" }}
+        {{ asset:css file="theme::font-awesome.min.css" group="global" }}
+        {{ asset:css file="theme::main.css" group="global" }}
+
+
+        {{ asset:render_css group="global" }} 
+        {{ asset:render_js group="global_top" }}
+
+        {{ if user:group != 'admin' AND global:environment == 'production' }}
+
+            {{ integration:analytics }}
+
+        {{ endif }}
+
+    </head>
+
+
+    <body class="{{ url:segments segment="1" default="home" }}">
+
+        <!--[if lt IE 7]>
+                <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        {{ theme:partial name="top_nav" }}
+    <div class="container">
+        {{ session:messages success="alert alert-success" notice="alert alert-info" error="alert alert-danger" }}
+
+    </div>
+        {{if page:is_home}}
+
+        {{ theme:partial name="home_top" }}
+        {{ theme:partial name="home_mid" }}    
+        {{ theme:partial name="home_features" }}
+        {{else}}
+        <div class="page-bg shadow"></div>
+
+
+
+
+
+
+    {{ theme:partial name="breadcrumbs" }}
+
+
+
+        <div class="container content-container shadow img-rounded">
+            <div class="row">
+                {{ template:body }}
+                
+
+            </div>
+
+        </div>
+
+
+
+        {{endif}}
+
+
+
+
+
+
+
+
+        {{ theme:partial name="footer" }}
+    {{if page:is_home}}
+    {{ asset:js file="layerslider/greensock.js" group="global" }}
+    {{ asset:js file="layerslider/layerslider.transitions.js" group="global" }}
+    {{ asset:js file="layerslider/layerslider.kreaturamedia.jquery.js" group="global" }}
+    {{endif}}
+        {{ asset:render_js group="global" }}
+
+
+    {{if page:is_home}}
+    {{ asset:render_js group="slider" }}
+    {{endif}}
+
+    </body>
+</html>

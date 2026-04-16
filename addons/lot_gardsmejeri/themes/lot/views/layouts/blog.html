@@ -1,0 +1,97 @@
+ {{ theme:partial name="header" }} 
+	
+	<section class="page_heading">
+		 {{ theme:partial name="logo" }} 
+	</section>
+	
+	<div class="page_wrapper">
+		<section class="container">
+		
+			<!-- Start Page -->
+                        <!-- Start Page Content -->
+			<div id="blog" class="page with_sidebar">
+				
+				<h1>Blog</h1>
+				
+			{{ template:body }}		
+				
+				
+				
+				
+			</div>
+			<!-- End Page Content -->
+			
+			<!-- Start Sidebar -->
+			<aside>
+				<!-- 
+				<div class="widget widget_search" id="search-2">
+					<form action="http://themes.two2twelve.com/wordpress/advocate/" id="searchform" method="get">
+						<p>	
+							<label for="s">Enter a search term...</label>
+					        <input type="text" id="s" class="text_field" name="s" value="">
+							<input type="submit" value="Search" id="searchsubmit" class="button white">
+						</p>
+					</form>
+				</div>
+				 -->
+				<div class="widget">
+						<h5>Recent Posts</h5>
+						<div class="recent_posts">
+                                                   
+							<ul>
+								 {{ widgets:instance id="3"}}
+								
+							</ul>
+							
+						</div>
+					</div>
+				
+				<div class="widget">
+					<h5>Categories</h5>
+					<div class="widget_categories">
+						<ul>
+							{{ widgets:instance id="4"}}
+						</ul>
+						
+					</div>
+				</div>
+				
+				<div class="widget">
+					<h5>Arkiv</h5>
+                                        
+                                       
+					
+					<div class="widget_categories">
+						<ul>
+							 {{ widgets:instance id="5"}}
+						</ul>
+						
+					</div>
+				</div>
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+	
+			</aside>
+			<!-- End Sidebar -->
+			
+			
+			<!-- End Page -->
+			
+		</section>
+		<!-- End Container -->
+		
+	</div>
+	<!-- End Home -->
+	
+	{{ theme:partial name="footer" }}
+	
+</body>
+</html>

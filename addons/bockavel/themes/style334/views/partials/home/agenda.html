@@ -1,0 +1,47 @@
+<script>
+    $(function () {
+        // $('.agenda-body li:first-child .activity-date').removeClass('label-warning').addClass('label-default');
+    });
+
+</script>
+
+<div class="panel">
+    <div class="panel-heading">Missa inte!</div>
+    <div class="panel-body agenda-body">
+        <ul class="media-list">
+
+
+            {{ streams:cycle stream="calendar" sort="asc" order_by="date" where="`date`>now()" limit="10" }}
+            {{ if active:key}}
+            <li class="media">
+                <a class="pull-left" href="#"><span class="activity-date"><h2>{{ helpers:date
+                    format='d' timestamp=date }}</h2><br><span
+                        class="label">{{ helpers:date
+                    format='monthname' timestamp=date }}</span></span></a>
+
+                <div class="media-body">
+                    <h4 class="media-heading"> {{ title }}</h4> {{limited_description}}
+
+                    {{ if page:id }}<a href='{{ page:link }}' style='white-space: nowrap;'>Läs mer >>></a>{{ endif
+                    }}
+
+                    {{ if external_link && !page:id }}<a href='{{ external_link }}' target='_blank'
+                                                         style='white-space: nowrap;'>Läs mer >>></a> {{ endif
+                    }}
+
+                    {{ if news_link:title_slug && !external_link && !page:id }}<a
+                        href='nyheter/{{ news_link:title_slug }}' style='white-space: nowrap;'>Läs mer >>></a>{{ endif
+                    }}
+
+
+                </div>
+            </li>
+
+            {{ endif }}
+            {{ /streams:cycle }}
+
+
+        </ul>
+    </div>
+</div>
+

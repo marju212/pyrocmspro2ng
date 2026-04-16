@@ -1,0 +1,35 @@
+<div class="col-xs-12">
+    <div class="panel news-archive">
+        <div class="panel-heading">Arkiv</div>
+        <div class="panel-body">
+            <table border="0">
+                {{# Show all news but hide the present one if is any #}}
+                {{ streams:cycle stream="news" sort="desc" order_by="publish_date"
+                limit="50" where="`publish_date` < now()" }}
+
+                <tr>
+
+                    <td valign="top" style="width:84px;border-right: 2px solid #bababa;font-color:#979797;" title="Nyhet publicerad {{ helper:date
+                        timestamp=publish_date
+                        }}, Av {{ created_by:display_name }}"><a
+                            href="{{ url:site uri='nyheter' }}/{{ title_slug }}">{{ helper:date
+                        timestamp=publish_date
+                        }} </a>
+                    </td>
+
+                    <td valign="top" style="padding-left: 5px;">
+                        <a href="{{ url:site uri='nyheter' }}/{{ title_slug }}"
+                           title="{{title}}">
+                            {{ title }} </a>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td colspan="2" style="height:15px;"></td>
+                </tr>
+                {{ /streams:cycle }}
+            </table>
+
+        </div>
+    </div>
+</div>

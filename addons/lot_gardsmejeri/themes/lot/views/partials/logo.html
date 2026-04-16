@@ -1,0 +1,8 @@
+<div class="logo container">
+    {{ streams:cycle stream="header_logo" where="`language`='<?php echo SITE_LANG; ?>' OR `language`='all' AND `visible`= 1 "  limit="1"  no_results="Missing logo"}}
+                    <a href="">{{ title }}</a>			
+                    <span class="tagline" style="font-size: 17px;"><en>{{ description }}</en></span>
+    {{ /streams:cycle }}
+      
+
+</div>

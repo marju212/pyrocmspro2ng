@@ -1,0 +1,64 @@
+<style>
+    .panel.news .panel-body hr.divider:last-child {
+        display: none;
+    }
+
+    .news-ingress img {
+        display: none;
+    }
+</style>
+
+<div class="col-xs-12">
+    <div class="panel news">
+        <div class="panel-heading">Nyheter och artiklar
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    {{# Show all news but hide the present one if is any #}}
+                    {{ streams:cycle stream="news" sort="desc" order_by="publish_date"
+                    limit="4" where="`publish_date` < now() AND
+                    `title_slug` !='[segment_2]'" }}
+
+                    <li class="media">
+                        <div class="row">
+                            <div class="col-sm-5">
+
+
+                                <img class="img-responsive" style='margin-bottom:10px;' alt="{{ title }}"
+                                     src="{{ newsimage:image }}">
+
+
+                            </div>
+                            <div class="col-sm-7">
+
+
+                                <h4 class="media-heading">{{ title }}</h4>
+
+                                <p class="news-ingress">{{ ingress }}
+                                    <a href="{{ url:site uri='nyheter' }}/{{ title_slug }}"
+                                       style="white-space: nowrap;">[Läs mer...]</a>
+                                </p>
+
+
+                            </div>
+
+                            <div class="col-xs-12 col-sm-7 pull-right">
+                                <ul class="news-author">
+                                    <li>Publicerad {{ helper:date timestamp=publish_date }}</li>
+                                    <li>Av {{ created_by:display_name }}</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </li>
+                    <hr class="divider">
+                    {{ /streams:cycle }}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

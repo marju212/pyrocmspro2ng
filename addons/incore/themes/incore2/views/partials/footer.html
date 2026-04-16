@@ -1,0 +1,85 @@
+<div class="pre-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-7">
+                {{ snippets:adress }}
+
+            </div>
+            <div class="col-md-3 col-sm-5">
+                <h4>Hitta till oss</h4>
+
+
+                    {{ widgets:area slug="googlemap" }}
+
+
+            </div>
+
+
+            <script>
+
+                $(document).ready(function () {
+                    $('.form-group input,.form-group textarea').addClass('form-control').addClass('input-sm');
+                    $('#save').removeClass('button').removeClass('primary').addClass('btn-default').addClass('btn-sm').css('background-color', '#95a5a6');
+
+                    $('.form-group input,.form-group textarea').each(function (index, value) {
+                        $(this).attr('placeholder', $(this).attr('title'));
+                    });
+                    $('#save').addClass('pull-right').addClass('clearfix');
+                });
+            </script>
+
+
+            <div class="col-md-6 col-sm-12">
+                <h4 class="visible-xs hidden-lg visible-sm hidden-md">Hur kan vi hjälpa dig?</h4>
+                <h4 class="hidden-xs visible-lg hidden-sm visible-md">Hur kan vi hjälpa dig, ring eller skicka ett
+                    meddelande!</h4>
+                {{ pyroforms:get id="1" display="form" }}
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+<div class="footer2">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+
+                <p class="simplenav hidden-xs">
+
+                    {{ navigation:links group="footer" class="active" }}
+                    <a href="{{ url }}" class="single {{ class }} parent">{{ title }}</a> |
+                    {{ /navigation:links }}
+
+                    <a href="{{ url:site uri="admin" }}">Administrera</a>|
+                    {{ if user:logged_in }}
+                    <a href="{{ url:site uri="admin/logout" }}">Logga ut</a>
+
+                    {{ else }}
+                    <a href="{{ url:site uri="admin" }}">Logga in</a>
+                    {{ endif }}
+                </p>
+
+            </div>
+            <div class="col-md-5 col-sm-12">
+
+                <p class="text-right hidden-xs visible-md visible-lg hidden-sm">
+                    © {{ helper:date format="Y" }} Innovative Core Solutions. All rights reserved.
+                </p>
+
+                <p class="text-center visible-xs hidden-md hidden-lg visible-sm">
+                    © {{ helper:date format="Y" }} Innovative Core Solutions.
+                </p>
+
+            </div>
+
+
+        </div>
+        <!-- /row of widgets -->
+    </div>
+</div>

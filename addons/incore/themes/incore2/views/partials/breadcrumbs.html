@@ -1,0 +1,19 @@
+<div class="container" style="margin-bottom: -17px">
+        <div class="row">
+            {{ if page:parent_id>=1 }}
+            <ol class="breadcrumb">
+
+
+                <li><a href="{{ url:site }}">Hem</a></li>
+
+                <li class="active">{{ page:title }}</li>
+
+
+            </ol>
+            {{else}}
+            <p>&nbsp;</p>
+            {{endif}}
+        </div>
+    </div>
+
+

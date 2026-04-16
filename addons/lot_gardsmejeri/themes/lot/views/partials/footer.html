@@ -1,0 +1,45 @@
+
+<footer>
+		<div class="container">
+			<div class="widget one_half" onclick="window.open('https://sv-se.facebook.com/pages/L%C3%B6t-G%C3%A5rdsmejeri/231771003544375','mywindow');" style="cursor:pointer;">
+				                     
+                                
+            {{ streams:cycle stream="footer_left" order_by='ordering_count' sort='asc' limit='1' where="((`language`='<?php echo CURRENT_LANGUAGE; ?>' OR `language`='all')) AND `visible`= 1 " }}
+            {{ entries }} 
+            <span class="left-image">{{ image:img }}</span><h2 class="logo">{{ title }}</h2>
+            <p>{{ text }}</p>
+            {{ /entries }}
+            {{ /streams:cycle }}
+
+                                
+			</div>
+			
+			<div class="widget one_half column_last">
+                            <h5>Kontakt</h5>
+				<div class="location_widget"  style="float:left;">
+					<p>
+						Löt Gårdsmejeri AB<br/>
+                                                Löt Ryttargård 1<br/>
+						583 60 Gammalkil<br/>
+					
+					</p>
+				</div>
+                            <div class="location_widget" style="float:right;">
+					
+					<p>
+						
+						<span class="icon general">h</span> <a href="mailto:lot.gardsmejeri.ab@gmail.com" target="_top">lot.gardsmejeri.ab@gmail.com</a> <br/>
+						<span class="icon general">l</span> <a href="">www.lot-gårdsmejeri.se</a> <br/>
+                                            <span class="icon general">r</span>Erik 070-0900183<br/>
+											<span class="icon general">r</span>Björn 070-2528082<br/>
+					</p>
+				</div>
+			</div>
+			
+			
+			<div class="copy">
+                            <p> &copy;2020 Incore web design och Löt Gårdsmejeri. All Rights Reserved.</p>
+			</div>
+			
+		</div>
+	</footer>

@@ -1,0 +1,174 @@
+<style>
+    .caption h3{
+        margin-top:2px;
+    } 
+
+    #rekyldampare_antal,#viltbarare_antal,#kamerafaste_antal{
+        width:60px;
+    }
+    #rekyldampare_beskrivning,#viltbarare_beskrivning,#kamerafaste_beskrivning{
+        max-width:400px;
+        height:80px;
+    }
+    .content-area{
+
+
+        padding-bottom:20px;
+
+    }
+</style>
+
+
+
+
+
+{{ pyroforms:get id="1" display="custom" }}
+
+
+{{ header }}
+
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="thumbnail">
+
+            <div class="caption">
+
+
+                <div class="row"> 
+                    <div class="col-md-6  col-sm-6">
+                         {{ snippets:postorder_rekyldampare }}
+                        {{ form_fields:rekyldampare_antal}} 
+                        {{ form_fields:rekyldampare_beskrivning}} 
+                    </div>
+                    <div class="col-md-6  col-sm-6">
+                        {{ files:image id="2df59bb6cb24f03" class="img-responsive img-thumbnail hidden-xs" }}
+                    </div>
+                </div>
+
+            </div>
+        </div>                
+    </div>
+
+    <div class="col-md-12  col-sm-12">
+        <div class="thumbnail">
+            <div class="caption">
+
+
+
+
+                <div class="row"> 
+                    <div class="col-md-6  col-sm-6">
+                        {{ snippets:postorder_viltbarare }}
+                        {{ form_fields:viltbarare_antal}} 
+                        {{ form_fields:viltbarare_beskrivning}}  
+                    </div>
+                    <div class="col-md-6  col-sm-6">
+                        {{ files:image id="8ab0564accb3631" class="img-responsive img-thumbnail hidden-xs" }}
+                    </div>
+                </div>
+
+
+            </div>
+        </div>            
+    </div>
+
+
+</div>
+
+
+<div class="row">
+
+    <div class="col-md-12  col-sm-12">
+        <div class="thumbnail">
+
+            <div class="caption">
+
+
+
+
+
+                <div class="row"> 
+                    <div class="col-md-6  col-sm-6">
+                        {{ snippets:postorder_kamerafaste }}
+                        {{ form_fields:kamerafaste_antal}} 
+                        {{ form_fields:kamerafaste_beskrivning}} 
+                    </div>
+                    <div class="col-md-6  col-sm-6">
+                        {{ files:image id="faad683238896e5" class="img-responsive img-thumbnail hidden-xs" }}
+                    </div>
+                </div>
+
+            </div>
+        </div>  
+    </div>
+
+
+
+</div>
+<div class="row">
+    <div class="col-lg-12">  
+        <div class="thumbnail">
+
+            <div class="caption">
+                <h3>Adressuppgifter</h3>
+
+                <div class="row">
+
+
+                    <div class="col-md-6 col-sm-6"> 
+                        {{ form_fields:namn}} 
+                        {{ form_fields:adress}}  
+                        {{ form_fields:postadress}}
+
+                    </div>  
+                    <div class="col-md-6 col-sm-6">  
+
+                        {{ form_fields:epost}}
+                        {{ form_fields:telefon}} {{ form_fields:ovrigt}}
+
+
+
+                        <p class="pull-right" style="margin-top:32px;">
+                            <a href="#" class="btn btn-default" role="button">Ångra</a> 
+
+                            <button type="submit"  value="" class="btn btn-primary" id="skicka" name="skicka" >Skicka beställning</button>
+                        </p>
+                        <div class="clearfix"></div> 
+                    </div>
+
+                </div>  
+
+
+
+
+            </div>
+        </div>  
+    </div>
+    <div class="col-md-12">  
+        <p class="pull-left" style="">
+            * Fälten är obligatoriska
+        </p>
+        <div class="clearfix"></div> 
+    </div>
+</div>
+</form>
+
+{{ /pyroforms:get }}
+
+<script>
+
+    if ($('#rekyldampare_antal').val().length < 1) {
+        $('#rekyldampare_antal').val(0);
+    }
+    if ($('#viltbarare_antal').val().length < 1) {
+        $('#viltbarare_antal').val(0);
+    }
+    if ($('#kamerafaste_antal').val().length < 1) {
+        $('#kamerafaste_antal').val(0);
+    }
+
+
+
+</script>
+
+

@@ -1,0 +1,76 @@
+<!-- Begin meta tags -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="author" content="Löt gårdsmejeri" />
+<meta name="copyright" content="Löt gårdsmejeri" />
+<meta name="distribution" content="global" />
+<meta name="resource-type" content="document" />
+<meta name="language" content="{{ lang:code }}" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	
+	
+	
+	<!-- Favicons -->
+	{{ theme:favicon file="favicon.ico" }}
+	
+
+
+<base href="{{ url:base }}" />
+
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+{{ theme:css file="flexslider.css" }}
+{{ theme:css file="tipsy.css" }}
+{{ theme:css file="base2.css" }}
+{{ theme:css file="message.css" }}
+{{ theme:css file="media.queries.css" }}
+{{ theme:css file="bootstrap-grid.css" }}
+{{ theme:css file="fancybox/jquery.fancybox.css" }}
+{{ theme:css file="fancybox/jquery.fancybox-buttons.css" }}
+{{ theme:css file="fancybox/jquery.fancybox-thumbs.css" }}
+
+{{ theme:css file="colorpicker.css" }}
+
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Pacifico|Cabin:400,700,600,500">
+<link href='http://fonts.googleapis.com/css?family=Simonetta:400,900,400italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Vollkorn:400italic' rel='stylesheet' type='text/css'>
+<!-- Use Html5Shiv in order to allow IE render HTML5 -->
+<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<!-- Begin scripts -->
+        {{ theme:js file="jquery-1.9.1.min.js" }}
+        {{ theme:js file="jquery.mousewheel-3.0.6.pack.js" }}
+	{{ theme:js file="fancybox/jquery.fancybox.pack.js" }}
+        {{ theme:js file="fancybox/jquery.fancybox-buttons.js" }}
+        {{ theme:js file="fancybox/jquery.fancybox-thumbs.js" }}
+        {{ theme:js file="fancybox/jquery.fancybox-media.js" }}
+	{{ theme:js file="html5shiv.js" }}
+	{{ theme:js file="jquery.tipsy.js" }}
+
+	{{ theme:js file="jquery.mobilemenu.js" }}
+	{{ theme:js file="jquery.infieldlabel.js" }}
+	{{ theme:js file="jquery.twitter.js" }}
+	{{ theme:js file="jquery.quicksand.js" }}
+	{{ theme:js file="jquery.flexslider-min.js" }}
+	{{ theme:js file="advocate.js" }}
+
+
+     {{ theme:js file="colorpicker.js" }}
+
+
+
+<!-- End scripts -->
+
+
+
+  	
+	
+{{ asset:render }}
+
+{{ template:metadata }}
+
+<!-- Place CSS bug fixes for IE 7 in this comment -->
+<!--[if IE 7]>
+{{ theme:css file="ie.css" }}
+<![endif]-->
+
+<title>{{ settings:site_name }}&nbsp;&bull;&nbsp;{{ template:title }}</title>

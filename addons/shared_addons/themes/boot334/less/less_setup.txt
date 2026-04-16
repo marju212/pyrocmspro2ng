@@ -1,0 +1,10 @@
+Always compile bootstrap.min.less
+
+to css
+
+php storm
+Only set Arguments:
+
+
+
+--no-color C:\www\public\pyrocmspro\ [addons\bockavel] \themes\style334\less\custom\bootstrap.min.less C:\www\public\pyrocmspro\ [addons\bockavel] \themes\style334\css\custom\bootstrap.min.css

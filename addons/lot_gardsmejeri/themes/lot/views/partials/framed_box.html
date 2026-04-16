@@ -1,0 +1,14 @@
+
+
+{{ streams:cycle stream="framed_box" where="((`language`='<?php echo CURRENT_LANGUAGE; ?>' OR `language`='all')) AND `visible`= 1 " no_results=""}}
+            {{ entries }} 
+           <div class="framed_box" style="margin:4px; margin-top: 10px; margin-bottom: 30px;">
+					<div class="text">
+						<span class="color">{{ text }}</span>
+					</div>				
+                                       
+				</div>
+            {{ /entries }}
+{{ /streams:cycle }}
+
+				

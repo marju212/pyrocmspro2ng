@@ -1,0 +1,30 @@
+
+
+
+
+{{ files:listing folder="<?php echo $this->uri->segment(1, 0);?>/<?php echo $this->uri->segment(2, 0);?>" }}
+					<li>
+						<a class="fancybox" rel="gallery1" href="{{ url:site }}files/thumb/{{ id }}/960/.jpg" rel="gallery1"  title="{{ description }}">
+                                                    <img src="{{ url:site }}files/thumb/{{ id }}/230/" alt="{{ description }}"/></a>
+					</li>
+{{ /files:listing }}
+<script>
+    
+$(document).ready(function() {
+	$(".fancybox").fancybox({
+		prevEffect	: 'fade',
+		nextEffect	: 'fade',
+                mouseWheel: true,
+		helpers	: {
+			title	: {
+				type: 'inside'
+			},
+			thumbs	: {
+				
+				
+			}
+		}
+	});
+});
+</script>
+                               

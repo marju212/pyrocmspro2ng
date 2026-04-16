@@ -1,0 +1,57 @@
+
+{{ if ad:isNewAds }}
+<div class="col-xs-12">
+    <div class="panel small-sale">
+        <div class="panel-heading">Köp & Sälj&nbsp;</div>
+        <div class="panel-body">
+
+            <div class="row">
+                <div class="col-xs-6"><h4 style="padding-bottom:20px;">Senaste annonserna</h4></div>
+
+
+            </div>
+            <div class="row">
+
+                <div class="col-xs-6"><p></p></div>
+            </div>
+            <div class="row">
+                {{# Show all news but hide the present one if is any #}}
+                {{ streams:cycle stream="ads" sort="desc" order_by="updated" no_results="<div class='col-lg-12'><p class='text-center'>För tillfället finns det inga annonser.</p></div>"
+                limit="6" where="<?php echo SITE_REF ?>_ads.updated BETWEEN SUBDATE(CURDATE(), INTERVAL 2 MONTH) AND NOW()" }}
+                <div class="col-lg-12" style="cursor:pointer;" onclick="window.location.href='{{ site }}ad/show/{{ id }}'">
+                    <li class="media">
+                        <div class="pull-left" >
+
+
+                            <img src="{{ ad_image_1:image }}" class="media-object sale-thumb thin-shadow" style="width: 120px;"/>
+
+                        </div>
+
+                        <div class="media-body" style="">
+                            <h6 class="media-heading text-muted">{{ helper:date timestamp=updated }} {{ ad_type:title }}{{ if ad_location }}, {{ ad_location }}{{ endif }}</h6>
+                            <h4 class="media-heading">{{ ad_title }}&nbsp; </h4>
+
+                            <p>{{ ad:textLimit text="{{ ad_body }}" limit="80" end=" <a>[...]</a>" }}</p>
+
+                            {{ if ad_amount }}<p>Pris {{ ad_amount }} kr</p>{{ endif }}
+                            <!--
+                            <button type="button" class="btn btn-sm btn-success pull-right">Visa</button>
+                            <button class=" pull-right">SEK 1200</button>
+
+                            -->
+
+                        </div>
+                    </li>
+                </div>
+                {{ /streams:cycle }}
+            </div>
+            <div class="row">
+
+                <div class="col-xs-12"><p style="padding-top:20px;"><a href="ad/show/all">Visa <u>alla</u> annonser</a></p></div>
+                <!--<div class="col-xs-12"><p><a>Lägg in en egen annons</a></p></div>-->
+
+            </div>
+        </div>
+    </div>
+</div>
+{{ endif }}

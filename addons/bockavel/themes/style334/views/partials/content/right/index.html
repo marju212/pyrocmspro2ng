@@ -1,0 +1,31 @@
+{{# Show if page IS in calendar #}}
+
+
+{{ theme:partial name="content/right/subnav" }}
+
+
+{{# Show if page not in calendar #}}
+{{# helpers:calendarNav page_id=page:id  showifincalendar='1' is_home=page:is_home #}}
+
+{{ if !page:is_home}}
+<div class="col-xs-12">
+    {{ theme:partial name="home/agenda" }}
+</div>
+<div class="col-xs-12"> &nbsp;</div>
+
+{{ endif }}
+{{# /helpers:calendarNav #}}
+
+{{ theme:partial name="content/right/links" }}
+
+{{# theme:partial name="content/right/newsletter" #}}
+{{ theme:partial name="content/right/sponsors" }}
+
+
+{{ theme:partial name="content/right/newsarchive" }}
+{{ if (user:not_logged_in AND global:module!='users') }}
+{{ theme:partial name="content/right/login" }}
+{{ endif }}
+
+
+<div class="col-xs-12"></div>

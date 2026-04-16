@@ -1,0 +1,54 @@
+
+<style>
+
+	#partners ul li a img {
+		max-width: 150px;
+	}
+
+
+</style>
+
+
+
+<div id="items">
+				
+					<!-- Start News -->
+					
+					<!-- End Events -->
+					
+					<!-- Start Sponsors -->
+					<div id="partners" class="full column_last">
+						<div class="box_heading" style="text-align: center;">
+							<h2>Kunder och partners</h2>
+							<span class="line"></span>
+						</div>
+						<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
+
+
+
+           {{ streams:cycle stream="partners" where="((`language`='<?php echo CURRENT_LANGUAGE; ?>' OR `language`='all')) AND `visible`= 1 " order_by="ordering_count" no_results=""}}
+            {{ entries }} 
+          <div class=""><a href="{{ url }}" target="_blank" alt="{{ title }}"><img style="width:100%;" src="{{ image:image }}"/></a></div>
+        
+            {{ /entries }}
+            {{ /streams:cycle }}
+
+
+						</div>
+					</div>
+					<!-- 
+     
+     <li><img src="images/content/sponsor-1.png" alt="Sponsor 1" /></li>
+							<li class="last"><img src="images/content/sponsor-2.png" alt="Sponsor 2" /></li>
+							<li><img src="images/content/sponsor-3.png" alt="Sponsor 3" /></li>
+							<li class="last"><img src="images/content/sponsor-4.png" alt="Sponsor 4" /></li>
+							<li><img src="images/content/sponsor-5.png" alt="Sponsor 5" /></li>
+							<li class="last"><img src="images/content/sponsor-6.png" alt="Sponsor 6" /></li>
+							<li class="bottom"><img src="images/content/sponsor-9.png" alt="Sponsor 9" /></li>
+							<li class="bottom last"><img src="images/content/sponsor-7.png" alt="Sponsor 7" /></li>
+     End Sponsors -->
+					
+				</div>
+
+<script>$("#partners li:odd").addClass("last");</script>

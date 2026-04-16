@@ -1,0 +1,49 @@
+
+
+
+{{ theme:partial name="header" }}
+
+
+      
+
+<section class="page_heading home"> {{ theme:partial name="logo" }}<div id="water_logo"><div style="float:right;">
+           <!-- {{ asset:image file="theme::backgrounds/logo.png"}}-->
+        </div>
+       
+    </div>  </section>
+
+      
+            <div id="home" class="page_wrapper">
+              
+                    <!-- Start Container -->
+                    <section class="container">
+
+<div class="page">
+
+
+{{ theme:partial name="slider" }}
+{{ snippets:frontpage_1 }}
+
+    {{ theme:partial name="framed_box" }}
+
+{{ template:body }}
+
+
+
+{{ snippets:frontpage_2 }}
+
+
+<!-- Start Items -->		
+{{ theme:partial name="semifooter" }}
+<!-- End Items -->
+</div>
+                    </section>
+                    <!-- End Container -->
+
+             </div>
+                <!-- End Home -->
+
+                {{ theme:partial name="footer" }}
+
+                </body>
+                </html>

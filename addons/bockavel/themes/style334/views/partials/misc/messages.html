@@ -1,0 +1,11 @@
+{{ session:messages success='alert alert-success alert-dismissible' notice='alert alert-info alert-dismissible' error='alert alert-error alert-dismissible'}}
+{{ if helpers:message }}
+<div class="alert alert-dismissible" style="background-color: #9d2d04;color: white;text-shadow: none;">{{ helpers:message }}</div>
+{{ endif }}
+<script>
+
+    $(function () {
+        $('.alert-dismissible').attr('role', 'alert');
+        $('.alert-dismissible').prepend(' <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span> </button>').hide().slideDown().delay('2000').slideUp();
+    });
+</script>

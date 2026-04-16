@@ -1,0 +1,59 @@
+<div id="fb-root"></div>
+<script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/sv_SE/sdk.js#xfbml=1&version=v2.5";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"> {{ asset:image file="toplogo.png" class=""}}
+            </a>
+        </div>
+
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                {{ navigation:links group="header" class="active" }}
+
+                {{ if children }}
+
+                <li class="dropdown {{ class }}">
+                    <a href="{{ url }}" class="{{ class }} dropdown-toggle" data-toggle="dropdown">{{ title }} <b
+                            class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {{ children }}
+                        <li><a href="{{ url }}">{{ title }}</a></li>
+                        {{ /children }}
+                    </ul>
+                </li>
+
+                {{ else }}
+
+                <li class="{{ class }}">
+                    <a href="{{ url }}" class="{{ class }}">{{ title }}</a>
+                </li>
+
+                {{ endif }}
+
+                {{ /navigation:links }}
+            </ul>
+        </div>
+    </div>
+</nav>

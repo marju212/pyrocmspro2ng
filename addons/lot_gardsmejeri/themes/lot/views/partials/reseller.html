@@ -1,0 +1,38 @@
+
+
+
+<?php
+$params = array(
+        'stream'   => 'place',
+        'namespace'=>'streams',
+        'order_by'=>'title',
+        'sort'=>'asc'
+);
+
+
+$result = $this->streams->entries->get_entries($params);
+
+foreach($result['entries'] as $entry){
+
+
+echo "<br><h2>".$entry['title']."</h2>";
+
+$params2 = array(
+        'stream'        => 'reseller',
+        'namespace'=>'streams',
+        'order_by'=>'title',
+        'sort'=>'asc',
+        'where'=>"placeid = '".$entry['id']."'"
+);
+$result_reseller = $this->streams->entries->get_entries($params2);
+foreach($result_reseller['entries'] as $reseller){
+
+echo "<a href='".$reseller['url']."' target='_blank'>".$reseller['title']."</a><br>";
+}
+
+
+}
+
+
+?>
+

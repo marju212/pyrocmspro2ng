@@ -1,0 +1,32 @@
+<style>
+    .panel .sponsor hr.divider:last-child {
+        display: none;
+    }
+</style>
+
+<div class="col-xs-12">
+    <div class="panel">
+
+        <div class="panel-body sponsor">
+
+            {{ streams:cycle stream="sponsors" sort="asc" order_by="ordering_count"
+            where="`start_date` < now() AND `end_date` > now()" }}
+            {{ if (placement:key=='left' OR placement:key=='both') }}
+
+
+            <a href="{{external_link}}" alt="{{ company }}">
+                <img src="{{ sponsorimage:image }}" class="img-responsive" width="100%" alt="{{ company }}">
+            </a>
+
+
+            <hr class="divider">
+            {{ endif }}
+            {{ /streams:cycle }}
+
+        </div>
+
+    </div>
+</div>
+
+
+

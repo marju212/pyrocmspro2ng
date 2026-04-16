@@ -1,0 +1,53 @@
+{{ theme:partial name="html_header" }}
+<body class="{{ url:segments segment="1" default="home" }}">
+	<header>
+        {{ theme:partial name="header" }}
+        <div class="container">
+            <ul class="breadcrumb">
+                {{ template:breadcrumbs }}
+                <li><a href="{{ url:site }}">Home</a></li>
+                {{ if uri }}
+                <li>{{ url:anchor segments=uri title=name }}</li>
+                {{ else }}
+                <li class="current">{{ name }}</li>
+                {{ endif }}
+                {{ /template:breadcrumbs }}
+            </ul>
+         </div>
+    </header>
+	
+	<section>
+        <div class="container">
+
+            {{if page:is_home}}
+                <div class="jumbotron">
+                    <h1>boot3</h1>
+                    <p>Twitter Bootstrap 3 theme framework for PyroCms</p>
+                    <hr/>
+                    <p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>
+                </div>
+
+                {{ theme:partial name="demo" }}
+            {{else}}
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ session:messages success="alert alert-success" notice="alert alert-info" error="alert alert-danger" }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        {{ template:body }}
+                    </div>
+                </div>
+            {{endif}}
+        </div>
+
+
+	</section>
+		
+	<footer>
+		{{ theme:partial name="footer" }}
+	</footer>
+</body>
+{{ theme:partial name="html_footer" }}

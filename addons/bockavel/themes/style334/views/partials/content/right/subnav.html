@@ -1,0 +1,31 @@
+<style>
+
+</style>
+
+
+{{ subnav:getNav group="header" page_id=page:id }}
+<div class="col-xs-12">
+    <div class="panel child-links">
+        <div class="panel-heading">{{ subnav:links group="header" page_id=page:id }} {{title}} {{/subnav:links }}
+        </div>
+        <div class="panel-body">
+            {{ subnav:links group="header" page_id=page:id active_class='subnav-active'}}
+            <ol>
+                {{ children }}
+
+
+                <li class="{{ active_class }} {{ class }}"><span class="glyphicon glyphicon-chevron-right"></span><a
+                        href="{{ url }}">{{
+                    title
+                    }}</a>
+
+
+                </li>
+                {{ /children }}
+            </ol>
+            {{ /subnav:links }}
+        </div>
+    </div>
+</div>
+{{ /subnav:getNav}}
+

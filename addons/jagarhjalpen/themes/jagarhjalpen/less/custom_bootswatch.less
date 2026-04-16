@@ -1,0 +1,301 @@
+// Flatly 3.1.1
+// Bootswatch
+// -----------------------------------------------------
+
+@import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
+
+// Navbar =====================================================================
+
+.navbar {
+    border-width: 0;
+    margin-bottom: 0px;
+    position:relative;
+    z-index:20;
+
+    &-brand {
+        padding-right:50px;
+        padding-left:60px;
+        margin-top:-20px;
+        z-index:20;
+    }
+    img{border:1px solid #002900;
+        border-top:0px;
+        z-index:20;
+        width:100%;
+        .box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.65))}
+}
+
+.navbar{
+    .box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.45));
+}
+
+#full-slider-wrapper{
+    .box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25));
+    padding-bottom:5px;
+    margin-bottom:40px;
+}
+
+#bigbg { background:#0b0b0b url(../../img/norm_bg.jpg) no-repeat center;  
+         min-height:100%; 
+
+         background-size: cover; 
+
+}
+section{padding-bottom:60px;}
+
+html, #layerslider{
+    background:#0b0b0b;
+}
+footer{
+
+    background:#0b0b0b;
+    min-height:160px; 
+}
+footer p {
+
+    padding-top:45px;
+    color:@gray;
+}
+.content-area{
+    background:#fff;
+
+    padding-bottom:40px;
+    border:1px solid #002900;
+    .box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.65))
+}
+.content-area h2{
+    text-align:center;
+    padding:30px;
+}
+
+@media (max-width: 1279px) {
+    a.navbar-brand img 
+    {
+
+         width:98px;
+
+    }
+
+}
+
+@media (max-width: 767px) {
+    a.navbar-brand img 
+    {
+
+        width:60px;
+
+    }
+
+}
+
+
+.vid {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 30px; height: 0; overflow: hidden;
+    margin-top:30px;
+}
+
+.vid iframe,
+.vid object,
+.vid embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+// Buttons ====================================================================
+
+.btn:active {
+    .box-shadow(none);
+}
+
+.btn-group.open .dropdown-toggle {
+    .box-shadow(none);
+}
+
+// Typography =================================================================
+
+.text-primary,
+.text-primary:hover {
+    color: @brand-primary;
+}
+
+.text-success,
+.text-success:hover {
+    color: @brand-success;
+}
+
+.text-danger,
+.text-danger:hover {
+    color: @brand-danger;
+}
+
+.text-warning,
+.text-warning:hover {
+    color: @brand-warning;
+}
+
+.text-info,
+.text-info:hover {
+    color: @brand-info;
+}
+
+// Tables =====================================================================
+
+table,
+.table {
+
+    a {
+        text-decoration: underline;
+    }
+
+    .success,
+    .warning,
+    .danger,
+    .info {
+        color: #fff;
+
+        a {
+            color: #fff;
+        }
+    }
+
+    > thead > tr > th,
+    > tbody > tr > th,
+    > tfoot > tr > th,
+    > thead > tr > td,
+    > tbody > tr > td,
+    > tfoot > tr > td {
+        border: none;
+    }
+
+    &-bordered > thead > tr > th,
+    &-bordered > tbody > tr > th,
+    &-bordered > tfoot > tr > th,
+    &-bordered > thead > tr > td,
+    &-bordered > tbody > tr > td,
+    &-bordered > tfoot > tr > td {
+        border: 1px solid @table-border-color;
+    }
+}
+
+// Forms ======================================================================
+
+.form-control,
+input, {
+    border-width: 2px;
+    .box-shadow(none);
+
+    &:focus {
+        .box-shadow(none);
+    }
+}
+
+.has-warning {
+    .help-block,
+    .control-label {
+        color: @brand-warning;
+    }
+
+    .form-control,
+    .form-control:focus {
+        border: 2px solid @brand-warning;
+    }
+}
+
+.has-error {
+    .help-block,
+    .control-label {
+        color: @brand-danger;
+    }
+
+    .form-control,
+    .form-control:focus {
+        border: 2px solid @brand-danger;
+    }
+}
+
+.has-success {
+    .help-block,
+    .control-label {
+        color: @brand-success;
+    }
+
+    .form-control,
+    .form-control:focus {
+        border: 2px solid @brand-success;
+    }
+}
+
+// Navs =======================================================================
+
+.nav {
+    .open > a,
+    .open > a:hover,
+        .open > a:focus {
+        border-color: transparent;
+    }
+}
+
+.pager {
+    a,
+    a:hover {
+        color: #fff;
+    }
+
+    .disabled {
+        &>a,
+        &>a:hover,
+            &>a:focus,
+            &>span {
+            background-color: @pagination-disabled-bg;
+        }
+    }
+}
+
+// Indicators =================================================================
+
+.alert {
+
+    a,
+    .alert-link {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    .close {
+        color: #fff;
+        text-decoration: none;
+        opacity: 0.4;
+
+        &:hover,
+            &:focus {
+            color: #fff;
+            opacity: 1;
+        }
+    }
+}
+
+// Progress bars ==============================================================
+
+.progress {
+    height: 10px;
+    .box-shadow(none);
+    .progress-bar {
+        font-size: 10px;
+        line-height: 10px;
+    }
+}
+
+// Containers =================================================================
+
+.well {
+    .box-shadow(none);
+}
+
+

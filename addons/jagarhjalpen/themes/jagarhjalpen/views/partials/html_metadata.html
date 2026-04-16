@@ -1,0 +1,77 @@
+<meta charset="utf-8">
+    <meta name="language" content="{{ lang:code }}">
+    <base href="{{ url:base }}">
+
+    <title>{{ settings:site_name }} - {{ template:title }}</title>
+    <meta name="author" content="incore solutions">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {{ theme:favicon xhtml="false" }}
+    {{ theme:favicon rel="apple-touch-icon" file="touch-icon-small.png" }}
+    {{ theme:favicon rel="apple-touch-icon" file="touch-icon-big.png" }}  
+    {{ if theme:options:ie == 1 }}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    {{endif}}
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+        window.jQuery || document.write('<script src="{{ theme:js_path file="jquery-1.10.2.min.js" }}" type="text/javascript" charset="utf-8"><\/script>')
+    </script>
+    {{ if theme:options:theme == "custom" }}
+        {{ theme:css file="custom/bootstrap.min.css" group="global" }}
+    {{else}}
+        {{ if theme:options:cdn == 0 }}
+            {{ if theme:options:theme == "default_flat" }}
+                {{ theme:css file="bootstrap/bootstrap.min.css" group="global" }}
+            {{ elseif theme:options:theme == "default" }}
+                {{ theme:css file="bootstrap/bootstrap.min.css" group="global" }}
+                {{ theme:css file="bootstrap/bootstrap-theme.min.css" group="global" }}
+            {{else}}
+                {{ theme:css file="bootswatch/{{theme:options:theme}}/bootstrap.min.css" group="global" }}
+            {{endif}}
+        {{else}}
+            {{ if theme:options:theme == "default_flat" }}
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+            {{ elseif theme:options:theme == "default" }}
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+            {{else}}
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/latest/{{theme:options:theme}}/bootstrap.min.css">
+            {{endif}}
+        {{endif}}
+    {{endif}}
+    {{ theme:css file="theme.css" group="global" }}
+    
+    {{ theme:css file="layerslider/layerslider.css" group="global" }}
+
+    {{ if theme:options:js == "compiled" }}
+        {{ if theme:options:cdn == 0 }}
+            {{ theme:js file="bootstrap/bootstrap.min.js" group="global" }}
+        {{ else }}
+            <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        {{ endif }}
+    {{else}}
+    <?php foreach(explode(",",$this->theme->options->js_plugins) as $p){ //todo with lex tags if the select-multiple bug fixed in pyro.. ?>
+        {{ theme:js file="bootstrap_plugins/<?php echo $p;?>.js" group="global" }}
+    <?php }?>
+    {{endif}}
+    
+    {{ theme:js file="holder.js" group="tmp" }}
+    {{ theme:js file="theme.js" group="global" }}
+     
+    {{ theme:partial name="meta_layerslider" }}
+    
+    
+    {{asset:render group="global"}}
+
+    {{ template:metadata }}
+    
+{{ if user:group != 'admin' AND global:environment == 'production' }}
+
+    {{ integration:analytics }}
+       
+{{ endif }}

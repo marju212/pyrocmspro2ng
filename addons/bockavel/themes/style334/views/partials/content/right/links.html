@@ -1,0 +1,26 @@
+<div class="col-xs-12">
+    <div class="panel important-links">
+        <div class="panel-heading">Viktiga länkar</div>
+        <div class="panel-body">
+            <ol>
+
+
+                {{ streams:cycle stream="links" sort="asc" order_by="ordering_count" }}
+                {{ if active:key }}
+                <li>
+                    <a href="{{ external_link }}" target="_blank"
+                       title="{{ title }}  {{ if link_description }}- {{ link_description }} {{ endif }}">{{ title
+                        }}
+                        {{ if link_description }}
+                        <small class="link_description">{{ link_description }}</small>
+                        {{ endif }}
+                    </a>
+                </li>
+                {{ endif }}
+                {{ /streams:cycle }}
+            </ol>
+        </div>
+    </div>
+
+
+</div>

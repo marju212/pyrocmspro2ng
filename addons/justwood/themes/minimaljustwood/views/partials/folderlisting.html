@@ -1,0 +1,24 @@
+
+    <style>
+        ul
+{
+    list-style-type: none;
+}
+textarea{width:800px;
+height:22px;}
+        </style>
+        <ul>
+
+      
+{{ files:listing folder="<?php echo $this->uri->segment(1, 'images');?>" }}
+					<li>						
+                                                    <img src="{{ files:image_path id="{{ id }}" }}" alt="{{ description }}"/></a>
+					</li>
+                                        <li>						
+                                            <textarea  onclick="this.focus();this.select()"><img src="{{ files:image_url id="{{ id }}" }}" alt="{{ description }}"/></textarea>
+					</li>
+{{ /files:listing }} 
+        
+  
+        
+        </ul>

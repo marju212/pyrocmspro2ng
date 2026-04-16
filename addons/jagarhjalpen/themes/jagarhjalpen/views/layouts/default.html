@@ -1,0 +1,59 @@
+{{ theme:partial name="html_header" }}
+<body class="{{ url:segments segment="1" default="home" }} " >
+    <header>
+        {{ theme:partial name="header" }}
+
+    </header>
+
+    <style>
+
+
+
+
+
+    </style>
+
+
+
+
+    {{if page:is_home}}
+    <section>
+        {{ theme:partial name="carousel" }}
+        {{else}}
+        <section id="bigbg">
+            {{endif}}
+            <div class="container ">
+
+                {{if page:is_home}}
+                {{ theme:partial name="home_products" }}
+
+
+
+                {{else}}
+                <div class="row" style="margin-top:30px;">
+
+                    {{ session:messages success="alert alert-success" notice="alert alert-info" error="alert alert-danger" }}
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 content-area img-rounded"  >
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1"  >
+                                {{ template:body }}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {{endif}}
+            </div>
+
+
+        </section>
+
+        <footer>
+            {{ theme:partial name="footer" }}
+        </footer>
+</body>
+{{ theme:partial name="html_footer" }}
