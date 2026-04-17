@@ -16,9 +16,13 @@ system/cms/cache/*
 system/cms/logs/log-*.php
 system/cms/logs/php-fatals.log
 permissionfix
-system/cms/config/database.php
 addons/shared_addons/modules/sitelock
 uploads/default
 gitcron.sh
 download/*
-/index.php
+
+# Environment configuration — committed `.env.example` is the template.
+# `.env` and friends carry secrets and host-local debug knobs; never commit.
+.env
+.env.local
+.env.*.local
