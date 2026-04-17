@@ -1,169 +1,196 @@
 {
     "base_url": "http:\/\/pyrocmspro2ng.test",
-    "generated": "2026-04-17T06:17:03+00:00",
+    "generated": "2026-04-17T12:06:32+00:00",
     "php_version": "8.2.30",
     "results": {
         "\/": {
             "status": 200,
             "expected": 200,
             "description": "homepage",
-            "body_length": 44700
+            "body_length": 57328,
+            "php_errors": []
         },
         "\/nyheter\/": {
             "status": 200,
             "expected": 200,
             "description": "news listing",
-            "body_length": 43641
+            "body_length": 53029,
+            "php_errors": []
         },
         "\/blimedlem": {
             "status": 200,
             "expected": 200,
             "description": "registration alias",
-            "body_length": 46604
+            "body_length": 61821,
+            "php_errors": []
         },
         "\/member\/medlemmar": {
             "status": 200,
             "expected": 200,
             "description": "members listing",
-            "body_length": 43232
+            "body_length": 51629,
+            "php_errors": []
         },
         "\/users\/login": {
             "status": 200,
             "expected": 200,
             "description": "login page",
-            "body_length": 42675
+            "body_length": 51072,
+            "php_errors": []
         },
         "\/users\/register": {
             "status": 200,
             "expected": 200,
             "description": "users\/register",
-            "body_length": 45198
+            "body_length": 60370,
+            "php_errors": []
         },
         "\/register": {
             "status": 200,
             "expected": 200,
             "description": "register alias",
-            "body_length": 45192
+            "body_length": 60364,
+            "php_errors": []
         },
         "\/blog\/rss\/all.rss": {
             "status": 200,
             "expected": 200,
             "description": "blog rss feed",
-            "body_length": 704
+            "body_length": 713,
+            "php_errors": []
         },
         "\/ad\/show\/all": {
             "status": 200,
             "expected": 200,
             "description": "ad show all",
-            "body_length": 41329
+            "body_length": 49351,
+            "php_errors": []
         },
         "\/avelsrad\/mjolkgeten": {
             "status": 200,
             "expected": 200,
             "description": "avelsrad mjolkgeten",
-            "body_length": 44164
+            "body_length": 57001,
+            "php_errors": []
         },
         "\/avelsrad\/rad-och-dad-fran-avelsradet": {
             "status": 200,
             "expected": 200,
             "description": "avelsrad rad-och-dad",
-            "body_length": 44201
+            "body_length": 55560,
+            "php_errors": []
         },
         "\/djurhalsa\/klovatlas": {
             "status": 200,
             "expected": 200,
             "description": "djurhalsa klovatlas",
-            "body_length": 45353
+            "body_length": 54120,
+            "php_errors": []
         },
         "\/djurhalsa\/lentivirus": {
             "status": 200,
             "expected": 200,
             "description": "djurhalsa lentivirus",
-            "body_length": 45345
+            "body_length": 59379,
+            "php_errors": []
         },
         "\/foder\/grovfoder": {
             "status": 200,
             "expected": 200,
             "description": "foder grovfoder",
-            "body_length": 45757
+            "body_length": 57645,
+            "php_errors": []
         },
         "\/foder\/foderstatsberakning": {
             "status": 200,
             "expected": 200,
             "description": "foder foderstatsberakning",
-            "body_length": 45778
+            "body_length": 55221,
+            "php_errors": []
         },
         "\/foder\/skulltorka-ho": {
             "status": 200,
             "expected": 200,
             "description": "foder skulltorka-ho",
-            "body_length": 45766
+            "body_length": 55989,
+            "php_errors": []
         },
         "\/gardens-byggnader": {
             "status": 200,
             "expected": 200,
             "description": "gardens byggnader",
-            "body_length": 43418
+            "body_length": 55063,
+            "php_errors": []
         },
         "\/nyheter\/arsmote-2015": {
             "status": 200,
             "expected": 200,
             "description": "news article arsmote-2015",
-            "body_length": 43646
+            "body_length": 53363,
+            "php_errors": []
         },
         "\/nyheter\/seminkurs": {
             "status": 200,
             "expected": 200,
             "description": "news article seminkurs",
-            "body_length": 43651
+            "body_length": 53080,
+            "php_errors": []
         },
         "\/om-foreningen\/avelsprogram": {
             "status": 200,
             "expected": 200,
             "description": "om foreningen avelsprogram",
-            "body_length": 44807
+            "body_length": 58637,
+            "php_errors": []
         },
         "\/om-foreningen\/styrelse": {
             "status": 200,
             "expected": 200,
             "description": "om foreningen styrelse",
-            "body_length": 44812
+            "body_length": 54620,
+            "php_errors": []
         },
         "\/om-foreningen\/styrelse\/arsmote-2026": {
             "status": 200,
             "expected": 200,
             "description": "styrelse arsmote-2026",
-            "body_length": 44962
+            "body_length": 54649,
+            "php_errors": []
         },
         "\/om-foreningen\/styrelse\/stadgar": {
             "status": 200,
             "expected": 200,
             "description": "styrelse stadgar",
-            "body_length": 44812
+            "body_length": 63233,
+            "php_errors": []
         },
         "\/projekt\/bevarandearbete-2018": {
             "status": 200,
             "expected": 200,
             "description": "projekt 2018",
-            "body_length": 45882
+            "body_length": 59436,
+            "php_errors": []
         },
         "\/projekt\/bevarandearbete-2025": {
             "status": 200,
             "expected": 200,
             "description": "projekt 2025",
-            "body_length": 45882
+            "body_length": 58126,
+            "php_errors": []
         },
         "\/projekt\/oronmarkning-2017-459": {
             "status": 200,
             "expected": 200,
             "description": "projekt oronmarkning",
-            "body_length": 45886
+            "body_length": 62666,
+            "php_errors": []
         },
         "\/start": {
             "status": 301,
             "expected": 301,
             "description": "start alias redirect",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/ad\/": {
             "status": 307,
@@ -172,7 +199,8 @@
                 307
             ],
             "description": "ad listing (login redirect)",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/ad\/create": {
             "status": 307,
@@ -181,7 +209,8 @@
                 307
             ],
             "description": "ad create (login redirect)",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/edit-profile": {
             "status": 307,
@@ -190,7 +219,8 @@
                 307
             ],
             "description": "edit-profile (login redirect)",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/": {
             "status": 307,
@@ -199,7 +229,8 @@
                 307
             ],
             "description": "admin dashboard",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/pages\/": {
             "status": 307,
@@ -208,7 +239,8 @@
                 307
             ],
             "description": "admin pages",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/blog\/": {
             "status": 307,
@@ -217,7 +249,8 @@
                 307
             ],
             "description": "admin blog",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/users\/": {
             "status": 307,
@@ -226,7 +259,8 @@
                 307
             ],
             "description": "admin users",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/settings\/": {
             "status": 307,
@@ -235,7 +269,8 @@
                 307
             ],
             "description": "admin settings",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/files\/": {
             "status": 307,
@@ -244,7 +279,8 @@
                 307
             ],
             "description": "admin files",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/navigation\/": {
             "status": 307,
@@ -253,7 +289,8 @@
                 307
             ],
             "description": "admin navigation",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/ad\/": {
             "status": 307,
@@ -262,7 +299,8 @@
                 307
             ],
             "description": "admin ad (bockavel)",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/member\/": {
             "status": 307,
@@ -271,7 +309,8 @@
                 307
             ],
             "description": "admin member",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/comments\/": {
             "status": 307,
@@ -280,7 +319,8 @@
                 307
             ],
             "description": "admin comments",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/templates\/": {
             "status": 307,
@@ -289,7 +329,8 @@
                 307
             ],
             "description": "admin templates",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/variables\/": {
             "status": 307,
@@ -298,7 +339,8 @@
                 307
             ],
             "description": "admin variables",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/redirects\/": {
             "status": 307,
@@ -307,7 +349,8 @@
                 307
             ],
             "description": "admin redirects",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/groups\/": {
             "status": 307,
@@ -316,7 +359,8 @@
                 307
             ],
             "description": "admin groups",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/admin\/keywords\/": {
             "status": 307,
@@ -325,7 +369,8 @@
                 307
             ],
             "description": "admin keywords",
-            "body_length": 0
+            "body_length": 0,
+            "php_errors": []
         },
         "\/this-page-does-not-exist-xyz": {
             "status": 404,
@@ -334,7 +379,8 @@
                 200
             ],
             "description": "nonexistent page (404 or pages catch-all 200)",
-            "body_length": 43392
+            "body_length": 57177,
+            "php_errors": []
         }
     }
 }

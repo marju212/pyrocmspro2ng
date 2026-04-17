@@ -181,14 +181,17 @@ class Field_choice
 	 */
 	private function format_choice($line)
 	{
-		if ($line[0] == '^')
+		// Choice keys can be ints when the user wrote `1 : Yes` — PHP 8 emits
+		// "array offset on int" warnings when subscripting numeric values, so
+		// cast to string before the leading-character check.
+		$line = (string) $line;
+
+		if (isset($line[0]) && $line[0] === '^')
 		{
 			return substr($line, 1);
 		}
-		else
-		{
-			return $line;
-		}
+
+		return $line;
 	}
 
 	// --------------------------------------------------------------------------

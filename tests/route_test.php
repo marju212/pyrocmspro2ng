@@ -137,7 +137,28 @@ function probe($url, $auth_header = null) {
     $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err  = curl_error($ch);
     curl_close($ch);
-    return array('status' => $code, 'error' => $err, 'body_length' => is_string($body) ? strlen($body) : 0);
+    $body = is_string($body) ? $body : '';
+
+    // Detect inline PHP error/exception blocks the framework prints when
+    // display_errors is on. These are the markers PyroCMS / CodeIgniter use:
+    //   <h4>A PHP Error was encountered</h4>
+    //   <h4>An uncaught Exception was encountered</h4>
+    //   "Severity: Warning|Notice|Error" inside that block
+    // Catching them here means a regression like the choice/int warning fixed
+    // on 2026-04-17 fails the suite instead of slipping through.
+    $php_errors = array();
+    if (preg_match_all('#<h4>(A PHP Error was encountered|An uncaught Exception was encountered)</h4>.*?Filename:\s*([^<]+)</p>\s*<p>\s*Line Number:\s*([0-9]+)#s', $body, $m, PREG_SET_ORDER)) {
+        foreach ($m as $hit) {
+            $php_errors[] = trim($hit[2]) . ':' . trim($hit[3]);
+        }
+    }
+
+    return array(
+        'status'      => $code,
+        'error'       => $err,
+        'body_length' => strlen($body),
+        'php_errors'  => $php_errors,
+    );
 }
 
 function status_ok($actual, $expected) {
@@ -185,17 +206,30 @@ foreach ($all_routes as $row) {
     list($path, $expected, $desc) = $row;
     $url = $base_url . $path;
     $r = probe($url, $auth_cookie);
-    $ok = status_ok($r['status'], $expected);
+    $status_ok = status_ok($r['status'], $expected);
+    // A 200 response with inline PHP warnings is still a regression — count
+    // those as failures so the suite catches silent display_errors leaks.
+    $php_clean = empty($r['php_errors']);
+    $ok = $status_ok && $php_clean;
+
     $results[$path] = array(
         'status'      => $r['status'],
         'expected'    => $expected,
         'description' => $desc,
         'body_length' => $r['body_length'],
+        'php_errors'  => $r['php_errors'],
     );
-    $mark = $ok ? 'OK ' : 'FAIL';
-    printf("%s  %3d (exp %-7s)  %s\n", $mark, $r['status'], expected_str($expected), $path);
+    $mark = $ok ? 'OK  ' : 'FAIL';
+    $php_tag = $php_clean ? '' : '   php_err=' . implode(',', $r['php_errors']);
+    printf("%s  %3d (exp %-7s)  %s%s\n", $mark, $r['status'], expected_str($expected), $path, $php_tag);
     if (!$ok) {
-        $failures[] = array('path' => $path, 'actual' => $r['status'], 'expected' => $expected, 'error' => $r['error']);
+        $failures[] = array(
+            'path'       => $path,
+            'actual'     => $r['status'],
+            'expected'   => $expected,
+            'php_errors' => $r['php_errors'],
+            'error'      => $r['error'],
+        );
     }
 }
 
@@ -233,6 +267,17 @@ if ($compare_baseline) {
         if ((int) $r['status'] !== (int) $b['status']) {
             $regressions[] = array('path' => $path, 'was' => $b['status'], 'now' => $r['status']);
             echo "REGR  $path — baseline " . $b['status'] . " → now " . $r['status'] . "\n";
+        }
+        // PHP-error regression: baseline was clean (no php_errors / missing /
+        // empty), but the new run surfaced one or more.
+        $b_php = isset($b['php_errors']) ? $b['php_errors'] : array();
+        if (empty($b_php) && !empty($r['php_errors'])) {
+            $regressions[] = array(
+                'path' => $path,
+                'was'  => 'clean',
+                'now'  => 'php_err=' . implode(',', $r['php_errors']),
+            );
+            echo "REGR  $path — baseline clean → now " . implode(',', $r['php_errors']) . "\n";
         }
     }
     echo "\nRegressions vs baseline: " . count($regressions) . "\n";
