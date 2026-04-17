@@ -16,7 +16,7 @@ class MY_Parser extends CI_Parser {
 
 	public function __construct($config = array())
 	{
-		$this->_ci = & get_instance();
+		$this->_ci = get_instance();
 		
 		if ( ! class_exists('Lex_Autoloader'))
 		{

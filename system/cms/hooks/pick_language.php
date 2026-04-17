@@ -17,15 +17,31 @@ function pick_language()
 {
 	require APPPATH.'/config/language.php';
 
-	// Re-populate $_GET
-	parse_str($_SERVER['QUERY_STRING'], $_GET);
-
-	// If we've been redirected from HTTP to HTTPS on admin, ?session= will be set to maintain language
-	if ($_SERVER['SERVER_PORT'] == 443 and ! empty($_GET['session']))
+	// Re-populate $_GET from the query string (some hooks fire before CI's Input).
+	if (isset($_SERVER['QUERY_STRING']))
 	{
-		session_start($_GET['session']);
+		parse_str($_SERVER['QUERY_STRING'], $_GET);
 	}
 
+	// Align the native session with the same cookie name CI's Session library
+	// will use later. Without this, pick_language's session_start() creates a
+	// PHPSESSID-based session whose internal ID then survives into CI's
+	// subsequent session_start() — PHP's use_strict_mode rejects that ID
+	// against the pyrocms_development file prefix, so a NEW session is born
+	// on every request (login state is lost).
+	$CI_config =& load_class('Config');
+	$ci_sess_name = $CI_config->item('sess_cookie_name');
+	if ($ci_sess_name)
+	{
+		session_name($ci_sess_name);
+	}
+
+	// If we've been redirected from HTTP to HTTPS on admin, ?session= will be set to maintain language
+	if (($_SERVER['SERVER_PORT'] ?? null) == 443 and ! empty($_GET['session']))
+	{
+		session_id($_GET['session']);
+		session_start();
+	}
 	else
 	{
 		session_start();
@@ -106,6 +122,10 @@ function pick_language()
 
 	// Whatever we decided the lang was, save it for next time to avoid working it out again
 	$_SESSION['lang_code'] = $lang;
+
+	// Release the session so CI's Session library (CI 3.1+) can configure
+	// session params without colliding with our active session.
+	session_write_close();
 
 	// Load CI config class
 	$CI_config =& load_class('Config');

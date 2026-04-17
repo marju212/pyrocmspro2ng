@@ -76,8 +76,7 @@ class User_m extends MY_Model
 		$this->db
 			->select($this->profile_table.'.*, g.description as group_name, users.*')
 			->join('groups g', 'g.id = users.group_id')
-			->join('profiles', 'profiles.user_id = users.id', 'left')
-			->group_by('users.id');
+			->join('profiles', 'profiles.user_id = users.id', 'left');
 
 		return parent::get_all();
 	}

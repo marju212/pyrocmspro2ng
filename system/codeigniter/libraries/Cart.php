@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2006 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Shopping Cart Class
@@ -32,7 +45,8 @@
  * @subpackage	Libraries
  * @category	Shopping Cart
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/cart.html
+ * @link		https://codeigniter.com/userguide3/libraries/cart.html
+ * @deprecated	3.0.0	This class is too specific for CI.
  */
 class CI_Cart {
 
@@ -42,7 +56,7 @@ class CI_Cart {
 	 *
 	 * @var string
 	 */
-	public $product_id_rules	= '\.a-z0-9_-';
+	public $product_id_rules = '\.a-z0-9_-';
 
 	/**
 	 * These are the regular expression rules that we use to validate the product ID and product name
@@ -50,17 +64,15 @@ class CI_Cart {
 	 *
 	 * @var string
 	 */
-	public $product_name_rules	= '\.\:\-_ a-z0-9';
+	public $product_name_rules = '\w \-\.\:';
 
 	/**
 	 * only allow safe product names
 	 *
 	 * @var bool
 	 */
-	public $product_name_safe	= TRUE;
+	public $product_name_safe = TRUE;
 
-	// --------------------------------------------------------------------------
-	// Protected variables. Do not change!
 	// --------------------------------------------------------------------------
 
 	/**
@@ -75,7 +87,7 @@ class CI_Cart {
 	 *
 	 * @var array
 	 */
-	protected $_cart_contents	= array();
+	protected $_cart_contents = array();
 
 	/**
 	 * Shopping Class Constructor
@@ -94,17 +106,17 @@ class CI_Cart {
 		$config = is_array($params) ? $params : array();
 
 		// Load the Sessions class
-		$this->CI->load->library('session', $config);
+		$this->CI->load->driver('session', $config);
 
 		// Grab the shopping cart array from the session table
 		$this->_cart_contents = $this->CI->session->userdata('cart_contents');
-		if ($this->_cart_contents === FALSE)
+		if ($this->_cart_contents === NULL)
 		{
 			// No cart exists so we'll set some base values
 			$this->_cart_contents = array('cart_total' => 0, 'total_items' => 0);
 		}
 
-		log_message('debug', 'Cart Class Initialized');
+		log_message('info', 'Cart Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -193,7 +205,7 @@ class CI_Cart {
 		$items['qty'] = (float) $items['qty'];
 
 		// If the quantity is zero or blank there's nothing for us to do
-		if ( ! is_numeric($items['qty']) OR $items['qty'] == 0)
+		if ($items['qty'] == 0)
 		{
 			return FALSE;
 		}
@@ -213,7 +225,7 @@ class CI_Cart {
 
 		// Validate the product name. It can only be alpha-numeric, dashes, underscores, colons or periods.
 		// Note: These can be user-specified by setting the $this->product_name_rules variable.
-		if ($this->product_name_safe && ! preg_match('/^['.$this->product_name_rules.']+$/i', $items['name']))
+		if ($this->product_name_safe && ! preg_match('/^['.$this->product_name_rules.']+$/i'.(UTF8_ENABLED ? 'u' : ''), $items['name']))
 		{
 			log_message('error', 'An invalid name was submitted as the product name: '.$items['name'].' The name can only contain alpha-numeric characters, dashes, underscores, colons, and spaces');
 			return FALSE;
@@ -223,15 +235,6 @@ class CI_Cart {
 
 		// Prep the price. Remove leading zeros and anything that isn't a number or decimal point.
 		$items['price'] = (float) $items['price'];
-
-		// Is the price a valid number?
-		if ( ! is_numeric($items['price']))
-		{
-			log_message('error', 'An invalid price was submitted for product ID: '.$items['id']);
-			return FALSE;
-		}
-
-		// --------------------------------------------------------------------
 
 		// We now need to create a unique identifier for the item being inserted into the cart.
 		// Every time something is added to the cart it is stored in the master cart array.
@@ -292,10 +295,10 @@ class CI_Cart {
 
 		// You can either update a single product using a one-dimensional array,
 		// or multiple products using a multi-dimensional one.  The way we
-		// determine the array type is by looking for a required array key named "id".
+		// determine the array type is by looking for a required array key named "rowid".
 		// If it's not found we assume it's a multi-dimensional array
 		$save_cart = FALSE;
-		if (isset($items['rowid'], $items['qty']))
+		if (isset($items['rowid']))
 		{
 			if ($this->_update($items) === TRUE)
 			{
@@ -306,7 +309,7 @@ class CI_Cart {
 		{
 			foreach ($items as $val)
 			{
-				if (is_array($val) && isset($val['rowid'], $val['qty']))
+				if (is_array($val) && isset($val['rowid']))
 				{
 					if ($this->_update($val) === TRUE)
 					{
@@ -331,10 +334,10 @@ class CI_Cart {
 	/**
 	 * Update the cart
 	 *
-	 * This function permits the quantity of a given item to be changed.
+	 * This function permits changing item properties.
 	 * Typically it is called from the "view cart" page if a user makes
 	 * changes to the quantity before checkout. That array must contain the
-	 * product ID and quantity for each item.
+	 * rowid and quantity for each item.
 	 *
 	 * @param	array
 	 * @return	bool
@@ -342,29 +345,36 @@ class CI_Cart {
 	protected function _update($items = array())
 	{
 		// Without these array indexes there is nothing we can do
-		if ( ! isset($items['qty'], $items['rowid'], $this->_cart_contents[$items['rowid']]))
+		if ( ! isset($items['rowid'], $this->_cart_contents[$items['rowid']]))
 		{
 			return FALSE;
 		}
 
 		// Prep the quantity
-		$items['qty'] = (float) $items['qty'];
-
-		// Is the quantity a number?
-		if ( ! is_numeric($items['qty']))
+		if (isset($items['qty']))
 		{
-			return FALSE;
+			$items['qty'] = (float) $items['qty'];
+			// Is the quantity zero?  If so we will remove the item from the cart.
+			// If the quantity is greater than zero we are updating
+			if ($items['qty'] == 0)
+			{
+				unset($this->_cart_contents[$items['rowid']]);
+				return TRUE;
+			}
 		}
 
-		// Is the quantity zero?  If so we will remove the item from the cart.
-		// If the quantity is greater than zero we are updating
-		if ($items['qty'] == 0)
+		// find updatable keys
+		$keys = array_intersect(array_keys($this->_cart_contents[$items['rowid']]), array_keys($items));
+		// if a price was passed, make sure it contains valid data
+		if (isset($items['price']))
 		{
-			unset($this->_cart_contents[$items['rowid']]);
+			$items['price'] = (float) $items['price'];
 		}
-		else
+
+		// product id & name shouldn't be changed
+		foreach (array_diff($keys, array('id', 'name')) as $key)
 		{
-			$this->_cart_contents[$items['rowid']]['qty'] = $items['qty'];
+			$this->_cart_contents[$items['rowid']][$key] = $items[$key];
 		}
 
 		return TRUE;
@@ -379,7 +389,7 @@ class CI_Cart {
 	 */
 	protected function _save_cart()
 	{
-		// Lets add up the individual prices and set the cart sub-total
+		// Let's add up the individual prices and set the cart sub-total
 		$this->_cart_contents['total_items'] = $this->_cart_contents['cart_total'] = 0;
 		foreach ($this->_cart_contents as $key => $val)
 		{
@@ -480,17 +490,34 @@ class CI_Cart {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get cart item
+	 *
+	 * Returns the details of a specific item in the cart
+	 *
+	 * @param	string	$row_id
+	 * @return	array
+	 */
+	public function get_item($row_id)
+	{
+		return (in_array($row_id, array('total_items', 'cart_total'), TRUE) OR ! isset($this->_cart_contents[$row_id]))
+			? FALSE
+			: $this->_cart_contents[$row_id];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Has options
 	 *
 	 * Returns TRUE if the rowid passed to this function correlates to an item
 	 * that has options associated with it.
 	 *
-	 * @param	mixed
+	 * @param	string	$row_id = ''
 	 * @return	bool
 	 */
-	public function has_options($rowid = '')
+	public function has_options($row_id = '')
 	{
-		return (isset($this->_cart_contents[$rowid]['options']) && count($this->_cart_contents[$rowid]['options']) !== 0);
+		return (isset($this->_cart_contents[$row_id]['options']) && count($this->_cart_contents[$row_id]['options']) !== 0);
 	}
 
 	// --------------------------------------------------------------------
@@ -500,12 +527,12 @@ class CI_Cart {
 	 *
 	 * Returns the an array of options, for a particular product row ID
 	 *
-	 * @param	int
+	 * @param	string	$row_id = ''
 	 * @return	array
 	 */
-	public function product_options($rowid = '')
+	public function product_options($row_id = '')
 	{
-		return isset($this->_cart_contents[$rowid]['options']) ? $this->_cart_contents[$rowid]['options'] : array();
+		return isset($this->_cart_contents[$row_id]['options']) ? $this->_cart_contents[$row_id]['options'] : array();
 	}
 
 	// --------------------------------------------------------------------
@@ -539,6 +566,3 @@ class CI_Cart {
 	}
 
 }
-
-/* End of file Cart.php */
-/* Location: ./system/libraries/Cart.php */

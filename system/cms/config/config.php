@@ -14,7 +14,12 @@
 | path to your installation.
 |
 */
-$config['base_url']    = '';
+// CI 3.1's empty-base_url fallback uses SERVER_ADDR (e.g. 127.0.0.1) instead
+// of HTTP_HOST; build base_url from HTTP_HOST so rendered {{ url:base }} /
+// site_url() point at the actual hostname.
+$config['base_url']    = isset($_SERVER['HTTP_HOST'])
+    ? ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'
+    : '';
 
 //Bockavel registered SMS users notification
 $config['sms_registered'] = [
@@ -261,16 +266,23 @@ $config['encryption_key'] = "Jiu348^&H%fa";
 | 'sess_time_to_update'        = how many seconds between CI refreshing Session Information
 |
 */
+$config['sess_driver']             = 'files';
 $config['sess_cookie_name']        = 'pyrocms' . (ENVIRONMENT !== 'production' ? '_' . ENVIRONMENT : '');
-$config['sess_expiration']        = 0;
-$config['sess_expire_on_close']    = true;
-$config['sess_encrypt_cookie']    = true;
-$config['sess_use_database']    = true;
-// don't change anything but the 'ci_sessions' part of this. The MSM depends on the 'default_' prefix
-$config['sess_table_name']        = 'default_ci_sessions';
-$config['sess_match_ip']        = true;
-$config['sess_match_useragent']    = true;
-$config['sess_time_to_update']    = 300;
+// Use a positive expiration so the session file persists across requests.
+// sess_expire_on_close still applies to the browser cookie lifetime.
+$config['sess_expiration']         = 7200;
+$config['sess_expire_on_close']    = false;
+// CI 3.1 ignores sess_encrypt_cookie; file sessions store data server-side.
+$config['sess_use_database']       = false;
+$config['sess_table_name']         = 'default_ci_sessions';
+$config['sess_save_path']          = FCPATH.'system/cms/cache/sessions';
+// Match-IP/UA cause session churn when the hook-based session (PHPSESSID from
+// pick_language) hands off to CI's own session name; keep them off so CI 3.1
+// doesn't discard the session on every request.
+$config['sess_match_ip']           = false;
+$config['sess_match_useragent']    = false;
+$config['sess_time_to_update']     = 300;
+$config['sess_regenerate_destroy'] = false;
 
 /*
 |--------------------------------------------------------------------------

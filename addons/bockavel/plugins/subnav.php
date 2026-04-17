@@ -33,7 +33,7 @@ class Plugin_subnav extends Plugin
 
         $group = $this->attribute('group');
         $page_id = $this->attribute('page_id', 0);
-        return count($this->getParent($group, $page_id)) > 0;
+        return count((array) $this->getParent($group, $page_id)) > 0;
     }
 
 
@@ -48,7 +48,7 @@ class Plugin_subnav extends Plugin
         }
 
 
-        return (count($this->getParent($group, $page_id)) > 0) ? $this->content() : '';
+        return (count((array) $this->getParent($group, $page_id)) > 0) ? $this->content() : '';
     }
 
 

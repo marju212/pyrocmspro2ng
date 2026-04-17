@@ -109,20 +109,15 @@ class Ion_auth_model extends CI_Model
 	 **/
 	public function hash_password($password, $salt=false)
 	{
-	    if (empty($password))
-	    {
-		return false;
-	    }
+		if (empty($password))
+		{
+			return false;
+		}
 
-	    if ($this->store_salt && $salt)
-		{
-			return  sha1($password . $salt);
-		}
-		else
-		{
-		$salt = $this->salt();
-		return  $salt . substr(sha1($salt . $password), 0, -$this->salt_length);
-		}
+		// New password storage always uses bcrypt (PASSWORD_DEFAULT).
+		// Legacy SHA1 hashes remain verifiable via hash_password_db(), which
+		// transparently re-hashes them to bcrypt on first successful login.
+		return password_hash($password, PASSWORD_DEFAULT);
 	}
 
 	// --------------------------------------------------------------------------
@@ -141,30 +136,60 @@ class Ion_auth_model extends CI_Model
 			return false;
 		}
 
-	   $query = $this->db->select('password')
-						 ->select('salt')
-						 ->where('id', $id)
-						 ->where($this->ion_auth->_extra_where)
-						 ->limit(1)
-						 ->get($this->tables['users']);
-
-		$hash_password_db = $query->row();
+		$query = $this->db->select('password')
+						  ->select('salt')
+						  ->where('id', $id)
+						  ->where($this->ion_auth->_extra_where)
+						  ->limit(1)
+						  ->get($this->tables['users']);
 
 		if ($query->num_rows() !== 1)
 		{
-		    return false;
+			return false;
 		}
 
-		if ($this->store_salt)
+		$row = $query->row();
+		$stored_hash = $row->password;
+		$stored_salt = $row->salt;
+
+		// Modern bcrypt/argon2 hash — use password_verify().
+		if (is_string($stored_hash) && strlen($stored_hash) > 40 && strpos($stored_hash, '$') === 0)
 		{
-			return sha1($password . $hash_password_db->salt);
+			return password_verify($password, $stored_hash);
+		}
+
+		// Legacy SHA1 hash verification (two historical schemes):
+		//   a) store_salt = true: sha1(password . salt)
+		//   b) store_salt = false: salt-prefixed sha1(salt . password) truncated
+		$legacy_ok = false;
+
+		if ($this->store_salt && !empty($stored_salt))
+		{
+			$legacy_ok = hash_equals((string) $stored_hash, sha1($password . $stored_salt));
 		}
 		else
 		{
-			$salt = substr($hash_password_db->password, 0, $this->salt_length);
-
-			return $salt . substr(sha1($salt . $password), 0, -$this->salt_length);
+			$salt = substr((string) $stored_hash, 0, $this->salt_length);
+			$legacy_ok = hash_equals(
+				(string) $stored_hash,
+				$salt . substr(sha1($salt . $password), 0, -$this->salt_length)
+			);
 		}
+
+		if ($legacy_ok)
+		{
+			// Transparent upgrade: replace legacy hash with bcrypt, clear salt.
+			$new_hash = password_hash($password, PASSWORD_DEFAULT);
+			$this->db
+				->where('id', $id)
+				->update($this->tables['users'], array(
+					'password' => $new_hash,
+					'salt'     => '',
+				));
+			return true;
+		}
+
+		return false;
 	}
 
 	// --------------------------------------------------------------------------
@@ -296,11 +321,10 @@ class Ion_auth_model extends CI_Model
 						  ->limit(1)
 						  ->get($this->tables['users'])->row();
 
-	    $db_password = $result->password;
-	    $old		 = $this->hash_password_db($result->id, $old);
-	    $new		 = $this->hash_password($new, $result->salt);
+	    $old_matches = $this->hash_password_db($result->id, $old);
+	    $new         = $this->hash_password($new, $result->salt);
 
-	    if ($db_password === $old)
+	    if ($old_matches === true)
 	    {
 			// Store the new password and reset the remember code so all remembered instances have to re-login
 			$data = array(
@@ -395,7 +419,9 @@ class Ion_auth_model extends CI_Model
 			return false;
 	    }
 
-		$key = $this->hash_password(microtime().$email);
+		// URL-safe random token (bcrypt output contains '/' and '$' that would
+		// break URL routing for /users/reset_pass/<code>).
+		$key = bin2hex(function_exists('random_bytes') ? random_bytes(20) : openssl_random_pseudo_bytes(20));
 
 		$this->forgotten_password_code = $key;
 
@@ -644,9 +670,7 @@ class Ion_auth_model extends CI_Model
 
 		if ($query->num_rows() == 1)
 		{
-			$password = $this->hash_password_db($user->id, $password);
-
-			if ($user->password === $password)
+			if ($this->hash_password_db($user->id, $password) === true)
 			{
 				$this->_set_login($user, $remember);
 				return true;
@@ -691,6 +715,7 @@ class Ion_auth_model extends CI_Model
 	
 	public function _set_login($user, $remember)
 	{
+		file_put_contents('/tmp/auth.log', "[SET] uid=".$user->id." email=".$user->email." sid=".session_id()." sname=".session_name()."\n", FILE_APPEND);
 		$this->update_last_login($user->id);
 
 		$group_row = $this->db->select('name')->where('id', $user->group_id)->get($this->tables['groups'])->row();

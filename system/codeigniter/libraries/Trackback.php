@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Trackback Class
@@ -34,20 +47,64 @@
  * @subpackage	Libraries
  * @category	Trackbacks
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/trackback.html
+ * @link		https://codeigniter.com/userguide3/libraries/trackback.html
  */
 class CI_Trackback {
 
-	public $time_format	= 'local';
-	public $charset		= 'UTF-8';
-	public $data			= array('url' => '', 'title' => '', 'excerpt' => '', 'blog_name' => '', 'charset' => '');
-	public $convert_ascii	= TRUE;
-	public $response		= '';
-	public $error_msg		= array();
+	/**
+	 * Character set
+	 *
+	 * @var	string
+	 */
+	public $charset = 'UTF-8';
 
+	/**
+	 * Trackback data
+	 *
+	 * @var	array
+	 */
+	public $data = array(
+		'url' => '',
+		'title' => '',
+		'excerpt' => '',
+		'blog_name' => '',
+		'charset' => ''
+	);
+
+	/**
+	 * Convert ASCII flag
+	 *
+	 * Whether to convert high-ASCII and MS Word
+	 * characters to HTML entities.
+	 *
+	 * @var	bool
+	 */
+	public $convert_ascii = TRUE;
+
+	/**
+	 * Response
+	 *
+	 * @var	string
+	 */
+	public $response = '';
+
+	/**
+	 * Error messages list
+	 *
+	 * @var	string[]
+	 */
+	public $error_msg = array();
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
+	 *
+	 * @return	void
+	 */
 	public function __construct()
 	{
-		log_message('debug', 'Trackback Class Initialized');
+		log_message('info', 'Trackback Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -77,18 +134,22 @@ class CI_Trackback {
 
 			switch ($item)
 			{
-				case 'ping_url'	: $$item = $this->extract_urls($tb_data[$item]);
+				case 'ping_url':
+					$$item = $this->extract_urls($tb_data[$item]);
 					break;
-				case 'excerpt'	: $$item = $this->limit_characters($this->convert_xml(strip_tags(stripslashes($tb_data[$item]))));
+				case 'excerpt':
+					$$item = $this->limit_characters($this->convert_xml(strip_tags(stripslashes($tb_data[$item]))));
 					break;
-				case 'url'		: $$item = str_replace('&#45;', '-', $this->convert_xml(strip_tags(stripslashes($tb_data[$item]))));
+				case 'url':
+					$$item = str_replace('&#45;', '-', $this->convert_xml(strip_tags(stripslashes($tb_data[$item]))));
 					break;
-				default			: $$item = $this->convert_xml(strip_tags(stripslashes($tb_data[$item])));
+				default:
+					$$item = $this->convert_xml(strip_tags(stripslashes($tb_data[$item])));
 					break;
 			}
 
 			// Convert High ASCII Characters
-			if ($this->convert_ascii === TRUE && in_array($item, array('excerpt', 'title', 'blog_name')))
+			if ($this->convert_ascii === TRUE && in_array($item, array('excerpt', 'title', 'blog_name'), TRUE))
 			{
 				$$item = $this->convert_ascii($$item);
 			}
@@ -142,7 +203,14 @@ class CI_Trackback {
 
 			if ($val !== 'url' && MB_ENABLED === TRUE)
 			{
-				$_POST[$val] = mb_convert_encoding($_POST[$val], $this->charset, $this->data['charset']);
+				if (MB_ENABLED === TRUE)
+				{
+					$_POST[$val] = mb_convert_encoding($_POST[$val], $this->charset, $this->data['charset']);
+				}
+				elseif (ICONV_ENABLED === TRUE)
+				{
+					$_POST[$val] = @iconv($this->data['charset'], $this->charset.'//IGNORE', $_POST[$val]);
+				}
 			}
 
 			$_POST[$val] = ($val !== 'url') ? $this->convert_xml(strip_tags($_POST[$val])) : strip_tags($_POST[$val]);
@@ -172,8 +240,7 @@ class CI_Trackback {
 	 */
 	public function send_error($message = 'Incomplete Information')
 	{
-		echo '<?xml version="1.0" encoding="utf-8"?'.">\n<response>\n<error>1</error>\n<message>".$message."</message>\n</response>";
-		exit;
+		exit('<?xml version="1.0" encoding="utf-8"?'.">\n<response>\n<error>1</error>\n<message>".$message."</message>\n</response>");
 	}
 
 	// --------------------------------------------------------------------
@@ -188,8 +255,7 @@ class CI_Trackback {
 	 */
 	public function send_success()
 	{
-		echo '<?xml version="1.0" encoding="utf-8"?'.">\n<response>\n<error>0</error>\n</response>";
-		exit;
+		exit('<?xml version="1.0" encoding="utf-8"?'.">\n<response>\n<error>0</error>\n</response>");
 	}
 
 	// --------------------------------------------------------------------
@@ -229,9 +295,8 @@ class CI_Trackback {
 		}
 
 		// Build the path
-		$ppath = isset($target['path']) ? $target['path'] : $url;
-
-		$path = empty($target['query']) ? $ppath : $ppath.'?'.$target['query'];
+		$path = isset($target['path']) ? $target['path'] : $url;
+		empty($target['query']) OR $path .= '?'.$target['query'];
 
 		// Add the Trackback ID to the data string
 		if ($id = $this->get_id($url))
@@ -258,7 +323,9 @@ class CI_Trackback {
 
 		if (stripos($this->response, '<error>0</error>') === FALSE)
 		{
-			$message = preg_match('/<message>(.*?)<\/message>/is', $this->response, $match) ? trim($match[1]) : 'An unknown error was encountered';
+			$message = preg_match('/<message>(.*?)<\/message>/is', $this->response, $match)
+				? trim($match[1])
+				: 'An unknown error was encountered';
 			$this->set_error($message);
 			return FALSE;
 		}
@@ -283,17 +350,10 @@ class CI_Trackback {
 		// Remove the pesky white space and replace with a comma, then replace doubles.
 		$urls = str_replace(',,', ',', preg_replace('/\s*(\S+)\s*/', '\\1,', $urls));
 
-		// Remove any comma that might be at the end
-		if (substr($urls, -1) === ',')
-		{
-			$urls = substr($urls, 0, -1);
-		}
-
 		// Break into an array via commas and remove duplicates
-		$urls = array_unique(preg_split('/[,]/', $urls));
+		$urls = array_unique(preg_split('/[,]/', rtrim($urls, ',')));
 
 		array_walk($urls, array($this, 'validate_url'));
-
 		return $urls;
 	}
 
@@ -311,7 +371,7 @@ class CI_Trackback {
 	{
 		$url = trim($url);
 
-		if (strpos($url, 'http') !== 0)
+		if (stripos($url, 'http') !== 0)
 		{
 			$url = 'http://'.$url;
 		}
@@ -355,7 +415,7 @@ class CI_Trackback {
 			}
 		}
 
-		return preg_match('/^[0-9]+$/', $tb_id) ? $tb_id : FALSE;
+		return ctype_digit((string) $tb_id) ? $tb_id : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -495,6 +555,3 @@ class CI_Trackback {
 	}
 
 }
-
-/* End of file Trackback.php */
-/* Location: ./system/libraries/Trackback.php */

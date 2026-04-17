@@ -187,7 +187,24 @@ class Lex_Parser
 			{
 				if (($val = $this->get_variable($var, $data, '__lex_no_value__')) !== '__lex_no_value__')
 				{
-					$text = str_replace($data_matches[0][$index], $val, $text);
+					// Only scalars (plus objects with __toString and null) can
+					// be fed to str_replace() on PHP 8.0+. Arrays / raw objects
+					// would TypeError. Always perform the replacement so the
+					// tag is consumed — substitute an empty string for types
+					// that can't be rendered inline.
+					if (is_array($val))
+					{
+						$val = '';
+					}
+					elseif (is_object($val) && ! method_exists($val, '__toString'))
+					{
+						$val = '';
+					}
+					elseif ($val === null || $val === false)
+					{
+						$val = '';
+					}
+					$text = str_replace($data_matches[0][$index], (string) $val, $text);
 				}
 			}
 		}
@@ -384,6 +401,10 @@ class Lex_Parser
 			$array_key = $match[1];
 			$tag = $match[0];
 			$next_tag = null;
+			if (!isset(Lex_Parser::$callback_data[$array_key]) || !is_array(Lex_Parser::$callback_data[$array_key]))
+			{
+				return $text;
+			}
 			$children = Lex_Parser::$callback_data[$array_key];
 			$child_count = count($children);
 			$count = 1;
@@ -686,6 +707,7 @@ class Lex_Parser
 	 */
 	protected function inject_extractions($text, $type = null)
 	{
+		$text = (string) $text;
 		if ($type === null)
 		{
 			foreach (Lex_Parser::$extractions as $type => $extractions)
@@ -777,12 +799,19 @@ class Lex_Parser
 	protected function parse_php($text)
 	{
 		ob_start();
-		$result = eval('?>'.$text.'<?php ');
+		try {
+			$result = eval('?>'.$text.'<?php ');
+		} catch (ParseError $e) {
+			ob_end_clean();
+			log_message('error', 'Lex parse error: '.$e->getMessage());
+			return '';
+		}
 
 		if ($result === false)
 		{
-			echo '<br />You have a syntax error in your Lex tags. The snippet of text that contains the error has been output below:<br />';
-			exit(str_replace(array('?>', '<?php '), '', $text));
+			ob_end_clean();
+			log_message('error', 'Lex eval error in template');
+			return '';
 		}
 
 		return ob_get_clean();

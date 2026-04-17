@@ -101,7 +101,6 @@ $config['streams:schema'] = array(
         'fields' => array(
 	        	'id' => array(
 	        			'type' => 'INT',
-	        			'constraint' => 11,
 	        			'unsigned' => true,
 	        			'auto_increment' => true
 	        	),
@@ -140,21 +139,17 @@ $config['streams:schema'] = array(
         'fields' => array(
 	        	'id' => array(
 	        			'type' => 'INT',
-	        			'constraint' => 11,
 	        			'unsigned' => true,
 	        			'auto_increment' => true
 	        		),
 	        	'sort_order' => array(
 	        			'type' => 'INT',
-	        			'constraint' => 11
 	        		),
 	        	'stream_id' => array(
 	        			'type' => 'INT',
-	        			'constraint' => 11
 	        		),
 	        	'field_id' => array(
 	        			'type' => 'INT',
-	        			'constraint' => 11
 	        		),
 	        	'is_required' => array(
 	        			'type' => 'ENUM',

@@ -1,0 +1,340 @@
+{
+    "base_url": "http:\/\/pyrocmspro2ng.test",
+    "generated": "2026-04-17T06:17:03+00:00",
+    "php_version": "8.2.30",
+    "results": {
+        "\/": {
+            "status": 200,
+            "expected": 200,
+            "description": "homepage",
+            "body_length": 44700
+        },
+        "\/nyheter\/": {
+            "status": 200,
+            "expected": 200,
+            "description": "news listing",
+            "body_length": 43641
+        },
+        "\/blimedlem": {
+            "status": 200,
+            "expected": 200,
+            "description": "registration alias",
+            "body_length": 46604
+        },
+        "\/member\/medlemmar": {
+            "status": 200,
+            "expected": 200,
+            "description": "members listing",
+            "body_length": 43232
+        },
+        "\/users\/login": {
+            "status": 200,
+            "expected": 200,
+            "description": "login page",
+            "body_length": 42675
+        },
+        "\/users\/register": {
+            "status": 200,
+            "expected": 200,
+            "description": "users\/register",
+            "body_length": 45198
+        },
+        "\/register": {
+            "status": 200,
+            "expected": 200,
+            "description": "register alias",
+            "body_length": 45192
+        },
+        "\/blog\/rss\/all.rss": {
+            "status": 200,
+            "expected": 200,
+            "description": "blog rss feed",
+            "body_length": 704
+        },
+        "\/ad\/show\/all": {
+            "status": 200,
+            "expected": 200,
+            "description": "ad show all",
+            "body_length": 41329
+        },
+        "\/avelsrad\/mjolkgeten": {
+            "status": 200,
+            "expected": 200,
+            "description": "avelsrad mjolkgeten",
+            "body_length": 44164
+        },
+        "\/avelsrad\/rad-och-dad-fran-avelsradet": {
+            "status": 200,
+            "expected": 200,
+            "description": "avelsrad rad-och-dad",
+            "body_length": 44201
+        },
+        "\/djurhalsa\/klovatlas": {
+            "status": 200,
+            "expected": 200,
+            "description": "djurhalsa klovatlas",
+            "body_length": 45353
+        },
+        "\/djurhalsa\/lentivirus": {
+            "status": 200,
+            "expected": 200,
+            "description": "djurhalsa lentivirus",
+            "body_length": 45345
+        },
+        "\/foder\/grovfoder": {
+            "status": 200,
+            "expected": 200,
+            "description": "foder grovfoder",
+            "body_length": 45757
+        },
+        "\/foder\/foderstatsberakning": {
+            "status": 200,
+            "expected": 200,
+            "description": "foder foderstatsberakning",
+            "body_length": 45778
+        },
+        "\/foder\/skulltorka-ho": {
+            "status": 200,
+            "expected": 200,
+            "description": "foder skulltorka-ho",
+            "body_length": 45766
+        },
+        "\/gardens-byggnader": {
+            "status": 200,
+            "expected": 200,
+            "description": "gardens byggnader",
+            "body_length": 43418
+        },
+        "\/nyheter\/arsmote-2015": {
+            "status": 200,
+            "expected": 200,
+            "description": "news article arsmote-2015",
+            "body_length": 43646
+        },
+        "\/nyheter\/seminkurs": {
+            "status": 200,
+            "expected": 200,
+            "description": "news article seminkurs",
+            "body_length": 43651
+        },
+        "\/om-foreningen\/avelsprogram": {
+            "status": 200,
+            "expected": 200,
+            "description": "om foreningen avelsprogram",
+            "body_length": 44807
+        },
+        "\/om-foreningen\/styrelse": {
+            "status": 200,
+            "expected": 200,
+            "description": "om foreningen styrelse",
+            "body_length": 44812
+        },
+        "\/om-foreningen\/styrelse\/arsmote-2026": {
+            "status": 200,
+            "expected": 200,
+            "description": "styrelse arsmote-2026",
+            "body_length": 44962
+        },
+        "\/om-foreningen\/styrelse\/stadgar": {
+            "status": 200,
+            "expected": 200,
+            "description": "styrelse stadgar",
+            "body_length": 44812
+        },
+        "\/projekt\/bevarandearbete-2018": {
+            "status": 200,
+            "expected": 200,
+            "description": "projekt 2018",
+            "body_length": 45882
+        },
+        "\/projekt\/bevarandearbete-2025": {
+            "status": 200,
+            "expected": 200,
+            "description": "projekt 2025",
+            "body_length": 45882
+        },
+        "\/projekt\/oronmarkning-2017-459": {
+            "status": 200,
+            "expected": 200,
+            "description": "projekt oronmarkning",
+            "body_length": 45886
+        },
+        "\/start": {
+            "status": 301,
+            "expected": 301,
+            "description": "start alias redirect",
+            "body_length": 0
+        },
+        "\/ad\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "ad listing (login redirect)",
+            "body_length": 0
+        },
+        "\/ad\/create": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "ad create (login redirect)",
+            "body_length": 0
+        },
+        "\/edit-profile": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "edit-profile (login redirect)",
+            "body_length": 0
+        },
+        "\/admin\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin dashboard",
+            "body_length": 0
+        },
+        "\/admin\/pages\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin pages",
+            "body_length": 0
+        },
+        "\/admin\/blog\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin blog",
+            "body_length": 0
+        },
+        "\/admin\/users\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin users",
+            "body_length": 0
+        },
+        "\/admin\/settings\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin settings",
+            "body_length": 0
+        },
+        "\/admin\/files\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin files",
+            "body_length": 0
+        },
+        "\/admin\/navigation\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin navigation",
+            "body_length": 0
+        },
+        "\/admin\/ad\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin ad (bockavel)",
+            "body_length": 0
+        },
+        "\/admin\/member\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin member",
+            "body_length": 0
+        },
+        "\/admin\/comments\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin comments",
+            "body_length": 0
+        },
+        "\/admin\/templates\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin templates",
+            "body_length": 0
+        },
+        "\/admin\/variables\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin variables",
+            "body_length": 0
+        },
+        "\/admin\/redirects\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin redirects",
+            "body_length": 0
+        },
+        "\/admin\/groups\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin groups",
+            "body_length": 0
+        },
+        "\/admin\/keywords\/": {
+            "status": 307,
+            "expected": [
+                302,
+                307
+            ],
+            "description": "admin keywords",
+            "body_length": 0
+        },
+        "\/this-page-does-not-exist-xyz": {
+            "status": 404,
+            "expected": [
+                404,
+                200
+            ],
+            "description": "nonexistent page (404 or pages catch-all 200)",
+            "body_length": 43392
+        }
+    }
+}

@@ -43,12 +43,12 @@ class File_m extends MY_Model {
 		}
 
         // join keywords, filter by tags
-        // group_by files.id to avoid duplicates files
+        // distinct() replaces group_by for ONLY_FULL_GROUP_BY compatibility
 		$this->db
+			->distinct()
 			->join('keywords_applied', 'keywords_applied.hash = files.keywords')
 			->join('keywords', 'keywords.id = keywords_applied.keyword_id')
-			->where_in('keywords.name', $tags)
-			->group_by('files.id');
+			->where_in('keywords.name', $tags);
 
 		return $this->get_all();
 	}

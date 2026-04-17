@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.3.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * MySQLi Database Adapter Class
@@ -36,76 +49,184 @@
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/userguide3/database/
  */
 class CI_DB_mysqli_driver extends CI_DB {
 
+	/**
+	 * Database driver
+	 *
+	 * @var	string
+	 */
 	public $dbdriver = 'mysqli';
 
-	// The character used for escaping
-	protected $_escape_char = '`';
-
-	protected $_random_keyword = ' RAND()'; // database specific random keyword
+	/**
+	 * Compression flag
+	 *
+	 * @var	bool
+	 */
+	public $compress = FALSE;
 
 	/**
+	 * DELETE hack flag
+	 *
 	 * Whether to use the MySQL "delete hack" which allows the number
 	 * of affected rows to be shown. Uses a preg_replace when enabled,
 	 * adding a bit more processing to all queries.
+	 *
+	 * @var	bool
 	 */
 	public $delete_hack = TRUE;
 
 	/**
-	 * Non-persistent database connection
+	 * Strict ON flag
 	 *
-	 * @return	object
+	 * Whether we're running in strict SQL mode.
+	 *
+	 * @var	bool
 	 */
-	public function db_connect()
-	{
-		// Use MySQL client compression?
-		if ($this->compress === TRUE)
-		{
-			$port = empty($this->port) ? NULL : $this->port;
-
-			$mysqli = mysqli_init();
-			$mysqli->real_connect($this->hostname, $this->username, $this->password, $this->database, $port, NULL, MYSQLI_CLIENT_COMPRESS);
-
-			return $mysqli;
-		}
-
-		return empty($this->port)
-			? @new mysqli($this->hostname, $this->username, $this->password, $this->database)
-			: @new mysqli($this->hostname, $this->username, $this->password, $this->database, $this->port);
-	}
+	public $stricton;
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Persistent database connection
+	 * Identifier escape character
 	 *
+	 * @var	string
+	 */
+	protected $_escape_char = '`';
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * MySQLi object
+	 *
+	 * Has to be preserved without being assigned to $conn_id.
+	 *
+	 * @var	MySQLi
+	 */
+	protected $_mysqli;
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Database connection
+	 *
+	 * @param	bool	$persistent
 	 * @return	object
 	 */
-	public function db_pconnect()
+	public function db_connect($persistent = FALSE)
 	{
-		// Persistent connection support was added in PHP 5.3.0
-		if ( ! is_php('5.3'))
+		// PHP 8.1 changes default error handling mode from silent to exceptions - reverse that
+		if (is_php('8.1'))
 		{
-			return $this->db_connect();
+			$mysqli_driver = new mysqli_driver();
+			$mysqli_driver->report_mode = MYSQLI_REPORT_OFF;
 		}
 
-		// Use MySQL client compression?
-		if ($this->compress === TRUE)
+		// Do we have a socket path?
+		if ($this->hostname[0] === '/')
 		{
+			$hostname = NULL;
+			$port = NULL;
+			$socket = $this->hostname;
+		}
+		else
+		{
+			$hostname = ($persistent === TRUE)
+				? 'p:'.$this->hostname : $this->hostname;
 			$port = empty($this->port) ? NULL : $this->port;
-
-			$mysqli = mysqli_init();
-			$mysqli->real_connect('p:'.$this->hostname, $this->username, $this->password, $this->database, $port, NULL, MYSQLI_CLIENT_COMPRESS);
-
-			return $mysqli;
+			$socket = NULL;
 		}
 
-		return empty($this->port)
-			? @new mysqli('p:'.$this->hostname, $this->username, $this->password, $this->database)
-			: @new mysqli('p:'.$this->hostname, $this->username, $this->password, $this->database, $this->port);
+		$client_flags = ($this->compress === TRUE) ? MYSQLI_CLIENT_COMPRESS : 0;
+		$this->_mysqli = mysqli_init();
+
+		$this->_mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+
+		if (isset($this->stricton))
+		{
+			if ($this->stricton)
+			{
+				$this->_mysqli->options(MYSQLI_INIT_COMMAND, 'SET SESSION sql_mode = CONCAT(@@sql_mode, ",", "STRICT_ALL_TABLES")');
+			}
+			else
+			{
+				$this->_mysqli->options(MYSQLI_INIT_COMMAND,
+					'SET SESSION sql_mode =
+					REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+					@@sql_mode,
+					"STRICT_ALL_TABLES,", ""),
+					",STRICT_ALL_TABLES", ""),
+					"STRICT_ALL_TABLES", ""),
+					"STRICT_TRANS_TABLES,", ""),
+					",STRICT_TRANS_TABLES", ""),
+					"STRICT_TRANS_TABLES", "")'
+				);
+			}
+		}
+
+		if (is_array($this->encrypt))
+		{
+			$ssl = array();
+			empty($this->encrypt['ssl_key'])    OR $ssl['key']    = $this->encrypt['ssl_key'];
+			empty($this->encrypt['ssl_cert'])   OR $ssl['cert']   = $this->encrypt['ssl_cert'];
+			empty($this->encrypt['ssl_ca'])     OR $ssl['ca']     = $this->encrypt['ssl_ca'];
+			empty($this->encrypt['ssl_capath']) OR $ssl['capath'] = $this->encrypt['ssl_capath'];
+			empty($this->encrypt['ssl_cipher']) OR $ssl['cipher'] = $this->encrypt['ssl_cipher'];
+
+			if (isset($this->encrypt['ssl_verify']))
+			{
+				$client_flags |= MYSQLI_CLIENT_SSL;
+
+				if ($this->encrypt['ssl_verify'])
+				{
+					defined('MYSQLI_OPT_SSL_VERIFY_SERVER_CERT') && $this->_mysqli->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, TRUE);
+				}
+				// Apparently (when it exists), setting MYSQLI_OPT_SSL_VERIFY_SERVER_CERT
+				// to FALSE didn't do anything, so PHP 5.6.16 introduced yet another
+				// constant ...
+				//
+				// https://secure.php.net/ChangeLog-5.php#5.6.16
+				// https://bugs.php.net/bug.php?id=68344
+				elseif (defined('MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT'))
+				{
+					$client_flags |= MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
+				}
+			}
+
+			if ( ! empty($ssl))
+			{
+				$client_flags |= MYSQLI_CLIENT_SSL;
+				$this->_mysqli->ssl_set(
+					isset($ssl['key'])    ? $ssl['key']    : NULL,
+					isset($ssl['cert'])   ? $ssl['cert']   : NULL,
+					isset($ssl['ca'])     ? $ssl['ca']     : NULL,
+					isset($ssl['capath']) ? $ssl['capath'] : NULL,
+					isset($ssl['cipher']) ? $ssl['cipher'] : NULL
+				);
+			}
+		}
+
+		if ($this->_mysqli->real_connect($hostname, $this->username, $this->password, $this->database, $port, $socket, $client_flags))
+		{
+			// Prior to version 5.7.3, MySQL silently downgrades to an unencrypted connection if SSL setup fails
+			if (
+				($client_flags & MYSQLI_CLIENT_SSL)
+				&& version_compare($this->_mysqli->client_info, '5.7.3', '<=')
+				&& empty($this->_mysqli->query("SHOW STATUS LIKE 'ssl_cipher'")->fetch_object()->Value)
+			)
+			{
+				$this->_mysqli->close();
+				$message = 'MySQLi was configured for an SSL connection, but got an unencrypted connection instead!';
+				log_message('error', $message);
+				return ($this->db_debug) ? $this->display_error($message, '', TRUE) : FALSE;
+			}
+
+			return $this->_mysqli;
+		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -131,7 +252,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Select the database
 	 *
-	 * @param	string	database name
+	 * @param	string	$database
 	 * @return	bool
 	 */
 	public function db_select($database = '')
@@ -141,9 +262,10 @@ class CI_DB_mysqli_driver extends CI_DB {
 			$database = $this->database;
 		}
 
-		if (@$this->conn_id->select_db($database))
+		if ($this->conn_id->select_db($database))
 		{
 			$this->database = $database;
+			$this->data_cache = array();
 			return TRUE;
 		}
 
@@ -155,12 +277,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Set client character set
 	 *
-	 * @param	string
+	 * @param	string	$charset
 	 * @return	bool
 	 */
 	protected function _db_set_charset($charset)
 	{
-		return @$this->conn_id->set_charset($charset);
+		return $this->conn_id->set_charset($charset);
 	}
 
 	// --------------------------------------------------------------------
@@ -172,9 +294,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	public function version()
 	{
-		return isset($this->data_cache['version'])
-			? $this->data_cache['version']
-			: $this->data_cache['version'] = $this->conn_id->server_info;
+		if (isset($this->data_cache['version']))
+		{
+			return $this->data_cache['version'];
+		}
+
+		return $this->data_cache['version'] = $this->conn_id->server_info;
 	}
 
 	// --------------------------------------------------------------------
@@ -182,12 +307,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Execute the query
 	 *
-	 * @param	string	an SQL query
+	 * @param	string	$sql	an SQL query
 	 * @return	mixed
 	 */
 	protected function _execute($sql)
 	{
-		return @$this->conn_id->query($this->_prep_query($sql));
+		return $this->conn_id->query($this->_prep_query($sql));
 	}
 
 	// --------------------------------------------------------------------
@@ -197,7 +322,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * If needed, each database adapter can prep the query string
 	 *
-	 * @param	string	an SQL query
+	 * @param	string	$sql	an SQL query
 	 * @return	string
 	 */
 	protected function _prep_query($sql)
@@ -206,7 +331,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 		// modifies the query so that it a proper number of affected rows is returned.
 		if ($this->delete_hack === TRUE && preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', $sql))
 		{
-			return preg_replace('/^\s*DELETE\s+FROM\s+(\S+)\s*$/', 'DELETE FROM \\1 WHERE 1=1', $sql);
+			return trim($sql).' WHERE 1=1';
 		}
 
 		return $sql;
@@ -219,22 +344,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_begin($test_mode = FALSE)
+	protected function _trans_begin()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
-		{
-			return TRUE;
-		}
-
-		// Reset the transaction failure flag.
-		// If the $test_mode flag is set to TRUE transactions will be rolled back
-		// even if the queries produce a successful result.
-		$this->_trans_failure = ($test_mode === TRUE);
-
-		$this->simple_query('SET AUTOCOMMIT=0');
-		$this->simple_query('START TRANSACTION'); // can also be BEGIN or BEGIN WORK
-		return TRUE;
+		$this->conn_id->autocommit(FALSE);
+		return is_php('5.5')
+			? $this->conn_id->begin_transaction()
+			: $this->simple_query('START TRANSACTION'); // can also be BEGIN or BEGIN WORK
 	}
 
 	// --------------------------------------------------------------------
@@ -244,17 +359,15 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_commit()
+	protected function _trans_commit()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
+		if ($this->conn_id->commit())
 		{
+			$this->conn_id->autocommit(TRUE);
 			return TRUE;
 		}
 
-		$this->simple_query('COMMIT');
-		$this->simple_query('SET AUTOCOMMIT=1');
-		return TRUE;
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -264,51 +377,28 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_rollback()
+	protected function _trans_rollback()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
+		if ($this->conn_id->rollback())
 		{
+			$this->conn_id->autocommit(TRUE);
 			return TRUE;
 		}
 
-		$this->simple_query('ROLLBACK');
-		$this->simple_query('SET AUTOCOMMIT=1');
-		return TRUE;
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Escape String
+	 * Platform-dependent string escape
 	 *
 	 * @param	string
-	 * @param	bool	whether or not the string will be used in a LIKE condition
 	 * @return	string
 	 */
-	public function escape_str($str, $like = FALSE)
+	protected function _escape_str($str)
 	{
-		if (is_array($str))
-		{
-			foreach ($str as $key => $val)
-			{
-				$str[$key] = $this->escape_str($val, $like);
-			}
-
-			return $str;
-		}
-
-		$str = is_object($this->conn_id) ? $this->conn_id->real_escape_string($str) : addslashes($str);
-
-		// escape LIKE condition wildcards
-		if ($like === TRUE)
-		{
-			return str_replace(array($this->_like_escape_chr, '%', '_'),
-						array($this->_like_escape_chr.$this->_like_escape_chr, $this->_like_escape_chr.'%', $this->_like_escape_chr.'_'),
-						$str);
-		}
-
-		return $str;
+		return $this->conn_id->real_escape_string($str);
 	}
 
 	// --------------------------------------------------------------------
@@ -342,12 +432,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * Generates a platform-specific query string so that the table names can be fetched
 	 *
-	 * @param	bool
+	 * @param	bool	$prefix_limit
 	 * @return	string
 	 */
 	protected function _list_tables($prefix_limit = FALSE)
 	{
-		$sql = 'SHOW TABLES FROM '.$this->escape_identifiers($this->database);
+		$sql = 'SHOW TABLES FROM '.$this->_escape_char.$this->database.$this->_escape_char;
 
 		if ($prefix_limit !== FALSE && $this->dbprefix !== '')
 		{
@@ -364,7 +454,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * Generates a platform-specific query string so that the column names can be fetched
 	 *
-	 * @param	string	the table name
+	 * @param	string	$table
 	 * @return	string
 	 */
 	protected function _list_columns($table = '')
@@ -377,29 +467,29 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Returns an object with field data
 	 *
-	 * @param	string	the table name
-	 * @return	object
+	 * @param	string	$table
+	 * @return	array
 	 */
-	public function field_data($table = '')
+	public function field_data($table)
 	{
-		if ($table === '')
+		if (($query = $this->query('SHOW COLUMNS FROM '.$this->protect_identifiers($table, TRUE, NULL, FALSE))) === FALSE)
 		{
-			return ($this->db_debug) ? $this->display_error('db_field_param_missing') : FALSE;
+			return FALSE;
 		}
-
-		$query = $this->query('DESCRIBE '.$this->protect_identifiers($table, TRUE, NULL, FALSE));
 		$query = $query->result_object();
 
 		$retval = array();
 		for ($i = 0, $c = count($query); $i < $c; $i++)
 		{
-			preg_match('/([a-z]+)(\(\d+\))?/', $query[$i]->Type, $matches);
-
 			$retval[$i]			= new stdClass();
 			$retval[$i]->name		= $query[$i]->Field;
-			$retval[$i]->type		= empty($matches[1]) ? NULL : $matches[1];
+
+			sscanf($query[$i]->Type, '%[a-z](%d)',
+				$retval[$i]->type,
+				$retval[$i]->max_length
+			);
+
 			$retval[$i]->default		= $query[$i]->Default;
-			$retval[$i]->max_length		= empty($matches[2]) ? NULL : preg_replace('/[^\d]/', '', $matches[2]);
 			$retval[$i]->primary_key	= (int) ($query[$i]->Key === 'PRI');
 		}
 
@@ -412,56 +502,41 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * Error
 	 *
 	 * Returns an array containing code and message of the last
-	 * database error that has occured.
+	 * database error that has occurred.
 	 *
 	 * @return	array
 	 */
 	public function error()
 	{
+		if ( ! empty($this->_mysqli->connect_errno))
+		{
+			return array(
+				'code'    => $this->_mysqli->connect_errno,
+				'message' => $this->_mysqli->connect_error
+			);
+		}
+
 		return array('code' => $this->conn_id->errno, 'message' => $this->conn_id->error);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update_Batch statement
+	 * FROM tables
 	 *
-	 * Generates a platform-specific batch update string from the supplied data
+	 * Groups tables in FROM clauses if needed, so there is no confusion
+	 * about operator precedence.
 	 *
-	 * @param	string	the table name
-	 * @param	array	the update data
-	 * @param	array	the where clause
 	 * @return	string
 	 */
-	protected function _update_batch($table, $values, $index, $where = NULL)
+	protected function _from_tables()
 	{
-		$ids = array();
-		foreach ($values as $key => $val)
+		if ( ! empty($this->qb_join) && count($this->qb_from) > 1)
 		{
-			$ids[] = $val[$index];
-
-			foreach (array_keys($val) as $field)
-			{
-				if ($field !== $index)
-				{
-					$final[$field][] =  'WHEN '.$index.' = '.$val[$index].' THEN '.$val[$field];
-				}
-			}
+			return '('.implode(', ', $this->qb_from).')';
 		}
 
-		$cases = '';
-		foreach ($final as $k => $v)
-		{
-			$cases .= $k.' = CASE '."\n"
-				.implode("\n", $v)."\n"
-				.'ELSE '.$k.' END, ';
-		}
-
-		$where = ($where !== '' && count($where) > 0) ? implode(' ', $where).' AND ' : '';
-
-		return 'UPDATE '.$table.' SET '.substr($cases, 0, -2)
-			.' WHERE '.(($where !== '' && count($where) > 0) ? implode(' ', $where).' AND ' : '')
-			.$index.' IN('.implode(',', $ids).')';
+		return implode(', ', $this->qb_from);
 	}
 
 	// --------------------------------------------------------------------
@@ -477,6 +552,3 @@ class CI_DB_mysqli_driver extends CI_DB {
 	}
 
 }
-
-/* End of file mysqli_driver.php */
-/* Location: ./system/database/drivers/mysqli/mysqli_driver.php */

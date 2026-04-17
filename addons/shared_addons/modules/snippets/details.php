@@ -100,18 +100,18 @@ class Module_Snippets extends Module {
 		// New install
 		$sql = "
             CREATE TABLE IF NOT EXISTS `".SITE_REF."_snippets` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `id` int NOT NULL AUTO_INCREMENT,
                 `name` varchar(60) NOT NULL,
                 `slug` varchar(60) NOT NULL,
                 `type` varchar(10) NOT NULL,
                 `content` text DEFAULT NULL,
                 `when_added` datetime DEFAULT NULL,
                 `last_updated` datetime DEFAULT NULL,
-                `added_by` int(11) DEFAULT NULL,
+                `added_by` int DEFAULT NULL,
                 `status` enum('p','l','h') NOT NULL DEFAULT 'p',
                 `params` text,
                 PRIMARY KEY (`id`)
-              ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";	
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";	
 
 		return $this->db->query($sql);
 	}

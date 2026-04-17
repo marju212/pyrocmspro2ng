@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Jquery Class
@@ -32,19 +45,67 @@
  * @subpackage	Libraries
  * @category	Loader
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/javascript.html
+ * @link		https://codeigniter.com/userguide3/libraries/javascript.html
  */
-
 class CI_Jquery extends CI_Javascript {
 
+	/**
+	 * JavaScript directory location
+	 *
+	 * @var	string
+	 */
 	protected $_javascript_folder = 'js';
+
+	/**
+	 * JQuery code for load
+	 *
+	 * @var	array
+	 */
 	public $jquery_code_for_load = array();
+
+	/**
+	 * JQuery code for compile
+	 *
+	 * @var	array
+	 */
 	public $jquery_code_for_compile = array();
+
+	/**
+	 * JQuery corner active flag
+	 *
+	 * @var	bool
+	 */
 	public $jquery_corner_active = FALSE;
+
+	/**
+	 * JQuery table sorter active flag
+	 *
+	 * @var	bool
+	 */
 	public $jquery_table_sorter_active = FALSE;
+
+	/**
+	 * JQuery table sorter pager active
+	 *
+	 * @var	bool
+	 */
 	public $jquery_table_sorter_pager_active = FALSE;
+
+	/**
+	 * JQuery AJAX image
+	 *
+	 * @var	string
+	 */
 	public $jquery_ajax_img = '';
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
+	 *
+	 * @param	array	$params
+	 * @return	void
+	 */
 	public function __construct($params)
 	{
 		$this->CI =& get_instance();
@@ -55,7 +116,7 @@ class CI_Jquery extends CI_Javascript {
 			$this->script();
 		}
 
-		log_message('debug', 'Jquery Class Initialized');
+		log_message('info', 'Jquery Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -101,15 +162,12 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * @param	string	The element to attach the event to
 	 * @param	string	The code to execute
-	 * @param	boolean	whether or not to return false
+	 * @param	bool	whether or not to return false
 	 * @return	string
 	 */
 	protected function _click($element = 'this', $js = '', $ret_false = TRUE)
 	{
-		if ( ! is_array($js))
-		{
-			$js = array($js);
-		}
+		is_array($js) OR $js = array($js);
 
 		if ($ret_false)
 		{
@@ -179,7 +237,7 @@ class CI_Jquery extends CI_Javascript {
 	 * @param	string	- Javascript code for mouse out
 	 * @return	string
 	 */
-	protected function _hover($element = 'this', $over, $out)
+	protected function _hover($element = 'this', $over = '', $out = '')
 	{
 		$event = "\n\t$(".$this->_prep_element($element).").hover(\n\t\tfunction()\n\t\t{\n\t\t\t{$over}\n\t\t}, \n\t\tfunction()\n\t\t{\n\t\t\t{$out}\n\t\t});\n";
 
@@ -307,11 +365,10 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs script directly
 	 *
-	 * @param	string	The element to attach the event to
-	 * @param	string	The code to execute
-	 * @return	string
+	 * @param	array	$array_js = array()
+	 * @return	void
 	 */
-	protected function _output($array_js = '')
+	protected function _output($array_js = array())
 	{
 		if ( ! is_array($array_js))
 		{
@@ -381,10 +438,11 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs a jQuery addClass event
 	 *
-	 * @param	string	- element
+	 * @param	string	$element
+	 * @param	string	$class
 	 * @return	string
 	 */
-	protected function _addClass($element = 'this', $class='')
+	protected function _addClass($element = 'this', $class = '')
 	{
 		$element = $this->_prep_element($element);
 		return '$('.$element.').addClass("'.$class.'");';
@@ -397,9 +455,10 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs a jQuery animate event
 	 *
-	 * @param	string	- element
-	 * @param	string	- One of 'slow', 'normal', 'fast', or time in milliseconds
-	 * @param	string	- Javascript callback function
+	 * @param	string	$element
+	 * @param	array	$params
+	 * @param	string	$speed	'slow', 'normal', 'fast', or time in milliseconds
+	 * @param	string	$extra
 	 * @return	string
 	 */
 	protected function _animate($element = 'this', $params = array(), $speed = '', $extra = '')
@@ -511,10 +570,11 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs a jQuery remove class event
 	 *
-	 * @param	string	- element
+	 * @param	string	$element
+	 * @param	string	$class
 	 * @return	string
 	 */
-	protected function _removeClass($element = 'this', $class='')
+	protected function _removeClass($element = 'this', $class = '')
 	{
 		$element = $this->_prep_element($element);
 		return '$('.$element.').removeClass("'.$class.'");';
@@ -618,10 +678,11 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs a jQuery toggle class event
 	 *
-	 * @param	string	- element
+	 * @param	string	$element
+	 * @param	string	$class
 	 * @return	string
 	 */
-	protected function _toggleClass($element = 'this', $class='')
+	protected function _toggleClass($element = 'this', $class = '')
 	{
 		$element = $this->_prep_element($element);
 		return '$('.$element.').toggleClass("'.$class.'");';
@@ -666,7 +727,7 @@ class CI_Jquery extends CI_Javascript {
 	 * @return	string
 	 */
 
-	protected function _updater($container = 'this', $controller, $options = '')
+	protected function _updater($container = 'this', $controller = '', $options = '')
 	{
 		$container = $this->_prep_element($container);
 		$controller = (strpos('://', $controller) === FALSE) ? $controller : $this->CI->config->site_url($controller);
@@ -695,7 +756,6 @@ class CI_Jquery extends CI_Javascript {
 		return $updater."\t\t$($container).load('$controller'$request_options);";
 	}
 
-
 	// --------------------------------------------------------------------
 	// Pre-written handy stuff
 	// --------------------------------------------------------------------
@@ -703,14 +763,15 @@ class CI_Jquery extends CI_Javascript {
 	/**
 	 * Zebra tables
 	 *
-	 * @param	string	table name
-	 * @param	string	plugin location
+	 * @param	string	$class
+	 * @param	string	$odd
+	 * @param	string	$hover
 	 * @return	string
 	 */
 	protected function _zebraTables($class = '', $odd = 'odd', $hover = '')
 	{
 		$class = ($class !== '') ? '.'.$class : '';
-		$zebra  = "\t\$(\"table{$class} tbody tr:nth-child(even)\").addClass(\"{$odd}\");";
+		$zebra = "\t\$(\"table{$class} tbody tr:nth-child(even)\").addClass(\"{$odd}\");";
 
 		$this->jquery_code_for_compile[] = $zebra;
 
@@ -729,9 +790,9 @@ class CI_Jquery extends CI_Javascript {
 	/**
 	 * Corner Plugin
 	 *
-	 * http://www.malsup.com/jquery/corner/
-	 *
-	 * @param	string	target
+	 * @link	https://www.malsup.com/jquery/corner/
+	 * @param	string	$element
+	 * @param	string	$corner_style
 	 * @return	string
 	 */
 	public function corner($element = '', $corner_style = '')
@@ -750,10 +811,12 @@ class CI_Jquery extends CI_Javascript {
 	// --------------------------------------------------------------------
 
 	/**
-	 * modal window
+	 * Modal window
 	 *
 	 * Load a thickbox modal window
 	 *
+	 * @param	string	$src
+	 * @param	bool	$relative
 	 * @return	void
 	 */
 	public function modal($src, $relative = FALSE)
@@ -768,6 +831,8 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Load an Effect library
 	 *
+	 * @param	string	$src
+	 * @param	bool	$relative
 	 * @return	void
 	 */
 	public function effect($src, $relative = FALSE)
@@ -782,6 +847,8 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Load a plugin library
 	 *
+	 * @param	string	$src
+	 * @param	bool	$relative
 	 * @return	void
 	 */
 	public function plugin($src, $relative = FALSE)
@@ -796,12 +863,15 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Load a user interface library
 	 *
+	 * @param	string	$src
+	 * @param	bool	$relative
 	 * @return	void
 	 */
 	public function ui($src, $relative = FALSE)
 	{
 		$this->jquery_code_for_load[] = $this->external($src, $relative);
 	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -809,11 +879,12 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Creates a jQuery sortable
 	 *
-	 * @return	void
+	 * @param	string	$element
+	 * @param	array	$options
+	 * @return	string
 	 */
 	public function sortable($element, $options = array())
 	{
-
 		if (count($options) > 0)
 		{
 			$sort_options = array();
@@ -864,7 +935,6 @@ class CI_Jquery extends CI_Javascript {
 		if (is_array($js))
 		{
 			$js = implode("\n\t\t", $js);
-
 		}
 
 		$event = "\n\t$(".$this->_prep_element($element).').'.$event."(function(){\n\t\t{$js}\n\t});\n";
@@ -878,9 +948,11 @@ class CI_Jquery extends CI_Javascript {
 	 * Compile
 	 *
 	 * As events are specified, they are stored in an array
-	 * This funciton compiles them all for output on a page
+	 * This function compiles them all for output on a page
 	 *
-	 * @return	string
+	 * @param	string	$view_var
+	 * @param	bool	$script_tags
+	 * @return	void
 	 */
 	protected function _compile($view_var = 'script_foot', $script_tags = TRUE)
 	{
@@ -902,7 +974,6 @@ class CI_Jquery extends CI_Javascript {
 		$output = ($script_tags === FALSE) ? $script : $this->inline($script);
 
 		$this->CI->load->vars(array($view_var => $output));
-
 	}
 
 	// --------------------------------------------------------------------
@@ -926,14 +997,12 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * A wrapper for writing document.ready()
 	 *
-	 * @return	string
+	 * @param	array	$js
+	 * @return	void
 	 */
 	protected function _document_ready($js)
 	{
-		if ( ! is_array($js))
-		{
-			$js = array($js);
-		}
+		is_array($js) OR $js = array($js);
 
 		foreach ($js as $script)
 		{
@@ -948,7 +1017,8 @@ class CI_Jquery extends CI_Javascript {
 	 *
 	 * Outputs the script tag that loads the jquery.js file into an HTML document
 	 *
-	 * @param	string
+	 * @param	string	$library_src
+	 * @param	bool	$relative
 	 * @return	string
 	 */
 	public function script($library_src = '', $relative = FALSE)
@@ -1005,6 +1075,3 @@ class CI_Jquery extends CI_Javascript {
 	}
 
 }
-
-/* End of file Jquery.php */
-/* Location: ./system/libraries/Jquery.php */

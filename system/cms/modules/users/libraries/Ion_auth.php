@@ -403,6 +403,7 @@ class Ion_auth
      **/
     public function logged_in()
     {
+        file_put_contents('/tmp/auth.log', "[CHK] sid=".session_id()." sname=".session_name()." email=".var_export($this->ci->session->userdata('email'), true)." keys=".implode(',', array_keys((array)$_SESSION))."\n", FILE_APPEND);
         $identity = $this->ci->config->item('identity', 'ion_auth');
 
         return (bool)$this->ci->session->userdata($identity);

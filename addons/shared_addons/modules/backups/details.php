@@ -61,7 +61,7 @@ class Module_Backups extends Module {
 		$this->dbforge->drop_table('backup_accounts');
 
 		$accounts = "CREATE TABLE ".$this->db->dbprefix('backup_accounts')." (
-						  account_id int(11) NOT NULL AUTO_INCREMENT,
+						  account_id int NOT NULL AUTO_INCREMENT,
 						  account_type varchar(100) NOT NULL,
 						  username varchar(255) NOT NULL,
 						  password varchar(255) DEFAULT NULL,
@@ -69,13 +69,13 @@ class Module_Backups extends Module {
 						  path varchar(255) DEFAULT NULL,
 						  PRIMARY KEY (account_id),
 						  UNIQUE KEY account_id (account_id)
-						) ENGINE=InnoDB  DEFAULT CHARSET=latin1;";
+						) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 		
 		$presets = "CREATE TABLE ".$this->db->dbprefix('backup_presets')." (
-						  preset_id int(11) NOT NULL AUTO_INCREMENT,
+						  preset_id int NOT NULL AUTO_INCREMENT,
 						  name varchar(150) DEFAULT NULL,
 						  description tinytext,
-						  account_id int(11) DEFAULT NULL,
+						  account_id int DEFAULT NULL,
 						  created_on datetime NOT NULL,
 						  last_run datetime DEFAULT NULL,
 						  tables text NULL,
@@ -84,7 +84,7 @@ class Module_Backups extends Module {
 						  PRIMARY KEY (preset_id),
 						  UNIQUE KEY preset_id (preset_id),
 						  KEY account_id_idxfk (account_id)
-						) ENGINE=InnoDB  DEFAULT CHARSET=latin1;";
+						) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 		
 		if($this->db->query($accounts) && $this->db->query($presets))
 		{

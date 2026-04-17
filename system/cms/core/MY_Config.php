@@ -15,7 +15,7 @@ class MY_Config extends CI_Config
 	 * @param string $uri the URI string
 	 * @return string
 	 */
-	public function site_url($uri = '')
+	public function site_url($uri = '', $protocol = null)
 	{
 		if (is_array($uri))
 		{

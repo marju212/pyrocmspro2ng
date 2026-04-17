@@ -77,7 +77,12 @@ class Modules
 	/** Load a module controller **/
 	public static function load($module) {
 		
-		(is_array($module)) ? list($module, $params) = each($module) : $params = null;	
+		if (is_array($module)) {
+			$params = current($module);
+			$module = key($module);
+		} else {
+			$params = null;
+		}
 		
 		/* get the module path */
 		$segments = explode('/', $module);

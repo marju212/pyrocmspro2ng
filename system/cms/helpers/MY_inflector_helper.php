@@ -62,7 +62,7 @@ if(!function_exists('rand_string'))
 		mt_srand((double)microtime() * 1000000);
 		while (strlen($string) < $length)
 		{
-			$string .= $chars{mt_rand(0, $max)};
+			$string .= $chars[mt_rand(0, $max)];
 		}
 		return $string;
 	}

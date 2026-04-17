@@ -129,7 +129,7 @@ if (isset($_SERVER['HTTP_HOST']))
 			  . str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 
 	// Base URI (It's different to base URL!)
-	$base_uri = parse_url($base_url, PHP_URL_PATH);
+	$base_uri = (string) parse_url($base_url, PHP_URL_PATH);
 	if (substr($base_uri, 0, 1) != '/')
 		$base_uri = '/' . $base_uri;
 	if (substr($base_uri, -1, 1) != '/')

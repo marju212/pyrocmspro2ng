@@ -1,39 +1,53 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 2.1.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * PDO Result Class
  *
  * This class extends the parent result class: CI_DB_result
  *
+ * @package		CodeIgniter
+ * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
- * @since	2.1
+ * @link		https://codeigniter.com/userguide3/database/
  */
 class CI_DB_pdo_result extends CI_DB_result {
 
@@ -90,7 +104,9 @@ class CI_DB_pdo_result extends CI_DB_result {
 		$field_names = array();
 		for ($i = 0, $c = $this->num_fields(); $i < $c; $i++)
 		{
-			$field_names[$i] = @$this->result_id->getColumnMeta();
+			// Might trigger an E_WARNING due to not all subdrivers
+			// supporting getColumnMeta()
+			$field_names[$i] = @$this->result_id->getColumnMeta($i);
 			$field_names[$i] = $field_names[$i]['name'];
 		}
 
@@ -108,61 +124,28 @@ class CI_DB_pdo_result extends CI_DB_result {
 	 */
 	public function field_data()
 	{
-		$data = array();
-
 		try
 		{
-			if (strpos($this->result_id->queryString, 'PRAGMA') !== FALSE)
+			$retval = array();
+
+			for ($i = 0, $c = $this->num_fields(); $i < $c; $i++)
 			{
-				foreach ($this->result_array() as $field)
-				{
-					preg_match('/([a-zA-Z]+)(\(\d+\))?/', $field['type'], $matches);
+				$field = $this->result_id->getColumnMeta($i);
 
-					$F		= new stdClass();
-					$F->name	= $field['name'];
-					$F->type	= ( ! empty($matches[1])) ? $matches[1] : NULL;
-					$F->default	= NULL;
-					$F->max_length	= ( ! empty($matches[2])) ? preg_replace('/[^\d]/', '', $matches[2]) : NULL;
-					$F->primary_key = (int) $field['pk'];
-					$F->pdo_type	= NULL;
-
-					$data[] = $F;
-				}
-			}
-			else
-			{
-				for($i = 0, $max = $this->num_fields(); $i < $max; $i++)
-				{
-					$field = $this->result_id->getColumnMeta($i);
-
-					$F		= new stdClass();
-					$F->name	= $field['name'];
-					$F->type	= $field['native_type'];
-					$F->default	= NULL;
-					$F->pdo_type	= $field['pdo_type'];
-
-					if ($field['precision'] < 0)
-					{
-						$F->max_length	= NULL;
-						$F->primary_key = 0;
-					}
-					else
-					{
-						$F->max_length	= ($field['len'] > 255) ? 0 : $field['len'];
-						$F->primary_key = (int) ( ! empty($field['flags']) && in_array('primary_key', $field['flags']));
-					}
-
-					$data[] = $F;
-				}
+				$retval[$i]			= new stdClass();
+				$retval[$i]->name		= $field['name'];
+				$retval[$i]->type		= isset($field['native_type']) ? $field['native_type'] : null;
+				$retval[$i]->max_length		= ($field['len'] > 0) ? $field['len'] : NULL;
+				$retval[$i]->primary_key	= (int) ( ! empty($field['flags']) && in_array('primary_key', $field['flags'], TRUE));
 			}
 
-			return $data;
+			return $retval;
 		}
 		catch (Exception $e)
 		{
 			if ($this->db->db_debug)
 			{
-				return $this->db->display_error('db_unsuported_feature');
+				return $this->db->display_error('db_unsupported_feature');
 			}
 
 			return FALSE;
@@ -205,7 +188,7 @@ class CI_DB_pdo_result extends CI_DB_result {
 	 *
 	 * Returns the result set as an object
 	 *
-	 * @param	string
+	 * @param	string	$class_name
 	 * @return	object
 	 */
 	protected function _fetch_object($class_name = 'stdClass')
@@ -214,6 +197,3 @@ class CI_DB_pdo_result extends CI_DB_result {
 	}
 
 }
-
-/* End of file pdo_result.php */
-/* Location: ./system/database/drivers/pdo/pdo_result.php */

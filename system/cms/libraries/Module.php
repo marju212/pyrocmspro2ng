@@ -254,11 +254,11 @@ abstract class Module {
 		{
 			// @todo there is no checking whether the index exists already.
 
-			// FULLTEXT is only available on MyISAM.
+			// FULLTEXT is supported on InnoDB from MySQL 5.6+ (required for MySQL 8.x).
 			if($type === 'FULLTEXT') {
-				$sql = 'ALTER TABLE '.$this->db->dbprefix($table).' ENGINE = MyISAM';
+				$sql = 'ALTER TABLE '.$this->db->dbprefix($table).' ENGINE = InnoDB';
 				if ( ! $this->db->query($sql) ) {
-					log_message('error', '-- -- Failed turning the engine for '.$table.' to MyISAM. SQL: '.$sql);
+					log_message('error', '-- -- Failed turning the engine for '.$table.' to InnoDB. SQL: '.$sql);
 					return false;
 				}
 			}

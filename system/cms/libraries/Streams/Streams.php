@@ -28,12 +28,12 @@ class Streams extends CI_Driver_Library {
 	 * @var		array
 	 */
 	protected $valid_drivers 	= array(
-			'streams_entries',
-			'streams_fields',
-			'streams_streams',
-			'streams_cp',
-			'streams_utilities',
-			'streams_parse'
+			'entries',
+			'fields',
+			'streams',
+			'cp',
+			'utilities',
+			'parse'
 	);
 
 	// --------------------------------------------------------------------------

@@ -127,10 +127,10 @@ class Admin extends Admin_Controller
         $offset = $pagination['current_page'] > 0 ? $pagination['limit'] : 0;
 
         $this->db
-            ->select('f.*, IFNULL(COUNT(e.id), 0) AS `entry_count`',FALSE)
+            ->select('f.id, f.name, f.slug, f.email, f.success_message, f.active, IFNULL(COUNT(e.id), 0) AS `entry_count`', FALSE)
 			->from('pyroforms f')
 			->join('pyroforms_entry e','f.id = e.form_id', 'left')
-			->group_by('f.id')
+			->group_by('f.id, f.name, f.slug, f.email, f.success_message, f.active')
             ->limit($per_page, $pagination['offset']);
             
         $forms = $this->db->get()->result();

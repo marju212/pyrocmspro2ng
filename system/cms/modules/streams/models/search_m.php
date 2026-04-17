@@ -79,51 +79,39 @@ class Search_m extends CI_Model {
 	}
 
 	public function build_query($fields, $search_term, $stream, $search_type = 'keywords')
-	{		
-		$db = $this->db;
-		$link = mysql_connect($db->hostname, $db->username, $db->password);
+	{
+		$keywords = $this->CI->security->xss_clean($search_term);
+		$keywords = explode(" ", $keywords);
 
-		$keywords 		= $this->CI->security->xss_clean($search_term);
-		
-		$keywords		= explode(" ", $keywords);
-		
 		// Break into keywords
 		foreach ($keywords as $key => $keyword) {
-		
 			if (trim($keyword) == '') {
-			
 				unset($keywords[$key]);
 			}
 		}
 
 		$likes = array();
-		
-		if ($search_type == 'keywords') {
 
+		if ($search_type == 'keywords') {
 			$keyword_build = '';
-		
+
 			// Go through each keyword/field individually
 			foreach ($keywords as $keyword) {
-			
 				$keyword_build .= $keyword.' ';
-			
+
 				foreach ($fields as $field) {
-				
-					$likes[] = "$field LIKE '%".mysql_real_escape_string($keyword, $link)."%'";
-					
+					$likes[] = "$field LIKE '%".$this->CI->db->escape_str($keyword)."%'";
 					// We also search cumulative keywords
-					$likes[] = "$field LIKE '%".mysql_real_escape_string($keyword_build, $link)."%'";
+					$likes[] = "$field LIKE '%".$this->CI->db->escape_str($keyword_build)."%'";
 				}
 			}
 		}
-		
+
 		if ($search_type == 'full_phrase') {
-		
 			$search_for = implode(' ', $keywords);
 
-			foreach ($fields as $field) 
-			{
-				$likes[] = "$field LIKE '%".mysql_real_escape_string($search_for)."%'";
+			foreach ($fields as $field) {
+				$likes[] = "$field LIKE '%".$this->CI->db->escape_str($search_for)."%'";
 			}
 		}
 

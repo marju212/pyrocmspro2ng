@@ -7,7 +7,7 @@ class Migration_Add_markdown_support extends CI_Migration {
 		$this->dbforge->modify_column('page_chunks', array(
 			'`type`' => array(
 				'type'			=> "set('html', 'markdown', 'wysiwyg-advanced','wysiwyg-simple')",
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 			)
 		));
 	}
@@ -17,7 +17,7 @@ class Migration_Add_markdown_support extends CI_Migration {
 		$this->dbforge->modify_column('page_chunks', array(
 			'`type`' => array(
 				'type'			=> "set('html', 'wysiwyg-advanced','wysiwyg-simple')",
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 			)
 		));
 	}

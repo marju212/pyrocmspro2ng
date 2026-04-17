@@ -8,7 +8,7 @@ class Migration_Changed_user_salt_length extends CI_Migration {
 			'salt' => array(
 				'type'			=> 'varchar',
 				'constraint'	=> 6,
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 				'default'		=> ''
 			)
 		));
@@ -20,7 +20,7 @@ class Migration_Changed_user_salt_length extends CI_Migration {
 			'salt' => array(
 				'type'			=> 'varchar',
 				'constraint'	=> 6,
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 				'default'		=> ''
 			)
 		));
@@ -35,7 +35,7 @@ class Migration_Changed_user_salt_length extends CI_Migration {
 			'salt' => array(
 				'type'			=> 'varchar',
 				'constraint'	=> 5,
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 				'default'		=> ''
 			)
 		));
@@ -46,7 +46,7 @@ class Migration_Changed_user_salt_length extends CI_Migration {
 			'salt' => array(
 				'type'			=> 'varchar',
 				'constraint'	=> 5,
-				'collate'		=> 'utf8_unicode_ci',
+				'collate'		=> 'utf8mb4_unicode_ci',
 				'default'		=> ''
 			)
 		));

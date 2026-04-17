@@ -9,18 +9,18 @@ class Migration_Add_keywords extends CI_Migration {
 		$keywords = "
 			CREATE TABLE " . $this->db->dbprefix('keywords') . " (
 			  `id` int unsigned NOT NULL AUTO_INCREMENT,
-			  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+			  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 		";
 		
 		$keywords_applied = "
 			CREATE TABLE " . $this->db->dbprefix('keywords_applied') . " (
 			  `id` int unsigned NOT NULL AUTO_INCREMENT,
 			  `hash` char(32) NOT NULL,
-			  `keyword_id` int unsigned COLLATE utf8_unicode_ci NOT NULL,
+			  `keyword_id` int unsigned COLLATE utf8mb4_unicode_ci NOT NULL,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 		";
 
 		if ($this->db->query($keywords) && $this->db->query($keywords_applied))

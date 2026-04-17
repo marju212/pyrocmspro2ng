@@ -7,17 +7,17 @@ class Migration_Add_contact_log extends CI_Migration {
 		$contact_log = "
 			CREATE TABLE ".$this->db->dbprefix('contact_log')." (
 			  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-			  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-			  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-			  `subject` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-		 	  `message` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+			  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `subject` varchar(255) CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci,
+		 	  `message` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci,
 			  `company_name` VARCHAR( 255 ) NOT NULL,
 			  `sender_agent` varchar(100)  DEFAULT NULL,
 			  `sender_ip` varchar(20),
 			  `sender_os` varchar(100)  NOT NULL,
-			  `sent_at` int(13) DEFAULT NULL,
+			  `sent_at` int DEFAULT NULL,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 		";
 		
 		$this->db->where('slug', 'contact');

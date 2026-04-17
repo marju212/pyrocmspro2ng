@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * CodeIgniter Date Helpers
@@ -32,7 +45,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/date_helper.html
+ * @link		https://codeigniter.com/userguide3/helpers/date_helper.html
  */
 
 // ------------------------------------------------------------------------
@@ -119,19 +132,16 @@ if ( ! function_exists('standard_date'))
 	 *
 	 * As of PHP 5.2, the DateTime extension provides constants that
 	 * serve for the exact same purpose and are used with date().
-	 * Due to that, this function is DEPRECATED and should be removed
-	 * in CodeIgniter 3.1+.
 	 *
-	 * Here are two examples of how you should replace it:
+	 * @todo	Remove in version 3.1+.
+	 * @deprecated	3.0.0	Use PHP's native date() instead.
+	 * @link	https://www.php.net/manual/en/class.datetime.php#datetime.constants.types
 	 *
-	 *	date(DATE_RFC822, now()); // default
-	 *	date(DATE_W3C, $time); // a different format and time
+	 * @example	date(DATE_RFC822, now()); // default
+	 * @example	date(DATE_W3C, $time); // a different format and time
 	 *
-	 * Reference: http://www.php.net/manual/en/class.datetime.php#datetime.constants.types
-	 *
-	 * @deprecated
-	 * @param	string	the chosen format
-	 * @param	int	Unix timestamp
+	 * @param	string	$fmt = 'DATE_RFC822'	the chosen format
+	 * @param	int	$time = NULL		Unix timestamp
 	 * @return	string
 	 */
 	function standard_date($fmt = 'DATE_RFC822', $time = NULL)
@@ -280,6 +290,11 @@ if ( ! function_exists('days_in_month'))
 			$year = date('Y');
 		}
 
+		if (defined('CAL_GREGORIAN'))
+		{
+			return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+		}
+
 		if ($year >= 1970)
 		{
 			return (int) date('t', mktime(12, 0, 0, $month, 1, $year));
@@ -362,20 +377,16 @@ if ( ! function_exists('mysql_to_unix'))
 	/**
 	 * Converts a MySQL Timestamp to Unix
 	 *
-	 * @param	int	Unix timestamp
-	 * @return	int
+	 * @param	int	MySQL timestamp YYYY-MM-DD HH:MM:SS
+	 * @return	int	Unix timstamp
 	 */
 	function mysql_to_unix($time = '')
 	{
-
 		// We'll remove certain characters for backward compatibility
 		// since the formatting changed with MySQL 4.1
 		// YYYY-MM-DD HH:MM:SS
 
 		$time = str_replace(array('-', ':', ' '), '', $time);
-        if (strlen($time)<9){
-            $time.='000000';
-        }
 
 		// YYYYMMDDHHMMSS
 		return mktime(
@@ -456,20 +467,13 @@ if ( ! function_exists('human_to_unix'))
 			return FALSE;
 		}
 
-		$split = explode(' ', $datestr);
+		sscanf($datestr, '%d-%d-%d %s %s', $year, $month, $day, $time, $ampm);
+		sscanf($time, '%d:%d:%d', $hour, $min, $sec);
+		isset($sec) OR $sec = 0;
 
-		list($year, $month, $day) = explode('-', $split[0]);
-
-		$ex = explode(':', $split['1']);
-
-		$hour	= (int) $ex[0];
-		$min	= (int) $ex[1];
-		$sec	= ( ! empty($ex[2]) && preg_match('/[0-9]{1,2}/', $ex[2]))
-				? (int) $ex[2] : 0;
-
-		if (isset($split[2]))
+		if (isset($ampm))
 		{
-			$ampm = strtolower($split[2]);
+			$ampm = strtolower($ampm);
 
 			if ($ampm[0] === 'p' && $hour < 12)
 			{
@@ -493,6 +497,7 @@ if ( ! function_exists('nice_date'))
 	 * Turns many "reasonably-date-like" strings into something
 	 * that is actually useful. This only works for dates after unix epoch.
 	 *
+	 * @deprecated	3.1.3	Use DateTime::createFromFormat($input_format, $input)->format($output_format);
 	 * @param	string	The terribly formatted date-like string
 	 * @param	string	Date format to return (same as php date function)
 	 * @return	string
@@ -526,9 +531,9 @@ if ( ! function_exists('nice_date'))
 		}
 
 		// Date Like: YYYYMMDD
-		if (preg_match('/^(\d{2})\d{2}(\d{4})$/i', $bad_date, $matches))
+		if (preg_match('/^\d{8}$/i', $bad_date, $matches))
 		{
-			return date($format, strtotime($matches[1].'/01/'.$matches[2]));
+			return DateTime::createFromFormat('Ymd', $bad_date)->format($format);
 		}
 
 		// Date Like: MM-DD-YYYY __or__ M-D-YYYY (or anything in between)
@@ -661,5 +666,78 @@ if ( ! function_exists('timezones'))
 	}
 }
 
-/* End of file date_helper.php */
-/* Location: ./system/helpers/date_helper.php */
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('date_range'))
+{
+	/**
+	 * Date range
+	 *
+	 * Returns a list of dates within a specified period.
+	 *
+	 * @param	int	unix_start	UNIX timestamp of period start date
+	 * @param	int	unix_end|days	UNIX timestamp of period end date
+	 *					or interval in days.
+	 * @param	mixed	is_unix		Specifies whether the second parameter
+	 *					is a UNIX timestamp or a day interval
+	 *					 - TRUE or 'unix' for a timestamp
+	 *					 - FALSE or 'days' for an interval
+	 * @param	string  date_format	Output date format, same as in date()
+	 * @return	array
+	 */
+	function date_range($unix_start = '', $mixed = '', $is_unix = TRUE, $format = 'Y-m-d')
+	{
+		if ($unix_start == '' OR $mixed == '' OR $format == '')
+		{
+			return FALSE;
+		}
+
+		$is_unix = ! ( ! $is_unix OR $is_unix === 'days');
+
+		// Validate input and try strtotime() on invalid timestamps/intervals, just in case
+		if ( ( ! ctype_digit((string) $unix_start) && ($unix_start = @strtotime($unix_start)) === FALSE)
+			OR ( ! ctype_digit((string) $mixed) && ($is_unix === FALSE OR ($mixed = @strtotime($mixed)) === FALSE))
+			OR ($is_unix === TRUE && $mixed < $unix_start))
+		{
+			return FALSE;
+		}
+
+		if ($is_unix && ($unix_start == $mixed OR date($format, $unix_start) === date($format, $mixed)))
+		{
+			return array(date($format, $unix_start));
+		}
+
+		$range = array();
+
+		$from = new DateTime();
+		$from->setTimestamp($unix_start);
+
+		if ($is_unix)
+		{
+			$arg = new DateTime();
+			$arg->setTimestamp($mixed);
+		}
+		else
+		{
+			$arg = (int) $mixed;
+		}
+
+		$period = new DatePeriod($from, new DateInterval('P1D'), $arg);
+		foreach ($period as $date)
+		{
+			$range[] = $date->format($format);
+		}
+
+		/* If a period end date was passed to the DatePeriod constructor, it might not
+		 * be in our results. Not sure if this is a bug or it's just possible because
+		 * the end date might actually be less than 24 hours away from the previously
+		 * generated DateTime object, but either way - we have to append it manually.
+		 */
+		if ( ! is_int($arg) && $range[count($range) - 1] !== $arg->format($format))
+		{
+			$range[] = $arg->format($format);
+		}
+
+		return $range;
+	}
+}

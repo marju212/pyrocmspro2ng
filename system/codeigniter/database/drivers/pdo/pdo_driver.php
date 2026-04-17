@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 2.1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 2.1.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * PDO Database Adapter Class
@@ -36,35 +49,39 @@
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/userguide3/database/
  */
 class CI_DB_pdo_driver extends CI_DB {
 
+	/**
+	 * Database driver
+	 *
+	 * @var	string
+	 */
 	public $dbdriver = 'pdo';
 
-	// The character used to escaping
-	protected $_escape_char = '"';
-
-	protected $_random_keyword;
-
-	public $trans_enabled = FALSE;
-
-	// need to track the PDO options
+	/**
+	 * PDO Options
+	 *
+	 * @var	array
+	 */
 	public $options = array();
 
+	// --------------------------------------------------------------------
+
 	/**
-	 * Constructor
+	 * Class constructor
 	 *
-	 * Validates the DSN string and/or detects the subdriver
+	 * Validates the DSN string and/or detects the subdriver.
 	 *
-	 * @param	array
+	 * @param	array	$params
 	 * @return	void
 	 */
 	public function __construct($params)
 	{
 		parent::__construct($params);
 
-		if (preg_match('/([^;]+):/', $this->dsn, $match) && count($match) === 2)
+		if (preg_match('/([^:]+):/', $this->dsn, $match) && count($match) === 2)
 		{
 			// If there is a minimum valid dsn string pattern found, we're done
 			// This is for general PDO users, who tend to have a full DSN string.
@@ -72,7 +89,7 @@ class CI_DB_pdo_driver extends CI_DB {
 			return;
 		}
 		// Legacy support for DSN specified in the hostname field
-		elseif (preg_match('/([^;]+):/', $this->hostname, $match) && count($match) === 2)
+		elseif (preg_match('/([^:]+):/', $this->hostname, $match) && count($match) === 2)
 		{
 			$this->dsn = $this->hostname;
 			$this->hostname = NULL;
@@ -87,7 +104,7 @@ class CI_DB_pdo_driver extends CI_DB {
 		{
 			$this->subdriver = '4d';
 		}
-		elseif ( ! in_array($this->subdriver, array('4d', 'cubrid', 'dblib', 'firebird', 'ibm', 'informix', 'mysql', 'oci', 'odbc', 'sqlite', 'sqlsrv'), TRUE))
+		elseif ( ! in_array($this->subdriver, array('4d', 'cubrid', 'dblib', 'firebird', 'ibm', 'informix', 'mysql', 'oci', 'odbc', 'pgsql', 'sqlite', 'sqlsrv'), TRUE))
 		{
 			log_message('error', 'PDO: Invalid or non-existent subdriver');
 
@@ -103,19 +120,29 @@ class CI_DB_pdo_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Non-persistent database connection
+	 * Database connection
 	 *
-	 * @param	bool
+	 * @param	bool	$persistent
 	 * @return	object
 	 */
 	public function db_connect($persistent = FALSE)
 	{
-		$this->options[PDO::ATTR_PERSISTENT] = $persistent;
+		if ($persistent === TRUE)
+		{
+			$this->options[PDO::ATTR_PERSISTENT] = TRUE;
+		}
 
-		// Connecting...
+		// From PHP8.0, default PDO::ATTR_ERRMODE is changed
+		// from PDO::ERRMODE_SILENT to PDO::ERRMODE_EXCEPTION
+		// as https://wiki.php.net/rfc/pdo_default_errmode
+		if ( ! isset($this->options[PDO::ATTR_ERRMODE]))
+		{
+			$this->options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_SILENT;
+		}
+
 		try
 		{
-			return @new PDO($this->dsn, $this->username, $this->password, $this->options);
+			return new PDO($this->dsn, $this->username, $this->password, $this->options);
 		}
 		catch (PDOException $e)
 		{
@@ -126,18 +153,6 @@ class CI_DB_pdo_driver extends CI_DB {
 
 			return FALSE;
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Persistent database connection
-	 *
-	 * @return	object
-	 */
-	public function db_pconnect()
-	{
-		return $this->db_connect(TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -170,7 +185,7 @@ class CI_DB_pdo_driver extends CI_DB {
 	/**
 	 * Execute the query
 	 *
-	 * @param	string	an SQL query
+	 * @param	string	$sql	SQL query
 	 * @return	mixed
 	 */
 	protected function _execute($sql)
@@ -185,19 +200,8 @@ class CI_DB_pdo_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_begin($test_mode = FALSE)
+	protected function _trans_begin()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
-		{
-			return TRUE;
-		}
-
-		// Reset the transaction failure flag.
-		// If the $test_mode flag is set to TRUE transactions will be rolled back
-		// even if the queries produce a successful result.
-		$this->_trans_failure = ($test_mode === TRUE);
-
 		return $this->conn_id->beginTransaction();
 	}
 
@@ -208,14 +212,8 @@ class CI_DB_pdo_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_commit()
+	protected function _trans_commit()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
-		{
-			return TRUE;
-		}
-
 		return $this->conn_id->commit();
 	}
 
@@ -226,56 +224,28 @@ class CI_DB_pdo_driver extends CI_DB {
 	 *
 	 * @return	bool
 	 */
-	public function trans_rollback()
+	protected function _trans_rollback()
 	{
-		// When transactions are nested we only begin/commit/rollback the outermost ones
-		if ( ! $this->trans_enabled OR $this->_trans_depth > 0)
-		{
-			return TRUE;
-		}
-
 		return $this->conn_id->rollBack();
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Escape String
+	 * Platform-dependent string escape
 	 *
 	 * @param	string
-	 * @param	bool	whether or not the string will be used in a LIKE condition
 	 * @return	string
 	 */
-	public function escape_str($str, $like = FALSE)
+	protected function _escape_str($str)
 	{
-		if (is_array($str))
-		{
-			foreach ($str as $key => $val)
-			{
-				$str[$key] = $this->escape_str($val, $like);
-			}
-
-			return $str;
-		}
-
 		// Escape the string
 		$str = $this->conn_id->quote($str);
 
 		// If there are duplicated quotes, trim them away
-		if ($str[0] === "'")
-		{
-			$str = substr($str, 1, -1);
-		}
-
-		// escape LIKE condition wildcards
-		if ($like === TRUE)
-		{
-			return str_replace(array($this->_like_escape_chr, '%', '_'),
-						array($this->_like_escape_chr.$this->_like_escape_chr, $this->_like_escape_chr.'%', $this->_like_escape_chr.'_'),
-						$str);
-		}
-
-		return $str;
+		return ($str[0] === "'")
+			? substr($str, 1, -1)
+			: $str;
 	}
 
 	// --------------------------------------------------------------------
@@ -295,7 +265,7 @@ class CI_DB_pdo_driver extends CI_DB {
 	/**
 	 * Insert ID
 	 *
-	 * @param	string
+	 * @param	string	$name
 	 * @return	int
 	 */
 	public function insert_id($name = NULL)
@@ -310,7 +280,7 @@ class CI_DB_pdo_driver extends CI_DB {
 	 *
 	 * Generates a platform-specific query so that the column data can be retrieved
 	 *
-	 * @param	string	the table name
+	 * @param	string	$table
 	 * @return	string
 	 */
 	protected function _field_data($table)
@@ -324,7 +294,7 @@ class CI_DB_pdo_driver extends CI_DB {
 	 * Error
 	 *
 	 * Returns an array containing code and message of the last
-	 * database error that has occured.
+	 * database error that has occurred.
 	 *
 	 * @return	array
 	 */
@@ -341,61 +311,10 @@ class CI_DB_pdo_driver extends CI_DB {
 		$error['code'] = isset($pdo_error[1]) ? $pdo_error[0].'/'.$pdo_error[1] : $pdo_error[0];
 		if (isset($pdo_error[2]))
 		{
-			 $error['message'] = $pdo_error[2];
+			$error['message'] = $pdo_error[2];
 		}
 
 		return $error;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update_Batch statement
-	 *
-	 * Generates a platform-specific batch update string from the supplied data
-	 *
-	 * @param	string	the table name
-	 * @param	array	the update data
-	 * @param	array	the where clause
-	 * @return	string
-	 */
-	protected function _update_batch($table, $values, $index, $where = NULL)
-	{
-		$ids = array();
-		$where = ($where !== '' && count($where) >=1) ? implode(' ', $where).' AND ' : '';
-
-		foreach ($values as $key => $val)
-		{
-			$ids[] = $val[$index];
-
-			foreach (array_keys($val) as $field)
-			{
-				if ($field !== $index)
-				{
-					$final[$field][] =  'WHEN '.$index.' = '.$val[$index].' THEN '.$val[$field];
-				}
-			}
-		}
-
-		$sql   = 'UPDATE '.$table.' SET ';
-		$cases = '';
-
-		foreach ($final as $k => $v)
-		{
-			$cases .= $k.' = CASE '."\n";
-
-			foreach ($v as $row)
-			{
-				$cases .= $row."\n";
-			}
-
-			$cases .= 'ELSE '.$k.' END, ';
-		}
-
-		$sql .= substr($cases, 0, -2);
-		$sql .= ' WHERE '.$where.$index.' IN ('.implode(',', $ids).')';
-
-		return $sql;
 	}
 
 	// --------------------------------------------------------------------
@@ -405,10 +324,10 @@ class CI_DB_pdo_driver extends CI_DB {
 	 *
 	 * Generates a platform-specific truncate string from the supplied data
 	 *
-	 * If the database does not support the truncate() command,
+	 * If the database does not support the TRUNCATE statement,
 	 * then this method maps to 'DELETE FROM table'
 	 *
-	 * @param	string	the table name
+	 * @param	string	$table
 	 * @return	string
 	 */
 	protected function _truncate($table)
@@ -416,7 +335,17 @@ class CI_DB_pdo_driver extends CI_DB {
 		return 'TRUNCATE TABLE '.$table;
 	}
 
-}
+	// --------------------------------------------------------------------
 
-/* End of file pdo_driver.php */
-/* Location: ./system/database/drivers/pdo/pdo_driver.php */
+	/**
+	 * Close DB Connection
+	 *
+	 * @return	void
+	 */
+	protected function _close()
+	{
+		$this->result_id = FALSE;
+		$this->conn_id = FALSE;
+	}
+
+}

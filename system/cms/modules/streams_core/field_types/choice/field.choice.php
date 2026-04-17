@@ -161,7 +161,7 @@ class Field_choice
 			return $line;
 		}
 	
-		if ($line{0} == '^')
+		if ($line[0] == '^')
 		{
 			return ' disabled="disabled" checked="checked"';
 		}
@@ -181,7 +181,7 @@ class Field_choice
 	 */
 	private function format_choice($line)
 	{
-		if ($line{0} == '^')
+		if ($line[0] == '^')
 		{
 			return substr($line, 1);
 		}
@@ -258,7 +258,7 @@ class Field_choice
 			{
 				$choice_line = trim($choice_line);
 
-				if ($choice_line{0} == '^')
+				if ($choice_line[0] == '^')
 				{
 					$input[] = substr($choice_line, 1);
 				}
@@ -313,7 +313,7 @@ class Field_choice
 			{
 				$choice_line = trim($choice_line);
 
-				if ($choice_line{0} == '^')
+				if ($choice_line[0] == '^')
 				{
 					$value[] = substr($choice_line, 1);
 				}

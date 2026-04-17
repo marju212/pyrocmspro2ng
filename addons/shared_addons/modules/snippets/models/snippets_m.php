@@ -75,13 +75,15 @@ class Snippets_m extends MY_Model {
 
 		foreach ($dir as $folder)
         {
-            if ($folder != 'index.html')
-            {	
+            // CI 3.1's directory_map returns 'wysiwyg/' etc. — strip trailing slash.
+            $folder = rtrim($folder, '/');
+            if ($folder !== '' && $folder !== 'index.html')
+            {
     			// Attempt to load the snippet file.
     			if (file_exists($this->snippets_dir.'/snippets/'.$folder.'/snip.'.$folder.'.php'))
     			{
     				require_once($this->snippets_dir.'/snippets/'.$folder.'/snip.'.$folder.'.php');
-    			
+
     				$class_name = 'Snippet_'.$folder;
     				$this->snippets->$folder = new $class_name();
     			}

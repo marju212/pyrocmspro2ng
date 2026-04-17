@@ -231,7 +231,7 @@ class Textile
     var $rev = '$Rev: 216 $';
 
 // -------------------------------------------------------------
-    function Textile()
+    function __construct()
     {
         $this->hlgn = "(?:\<(?!>)|(?<!<)\>|\<\>|\=|[()]+(?! ))";
         $this->vlgn = "[\-^~]";
@@ -422,7 +422,7 @@ class Textile
     {
         $text = $text . "\n\n";
         return preg_replace_callback("/^(?:table(_?{$this->s}{$this->a}{$this->c})\. ?\n)?^({$this->a}{$this->c}\.? ?\|.*\|)\n\n/smU",
-           array(&$this, "fTable"), $text);
+           array($this, "fTable"), $text);
     }
 
 // -------------------------------------------------------------
@@ -459,7 +459,7 @@ class Textile
 // -------------------------------------------------------------
     function lists($text)
     {
-        return preg_replace_callback("/^([#*]+$this->c .*)$(?![^#*])/smU", array(&$this, "fList"), $text);
+        return preg_replace_callback("/^([#*]+$this->c .*)$(?![^#*])/smU", array($this, "fList"), $text);
     }
 
 // -------------------------------------------------------------
@@ -505,7 +505,7 @@ class Textile
 // -------------------------------------------------------------
     function doPBr($in)
     {
-        return preg_replace_callback('@<(p)([^>]*?)>(.*)(</\1>)@s', array(&$this, 'doBr'), $in);
+        return preg_replace_callback('@<(p)([^>]*?)>(.*)(</\1>)@s', array($this, 'doBr'), $in);
     }
 
 // -------------------------------------------------------------
@@ -675,7 +675,7 @@ class Textile
                 ([$pnct]*)
                 $f
                 (?:$|([\]}])|(?=[[:punct:]]{1,2}|\s))
-            /x", array(&$this, "fSpan"), $text);
+            /x", array($this, "fSpan"), $text);
         }
         return $text;
     }
@@ -724,7 +724,7 @@ class Textile
             (\/)?                        # $slash
             ([^\w\/;]*)                  # $post
             (?:([\]}])|(?=\s|$|\)))
-        /Ux', array(&$this, "fLink"), $text);
+        /Ux', array($this, "fLink"), $text);
     }
 
 // -------------------------------------------------------------
@@ -756,7 +756,7 @@ class Textile
     function getRefs($text)
     {
         return preg_replace_callback("/(?<=^|\s)\[(.+)\]((?:http:\/\/|\/)\S+)(?=\s|$)/U",
-            array(&$this, "refs"), $text);
+            array($this, "refs"), $text);
     }
 
 // -------------------------------------------------------------
@@ -802,7 +802,7 @@ class Textile
             \!                 # closing
             (?::(\S+))?        # optional href
             (?:[\]}]|(?=\s|$)) # lookahead: space or end of string
-        /Ux", array(&$this, "fImage"), $text);
+        /Ux", array($this, "fImage"), $text);
     }
 
 // -------------------------------------------------------------
@@ -919,7 +919,7 @@ class Textile
     function doSpecial($text, $start, $end, $method='fSpecial')
     {
       return preg_replace_callback('/(^|\s|[[({>])'.preg_quote($start, '/').'(.*?)'.preg_quote($end, '/').'(\s|$|[\])}])?/ms',
-            array(&$this, $method), $text);
+            array($this, $method), $text);
     }
 
 // -------------------------------------------------------------
@@ -1101,12 +1101,7 @@ class Textile
     function txtgps($thing)
     {
         if (isset($_POST[$thing])) {
-            if (get_magic_quotes_gpc()) {
-                return stripslashes($_POST[$thing]);
-            }
-            else {
-                return $_POST[$thing];
-            }
+            return $_POST[$thing];
         }
         else {
             return '';

@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.3.1
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.3.1
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Unit Testing Class
@@ -34,31 +47,72 @@
  * @subpackage	Libraries
  * @category	UnitTesting
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/unit_testing.html
+ * @link		https://codeigniter.com/userguide3/libraries/unit_testing.html
  */
 class CI_Unit_test {
 
-	public $active					= TRUE;
-	public $results				= array();
-	public $strict					= FALSE;
-	protected $_template				= NULL;
-	protected $_template_rows			= NULL;
-	protected $_test_items_visible	= array();
+	/**
+	 * Active flag
+	 *
+	 * @var	bool
+	 */
+	public $active = TRUE;
 
+	/**
+	 * Test results
+	 *
+	 * @var	array
+	 */
+	public $results = array();
+
+	/**
+	 * Strict comparison flag
+	 *
+	 * Whether to use === or == when comparing
+	 *
+	 * @var	bool
+	 */
+	public $strict = FALSE;
+
+	/**
+	 * Template
+	 *
+	 * @var	string
+	 */
+	protected $_template = NULL;
+
+	/**
+	 * Template rows
+	 *
+	 * @var	string
+	 */
+	protected $_template_rows = NULL;
+
+	/**
+	 * List of visible test items
+	 *
+	 * @var	array
+	 */
+	protected $_test_items_visible	= array(
+		'test_name',
+		'test_datatype',
+		'res_datatype',
+		'result',
+		'file',
+		'line',
+		'notes'
+	);
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
+	 *
+	 * @return	void
+	 */
 	public function __construct()
 	{
-		// These are the default items visible when a test is run.
-		$this->_test_items_visible = array (
-							'test_name',
-							'test_datatype',
-							'res_datatype',
-							'result',
-							'file',
-							'line',
-							'notes'
-						);
-
-		log_message('debug', 'Unit Testing Class Initialized');
+		log_message('info', 'Unit Testing Class Initialized');
 	}
 
 	// --------------------------------------------------------------------
@@ -68,10 +122,10 @@ class CI_Unit_test {
 	 *
 	 * Runs the supplied tests
 	 *
-	 * @param	array
+	 * @param	array	$items
 	 * @return	void
 	 */
-	public function set_test_items($items = array())
+	public function set_test_items($items)
 	{
 		if ( ! empty($items) && is_array($items))
 		{
@@ -86,9 +140,10 @@ class CI_Unit_test {
 	 *
 	 * Runs the supplied tests
 	 *
-	 * @param	mixed
-	 * @param	mixed
-	 * @param	string
+	 * @param	mixed	$test
+	 * @param	mixed	$expected
+	 * @param	string	$test_name
+	 * @param	string	$notes
 	 * @return	string
 	 */
 	public function run($test, $expected = TRUE, $test_name = 'undefined', $notes = '')
@@ -98,33 +153,32 @@ class CI_Unit_test {
 			return FALSE;
 		}
 
-		if (in_array($expected, array('is_object', 'is_string', 'is_bool', 'is_true', 'is_false', 'is_int', 'is_numeric', 'is_float', 'is_double', 'is_array', 'is_null'), TRUE))
+		if (in_array($expected, array('is_object', 'is_string', 'is_bool', 'is_true', 'is_false', 'is_int', 'is_numeric', 'is_float', 'is_double', 'is_array', 'is_null', 'is_resource'), TRUE))
 		{
-			$expected = str_replace('is_double', 'is_float', $expected);
 			$result = $expected($test);
 			$extype = str_replace(array('true', 'false'), 'bool', str_replace('is_', '', $expected));
 		}
 		else
 		{
-			$result = ($this->strict === TRUE) ? ($test === $expected) : ($test === $expected);
+			$result = ($this->strict === TRUE) ? ($test === $expected) : ($test == $expected);
 			$extype = gettype($expected);
 		}
 
 		$back = $this->_backtrace();
 
-		$report[] = array (
-							'test_name'			=> $test_name,
-							'test_datatype'		=> gettype($test),
-							'res_datatype'		=> $extype,
-							'result'			=> ($result === TRUE) ? 'passed' : 'failed',
-							'file'				=> $back['file'],
-							'line'				=> $back['line'],
-							'notes'				=> $notes
-						);
+		$report = array (
+			'test_name'     => $test_name,
+			'test_datatype' => gettype($test),
+			'res_datatype'  => $extype,
+			'result'        => ($result === TRUE) ? 'passed' : 'failed',
+			'file'          => $back['file'],
+			'line'          => $back['line'],
+			'notes'         => $notes
+		);
 
 		$this->results[] = $report;
 
-		return $this->report($this->result($report));
+		return $this->report($this->result(array($report)));
 	}
 
 	// --------------------------------------------------------------------
@@ -134,6 +188,7 @@ class CI_Unit_test {
 	 *
 	 * Displays a table with the test data
 	 *
+	 * @param	array	 $result
 	 * @return	string
 	 */
 	public function report($result = array())
@@ -183,7 +238,7 @@ class CI_Unit_test {
 	 *
 	 * Causes the evaluation to use === rather than ==
 	 *
-	 * @param	bool
+	 * @param	bool	$state
 	 * @return	void
 	 */
 	public function use_strict($state = TRUE)
@@ -213,6 +268,7 @@ class CI_Unit_test {
 	 *
 	 * Returns the raw result data
 	 *
+	 * @param	array	$results
 	 * @return	array
 	 */
 	public function result($results = array())
@@ -235,26 +291,15 @@ class CI_Unit_test {
 				{
 					continue;
 				}
-
-				if (is_array($val))
+				elseif (in_array($key, array('test_name', 'test_datatype', 'res_datatype', 'result'), TRUE))
 				{
-					foreach ($val as $k => $v)
-					{
-						if (FALSE !== ($line = $CI->lang->line(strtolower('ut_'.$v))))
-						{
-							$v = $line;
-						}
-						$temp[$CI->lang->line('ut_'.$k)] = $v;
-					}
-				}
-				else
-				{
-					if (FALSE !== ($line = $CI->lang->line(strtolower('ut_'.$val))))
+					if (FALSE !== ($line = $CI->lang->line(strtolower('ut_'.$val), FALSE)))
 					{
 						$val = $line;
 					}
-					$temp[$CI->lang->line('ut_'.$key)] = $val;
 				}
+
+				$temp[$CI->lang->line('ut_'.$key, FALSE)] = $val;
 			}
 
 			$retval[] = $temp;
@@ -291,9 +336,9 @@ class CI_Unit_test {
 	{
 		$back = debug_backtrace();
 		return array(
-				'file' => (isset($back[1]['file']) ? $back[1]['file'] : ''),
-				'line' => (isset($back[1]['line']) ? $back[1]['line'] : '')
-			);
+			'file' => (isset($back[1]['file']) ? $back[1]['file'] : ''),
+			'line' => (isset($back[1]['line']) ? $back[1]['line'] : '')
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -322,12 +367,12 @@ class CI_Unit_test {
 	 */
 	protected function _parse_template()
 	{
-		if ( ! is_null($this->_template_rows))
+		if ($this->_template_rows !== NULL)
 		{
 			return;
 		}
 
-		if (is_null($this->_template) OR ! preg_match('/\{rows\}(.*?)\{\/rows\}/si', $this->_template, $match))
+		if ($this->_template === NULL OR ! preg_match('/\{rows\}(.*?)\{\/rows\}/si', $this->_template, $match))
 		{
 			$this->_default_template();
 			return;
@@ -340,18 +385,23 @@ class CI_Unit_test {
 }
 
 /**
- * Helper functions to test boolean true/false
+ * Helper function to test boolean TRUE
  *
+ * @param	mixed	$test
  * @return	bool
  */
 function is_true($test)
 {
 	return ($test === TRUE);
 }
+
+/**
+ * Helper function to test boolean FALSE
+ *
+ * @param	mixed	$test
+ * @return	bool
+ */
 function is_false($test)
 {
 	return ($test === FALSE);
 }
-
-/* End of file Unit_test.php */
-/* Location: ./system/libraries/Unit_test.php */

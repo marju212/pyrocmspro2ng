@@ -141,35 +141,47 @@ class MX_Loader extends CI_Loader
 
 		$library_pieces = explode('/', $library);
 		$class = strtolower(end($library_pieces));
-		
-		if (isset($this->_ci_classes[$class]) and $_alias = $this->_ci_classes[$class])
+
+		// Resolve final property name:
+		//   - if object_name given, use strtolower(object_name)
+		//   - else use the lowercased class name, remapped via CI's varmap
+		//     (unit_test→unit, user_agent→agent) to stay aligned with CI 3.1.
+		$varmap = array('unit_test' => 'unit', 'user_agent' => 'agent');
+		if ($object_name !== NULL && $object_name !== '') {
+			$_alias = strtolower($object_name);
+		} else {
+			$_alias = isset($varmap[$class]) ? $varmap[$class] : $class;
+		}
+
+		// Already loaded on this request?
+		if (isset(CI::$APP->$_alias)) {
 			return CI::$APP->$_alias;
-			
-		($_alias = strtolower($object_name)) OR $_alias = $class;
-		
+		}
+
 		list($path, $_library) = Modules::find($library, $this->_module, 'libraries/');
-		
+
 		/* load library config file as params */
 		if ($params == null) {
-			list($path2, $file) = Modules::find($_alias, $this->_module, 'config/');	
+			list($path2, $file) = Modules::find($_alias, $this->_module, 'config/');
 			($path2) AND $params = Modules::load_file($file, $path2, 'config');
-		}	
-			
+		}
+
 		if ($path === false) {
-			
-			$this->_ci_load_class($library, $params, $object_name);
-			$_alias = $this->_ci_classes[$class];
-			
-		} else {		
-			
+
+			$this->_ci_load_library($library, $params, $object_name);
+			// CI 3.1's _ci_classes maps property_name => class_name. We already
+			// computed the property name above as $_alias, so use that directly.
+
+		} else {
+
 			Modules::load_file($_library, $path);
-			
+
 			$library = ucfirst($_library);
 			CI::$APP->$_alias = new $library($params);
-			
-			$this->_ci_classes[$class] = $_alias;
+
+			$this->_ci_classes[$_alias] = ucfirst($class);
 		}
-		
+
 		return CI::$APP->$_alias;
     }
 
@@ -263,7 +275,7 @@ class MX_Loader extends CI_Loader
 	public function view($view, $vars = array(), $return = false) {
 		list($path, $view) = Modules::find($view, $this->_module, 'views/');
 		$this->_ci_view_paths = array($path => true);
-		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_prepare_view_vars($vars), '_ci_return' => $return));
 	}
 
 	public function _ci_is_instance() {}
@@ -314,9 +326,13 @@ class MX_Loader extends CI_Loader
 		ob_start();
 
 		if ((bool) @ini_get('short_open_tag') === false and CI::$APP->config->item('rewrite_short_tags') == true) {
-			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
+			try {
+				echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
+			} catch (ParseError $e) {
+				log_message('error', 'Parse error in view '.$_ci_path.': '.$e->getMessage());
+			}
 		} else {
-			include($_ci_path); 
+			include($_ci_path);
 		}
 
 		log_message('debug', 'File loaded: '.$_ci_path);

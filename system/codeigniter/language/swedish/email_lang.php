@@ -1,34 +1,59 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed');
-
- /**
- * Swedish translation.
+<?php
+/**
+ * CodeIgniter
  *
- * @author		marcus@incore.se
- * @package		PyroCMS  
- * @link		http://pyrocms.com
- * @date		2012-10-22
- * @version		1.1.0
+ * An open source application development framework for PHP
+ *
+ * This content is released under the MIT License (MIT)
+ *
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
+ * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['email_must_be_array'] = 'Valideringen av e-postadresser kräver en matris (array).';
-$lang['email_invalid_address'] = 'Du angav inte en korrekt e-postadress: %s';
-$lang['email_attachment_missing'] = 'Det gick inte att hitta bilagan: %s';
-$lang['email_attachment_unreadable'] = 'Det gick inte att öppna bilagan: %s';
-$lang['email_no_recipients'] = 'Du måste ange minst en mottagare: Till, Kopia, eller Hemlig kopia';
-$lang['email_send_failure_phpmail'] = 'Det gick inte att skicka e-post med PHP mail(). Servern är kanske inte konfigurerad för att skicka e-post med denna metod.';
-$lang['email_send_failure_sendmail'] = 'Det gick inte att skicka e-post med PHP Sendmail. Servern är kanske inte konfigurerad för att skicka e-post med denna metod.';
-$lang['email_send_failure_smtp'] = 'Det gick inte att skicka e-post med PHP SMTP. Servern är kanske inte konfigurerad för att skicka e-post med denna metod.';
-$lang['email_sent'] = 'Ditt meddelande har skickats med följande protokoll: %s';
-$lang['email_no_socket'] = 'Det gick inte att öppna en socket till Sendmail. Kontrollera inställningarna.';
-$lang['email_no_hostname'] = 'Fel. Du måste ange ett värdnamn (host) för SMTP.';
-$lang['email_smtp_error'] = 'Följande fel uppstod med SMTP: %s';
-$lang['email_no_smtp_unpw'] = 'Fel: Du måste ange användarnamn och lösenord för SMTP.';
-$lang['email_failed_smtp_login'] = 'Det gick inte att skicka kommandot AUTH LOGIN. Fel: %s';
-$lang['email_smtp_auth_un'] = 'Användarnamnet godkändes inte. Fel: %s';
-$lang['email_smtp_auth_pw'] = 'Lösenordet godkändes inte. Fel: %s';
-$lang['email_smtp_data_failure'] = 'Det gick inte att skicka data: %s';
-$lang['email_exit_status'] = 'Avslutande statuskod: %s';
-
-
-/* End of file email_lang.php */  
-/* Location: system/codeigniter/language/swedish/email_lang.php */  
+$lang['email_must_be_array'] = 'The email validation method must be passed an array.';
+$lang['email_invalid_address'] = 'Invalid email address: %s';
+$lang['email_attachment_missing'] = 'Unable to locate the following email attachment: %s';
+$lang['email_attachment_unreadable'] = 'Unable to open this attachment: %s';
+$lang['email_no_from'] = 'Cannot send mail with no "From" header.';
+$lang['email_no_recipients'] = 'You must include recipients: To, Cc, or Bcc';
+$lang['email_send_failure_phpmail'] = 'Unable to send email using PHP mail(). Your server might not be configured to send mail using this method.';
+$lang['email_send_failure_sendmail'] = 'Unable to send email using PHP Sendmail. Your server might not be configured to send mail using this method.';
+$lang['email_send_failure_smtp'] = 'Unable to send email using PHP SMTP. Your server might not be configured to send mail using this method.';
+$lang['email_sent'] = 'Your message has been successfully sent using the following protocol: %s';
+$lang['email_no_socket'] = 'Unable to open a socket to Sendmail. Please check settings.';
+$lang['email_no_hostname'] = 'You did not specify a SMTP hostname.';
+$lang['email_smtp_error'] = 'The following SMTP error was encountered: %s';
+$lang['email_no_smtp_unpw'] = 'Error: You must assign a SMTP username and password.';
+$lang['email_failed_smtp_login'] = 'Failed to send AUTH LOGIN command. Error: %s';
+$lang['email_smtp_auth_un'] = 'Failed to authenticate username. Error: %s';
+$lang['email_smtp_auth_pw'] = 'Failed to authenticate password. Error: %s';
+$lang['email_smtp_data_failure'] = 'Unable to send data: %s';
+$lang['email_exit_status'] = 'Exit status code: %s';

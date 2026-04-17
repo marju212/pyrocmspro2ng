@@ -66,15 +66,15 @@ class Migration_Add_streams extends CI_Migration {
 		
 			$this->db->query("
 			CREATE TABLE `".$this->db->dbprefix($config['streams.streams_table'])."` (
-			  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			  `stream_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-			  `stream_slug` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-			  `about` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			  `id` int unsigned NOT NULL AUTO_INCREMENT,
+			  `stream_name` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `stream_slug` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `about` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  `view_options` blob NOT NULL,
-			  `title_column` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-			  `sorting` enum('title','custom') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'title',
+			  `title_column` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+			  `sorting` enum('title','custom') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'title',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 			");
 		
 		endif;
@@ -83,14 +83,14 @@ class Migration_Add_streams extends CI_Migration {
 		
 			$this->db->query("
 			CREATE TABLE `".$this->db->dbprefix($config['streams.fields_table'])."` (
-			  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			  `field_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-			  `field_slug` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-			  `field_type` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+			  `id` int unsigned NOT NULL AUTO_INCREMENT,
+			  `field_name` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `field_slug` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `field_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  `field_data` blob,
 			  `view_options` blob,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 		
 		endif;
 
@@ -98,16 +98,16 @@ class Migration_Add_streams extends CI_Migration {
 		
 			$this->db->query("
 			CREATE TABLE `".$this->db->dbprefix($config['streams.assignments_table'])."` (
-			  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			  `sort_order` int(11) NOT NULL,
-			  `stream_id` int(11) NOT NULL,
-			  `field_id` int(11) NOT NULL,
-			  `is_required` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-			  `is_unique` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-			  `instructions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-			  `field_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+			  `id` int unsigned NOT NULL AUTO_INCREMENT,
+			  `sort_order` int NOT NULL,
+			  `stream_id` int NOT NULL,
+			  `field_id` int NOT NULL,
+			  `is_required` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+			  `is_unique` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+			  `instructions` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+			  `field_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 		
 		endif;
 
@@ -115,15 +115,15 @@ class Migration_Add_streams extends CI_Migration {
 		
 			$this->db->query("
 			CREATE TABLE `".$this->db->dbprefix($config['streams.searches_table'])."` (
-			  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			  `search_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-			  `search_term` text COLLATE utf8_unicode_ci NOT NULL,
-			  `ip_address` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-			  `total_results` int(11) NOT NULL,
-			  `query_string` longtext COLLATE utf8_unicode_ci NOT NULL,
-			  `stream_slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			  `id` int unsigned NOT NULL AUTO_INCREMENT,
+			  `search_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `search_term` text COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `ip_address` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `total_results` int NOT NULL,
+			  `query_string` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `stream_slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 			
 		endif;
 		

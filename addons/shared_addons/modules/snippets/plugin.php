@@ -60,7 +60,7 @@ class Plugin_Snippets extends Plugin
                 }
             }
 
-            if (method_exists($this->snippets_m->snippets->{$snippet->type}, 'pre_output'))
+            if (isset($this->snippets_m->snippets->{$snippet->type}) && method_exists($this->snippets_m->snippets->{$snippet->type}, 'pre_output'))
             {
                 // Run through pre_output
                 $this->snippets[$snippet->slug] = $this->snippets_m

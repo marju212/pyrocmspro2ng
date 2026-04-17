@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * CodeIgniter HTML Helpers
@@ -32,7 +45,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/html_helper.html
+ * @link		https://codeigniter.com/userguide3/helpers/html_helper.html
  */
 
 // ------------------------------------------------------------------------
@@ -108,7 +121,7 @@ if ( ! function_exists('_list'))
 	 * @param	int
 	 * @return	string
 	 */
-	function _list($type = 'ul', $list, $attributes = '', $depth = 0)
+	function _list($type = 'ul', $list = array(), $attributes = '', $depth = 0)
 	{
 		// If an array wasn't submitted there's nothing to do...
 		if ( ! is_array($list))
@@ -117,10 +130,9 @@ if ( ! function_exists('_list'))
 		}
 
 		// Set the indentation based on the depth
-		$out = str_repeat(' ', $depth);
-
-		// Write the opening list tag
-		$out .= '<'.$type._stringify_attributes($attributes).">\n";
+		$out = str_repeat(' ', $depth)
+			// Write the opening list tag
+			.'<'.$type._stringify_attributes($attributes).">\n";
 
 		// Cycle through the list elements.  If an array is
 		// encountered we will recursively call _list()
@@ -146,22 +158,6 @@ if ( ! function_exists('_list'))
 
 		// Set the indentation for the closing tag and apply it
 		return $out.str_repeat(' ', $depth).'</'.$type.">\n";
-	}
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists('br'))
-{
-	/**
-	 * Generates HTML BR tags based on number supplied
-	 *
-	 * @param	int
-	 * @return	string
-	 */
-	function br($num = 1)
-	{
-		return str_repeat('<br />', $num);
 	}
 }
 
@@ -196,17 +192,15 @@ if ( ! function_exists('img'))
 
 		foreach ($src as $k => $v)
 		{
-			if ($k === 'src' && strpos($v, '://') === FALSE)
+			if ($k === 'src' && ! preg_match('#^(data:[a-z,;])|(([a-z]+:)?(?<!data:)//)#i', $v))
 			{
-				$CI =& get_instance();
-
 				if ($index_page === TRUE)
 				{
-					$img .= ' src="'.$CI->config->site_url($v).'"';
+					$img .= ' src="'.get_instance()->config->site_url($v).'"';
 				}
 				else
 				{
-					$img .= ' src="'.$CI->config->slash_item('base_url').$v.'"';
+					$img .= ' src="'.get_instance()->config->base_url($v).'"';
 				}
 			}
 			else
@@ -237,26 +231,30 @@ if ( ! function_exists('doctype'))
 	 */
 	function doctype($type = 'xhtml1-strict')
 	{
-		global $_doctypes;
+		static $doctypes;
 
-		if ( ! is_array($_doctypes))
+		if ( ! is_array($doctypes))
 		{
-			if (defined('ENVIRONMENT') && is_file(APPPATH.'config/'.ENVIRONMENT.'/doctypes.php'))
-			{
-				include(APPPATH.'config/'.ENVIRONMENT.'/doctypes.php');
-			}
-			elseif (is_file(APPPATH.'config/doctypes.php'))
+			if (file_exists(APPPATH.'config/doctypes.php'))
 			{
 				include(APPPATH.'config/doctypes.php');
 			}
 
-			if ( ! is_array($_doctypes))
+			if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/doctypes.php'))
 			{
+				include(APPPATH.'config/'.ENVIRONMENT.'/doctypes.php');
+			}
+
+			if (empty($_doctypes) OR ! is_array($_doctypes))
+			{
+				$doctypes = array();
 				return FALSE;
 			}
+
+			$doctypes = $_doctypes;
 		}
 
-		return isset($_doctypes[$type]) ? $_doctypes[$type] : FALSE;
+		return isset($doctypes[$type]) ? $doctypes[$type] : FALSE;
 	}
 }
 
@@ -286,7 +284,7 @@ if ( ! function_exists('link_tag'))
 		{
 			foreach ($href as $k => $v)
 			{
-				if ($k === 'href' && strpos($v, '://') === FALSE)
+				if ($k === 'href' && ! preg_match('#^([a-z]+:)?//#i', $v))
 				{
 					if ($index_page === TRUE)
 					{
@@ -294,7 +292,7 @@ if ( ! function_exists('link_tag'))
 					}
 					else
 					{
-						$link .= 'href="'.$CI->config->slash_item('base_url').$v.'" ';
+						$link .= 'href="'.$CI->config->base_url($v).'" ';
 					}
 				}
 				else
@@ -305,7 +303,7 @@ if ( ! function_exists('link_tag'))
 		}
 		else
 		{
-			if (strpos($href, '://') !== FALSE)
+			if (preg_match('#^([a-z]+:)?//#i', $href))
 			{
 				$link .= 'href="'.$href.'" ';
 			}
@@ -315,7 +313,7 @@ if ( ! function_exists('link_tag'))
 			}
 			else
 			{
-				$link .= 'href="'.$CI->config->slash_item('base_url').$href.'" ';
+				$link .= 'href="'.$CI->config->base_url($href).'" ';
 			}
 
 			$link .= 'rel="'.$rel.'" type="'.$type.'" ';
@@ -365,7 +363,7 @@ if ( ! function_exists('meta'))
 		$str = '';
 		foreach ($name as $meta)
 		{
-			$type		= ( ! isset($meta['type']) OR $meta['type'] === 'name') ? 'name' : 'http-equiv';
+			$type		= (isset($meta['type']) && $meta['type'] !== 'name')	? 'http-equiv' : 'name';
 			$name		= isset($meta['name'])					? $meta['name'] : '';
 			$content	= isset($meta['content'])				? $meta['content'] : '';
 			$newline	= isset($meta['newline'])				? $meta['newline'] : "\n";
@@ -379,11 +377,29 @@ if ( ! function_exists('meta'))
 
 // ------------------------------------------------------------------------
 
+if ( ! function_exists('br'))
+{
+	/**
+	 * Generates HTML BR tags based on number supplied
+	 *
+	 * @deprecated	3.0.0	Use str_repeat() instead
+	 * @param	int	$count	Number of times to repeat the tag
+	 * @return	string
+	 */
+	function br($count = 1)
+	{
+		return str_repeat('<br />', $count);
+	}
+}
+
+// ------------------------------------------------------------------------
+
 if ( ! function_exists('nbs'))
 {
 	/**
 	 * Generates non-breaking space entities based on number supplied
 	 *
+	 * @deprecated	3.0.0	Use str_repeat() instead
 	 * @param	int
 	 * @return	string
 	 */
@@ -392,6 +408,3 @@ if ( ! function_exists('nbs'))
 		return str_repeat('&nbsp;', $num);
 	}
 }
-
-/* End of file html_helper.php */
-/* Location: ./system/helpers/html_helper.php */

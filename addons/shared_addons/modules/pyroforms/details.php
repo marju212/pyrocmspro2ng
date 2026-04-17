@@ -41,7 +41,7 @@ class Module_Pyroforms extends Module {
         
         $pf_forms = "
             CREATE TABLE `".$this->db->dbprefix('pyroforms')."` (
-              `id` int(7) NOT NULL AUTO_INCREMENT,
+              `id` int NOT NULL AUTO_INCREMENT,
               `frmName` varchar(200) DEFAULT NULL,
               `frmSlug` varchar(255) DEFAULT NULL,
               `frmInfo` text,
@@ -53,18 +53,18 @@ class Module_Pyroforms extends Module {
               `reply_to` varchar(50) DEFAULT NULL,
               `layout` text,
               `is_ajax` char(1) DEFAULT '0',
-              `file_maxsize` INT(16) DEFAULT NULL,
+              `file_maxsize` INT DEFAULT NULL,
               `file_types` VARCHAR(200) DEFAULT NULL,
               `track_pages` char(1) DEFAULT '0',
               `track_events` char(1) DEFAULT '0',
               PRIMARY KEY (`id`),
               UNIQUE KEY `frmSlug` (`frmSlug`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
         $pf_fields = "
             CREATE TABLE `".$this->db->dbprefix('pyroforms_fields')."` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `frm_id` int(11) DEFAULT NULL,
+              `id` int NOT NULL AUTO_INCREMENT,
+              `frm_id` int DEFAULT NULL,
               `fldName` varchar(255) DEFAULT NULL,
               `fldLabel` varchar(255) DEFAULT NULL,
               `fldLabelVisible` char(1) DEFAULT '1',
@@ -76,22 +76,22 @@ class Module_Pyroforms extends Module {
               `fldPrep` varchar(255) DEFAULT NULL,
               `fldValidation` varchar(255) DEFAULT NULL,
               `fldAttr` varchar(255) DEFAULT NULL,
-              `fldOrder` int(2) DEFAULT NULL,
+              `fldOrder` int DEFAULT NULL,
               PRIMARY KEY (`id`),
               KEY `frm_id` (`frm_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
             
         $pf_entries = "   
             CREATE TABLE `".$this->db->dbprefix('pyroforms_entry')."` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `id` int NOT NULL AUTO_INCREMENT,
               `name` varchar(255) DEFAULT NULL,
               `ip` text,
-              `form_id` int(11) DEFAULT NULL,
-              `page_id` int(11) DEFAULT NULL,
-              `user_id` int(11) DEFAULT NULL,
+              `form_id` int DEFAULT NULL,
+              `page_id` int DEFAULT NULL,
+              `user_id` int DEFAULT NULL,
               `sent_to` varchar(255) DEFAULT NULL,
-              `created_on` int(11) NOT NULL,
-              `updated_on` int(11) DEFAULT NULL,
+              `created_on` int NOT NULL,
+              `updated_on` int DEFAULT NULL,
               `uagent` varchar(50) DEFAULT NULL,
               `os` varchar(50) DEFAULT NULL,
               `data` longtext,
@@ -99,7 +99,7 @@ class Module_Pyroforms extends Module {
               KEY `form_id` (`form_id`),
               KEY `page_id` (`page_id`),
               KEY `user_id` (`user_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
         
         $this->db->trans_begin();
         

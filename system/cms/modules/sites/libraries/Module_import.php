@@ -96,7 +96,7 @@ class Module_import {
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY `slug` (`slug`),
 			  INDEX `enabled` (`enabled`)
-			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		";
 
 		//create the modules table so that we can import all modules including the modules module
@@ -111,7 +111,7 @@ class Module_import {
 			 `user_data` text NULL,
 			PRIMARY KEY (`session_id`),
 			KEY `last_activity_idx` (`last_activity`)
-			) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 		";
 
 		// create a session table so they can use it if they want

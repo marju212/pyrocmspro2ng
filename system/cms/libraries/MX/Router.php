@@ -46,18 +46,51 @@ class MX_Router extends CI_Router
 	public function _validate_request($segments) {
 
 		if (count($segments) == 0) return $segments;
-		
+
 		/* locate module controller */
 		if ($located = $this->locate($segments)) return $located;
-		
+
 		/* use a default 404_override controller */
 		if (isset($this->routes['404_override']) and $this->routes['404_override']) {
 			$segments = explode('/', $this->routes['404_override']);
 			if ($located = $this->locate($segments)) return $located;
 		}
-		
+
 		/* no controller found */
 		show_404();
+	}
+
+	/**
+	 * Set default controller — overrides CI_Router so the default route
+	 * (e.g. 'pages') can resolve to a module controller, not just APPPATH/controllers.
+	 */
+	protected function _set_default_controller()
+	{
+		if (empty($this->default_controller))
+		{
+			show_error('Unable to determine what should be displayed. A default route has not been specified in the routing file.');
+		}
+
+		if (sscanf($this->default_controller, '%[^/]/%s', $class, $method) !== 2)
+		{
+			$method = 'index';
+		}
+
+		$segments = $this->locate(array($class));
+		if ( ! $segments)
+		{
+			return;
+		}
+
+		$this->set_class($segments[0]);
+		$this->set_method($method);
+
+		$this->uri->rsegments = array(
+			1 => $segments[0],
+			2 => $method,
+		);
+
+		log_message('debug', 'No URI present. Default module controller set via MX_Router.');
 	}
 	
 	/** Locate the controller **/

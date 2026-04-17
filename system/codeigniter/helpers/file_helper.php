@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * CodeIgniter File Helpers
@@ -32,7 +45,7 @@
  * @subpackage	Helpers
  * @category	Helpers
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/file_helper.html
+ * @link		https://codeigniter.com/userguide3/helpers/file_helper.html
  */
 
 // ------------------------------------------------------------------------
@@ -42,14 +55,12 @@ if ( ! function_exists('read_file'))
 	/**
 	 * Read File
 	 *
-	 * Opens the file specfied in the path and returns it as a string.
+	 * Opens the file specified in the path and returns it as a string.
 	 *
-	 * This function is DEPRECATED and should be removed in
-	 * CodeIgniter 3.1+. Use file_get_contents() instead.
-	 *
-	 * @deprecated
-	 * @param	string	path to file
-	 * @return	string
+	 * @todo	Remove in version 3.1+.
+	 * @deprecated	3.0.0	It is now just an alias for PHP's native file_get_contents().
+	 * @param	string	$file	Path to file
+	 * @return	string	File contents
 	 */
 	function read_file($file)
 	{
@@ -67,12 +78,12 @@ if ( ! function_exists('write_file'))
 	 * Writes data to the file specified in the path.
 	 * Creates a new file if non-existent.
 	 *
-	 * @param	string	path to file
-	 * @param	string	file data
-	 * @param	int
+	 * @param	string	$path	File path
+	 * @param	string	$data	Data to write
+	 * @param	string	$mode	fopen() mode (default: 'wb')
 	 * @return	bool
 	 */
-	function write_file($path, $data, $mode = FOPEN_WRITE_CREATE_DESTRUCTIVE)
+	function write_file($path, $data, $mode = 'wb')
 	{
 		if ( ! $fp = @fopen($path, $mode))
 		{
@@ -80,11 +91,19 @@ if ( ! function_exists('write_file'))
 		}
 
 		flock($fp, LOCK_EX);
-		fwrite($fp, $data);
+
+		for ($result = $written = 0, $length = strlen($data); $written < $length; $written += $result)
+		{
+			if (($result = fwrite($fp, substr($data, $written))) === FALSE)
+			{
+				break;
+			}
+		}
+
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		return TRUE;
+		return is_int($result);
 	}
 }
 
@@ -100,16 +119,16 @@ if ( ! function_exists('delete_files'))
 	 * If the second parameter is set to TRUE, any directories contained
 	 * within the supplied base directory will be nuked as well.
 	 *
-	 * @param	string	path to file
-	 * @param	bool	whether to delete any directories found in the path
-	 * @param	int
-	 * @param	bool	whether to skip deleting .htaccess and index page files
+	 * @param	string	$path		File path
+	 * @param	bool	$del_dir	Whether to delete any directories found in the path
+	 * @param	bool	$htdocs		Whether to skip deleting .htaccess and index page files
+	 * @param	int	$_level		Current directory depth level (default: 0; internal use only)
 	 * @return	bool
 	 */
-	function delete_files($path, $del_dir = FALSE, $level = 0, $htdocs = FALSE)
+	function delete_files($path, $del_dir = FALSE, $htdocs = FALSE, $_level = 0)
 	{
 		// Trim the trailing slash
-		$path = rtrim($path, DIRECTORY_SEPARATOR);
+		$path = rtrim($path, '/\\');
 
 		if ( ! $current_dir = @opendir($path))
 		{
@@ -120,24 +139,24 @@ if ( ! function_exists('delete_files'))
 		{
 			if ($filename !== '.' && $filename !== '..')
 			{
-				if (is_dir($path.DIRECTORY_SEPARATOR.$filename) && $filename[0] !== '.')
+				$filepath = $path.DIRECTORY_SEPARATOR.$filename;
+
+				if (is_dir($filepath) && $filename[0] !== '.' && ! is_link($filepath))
 				{
-					delete_files($path.DIRECTORY_SEPARATOR.$filename, $del_dir, $level + 1, $htdocs);
+					delete_files($filepath, $del_dir, $htdocs, $_level + 1);
 				}
 				elseif ($htdocs !== TRUE OR ! preg_match('/^(\.htaccess|index\.(html|htm|php)|web\.config)$/i', $filename))
 				{
-					@unlink($path.DIRECTORY_SEPARATOR.$filename);
+					@unlink($filepath);
 				}
 			}
 		}
-		@closedir($current_dir);
 
-		if ($del_dir === TRUE && $level > 0)
-		{
-			return @rmdir($path);
-		}
+		closedir($current_dir);
 
-		return TRUE;
+		return ($del_dir === TRUE && $_level > 0)
+			? @rmdir($path)
+			: TRUE;
 	}
 }
 
@@ -171,7 +190,7 @@ if ( ! function_exists('get_filenames'))
 
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				if (@is_dir($source_dir.$file) && $file[0] !== '.')
+				if (is_dir($source_dir.$file) && $file[0] !== '.')
 				{
 					get_filenames($source_dir.$file.DIRECTORY_SEPARATOR, $include_path, TRUE);
 				}
@@ -180,8 +199,8 @@ if ( ! function_exists('get_filenames'))
 					$_filedata[] = ($include_path === TRUE) ? $source_dir.$file : $file;
 				}
 			}
-			closedir($fp);
 
+			closedir($fp);
 			return $_filedata;
 		}
 
@@ -220,10 +239,10 @@ if ( ! function_exists('get_dir_file_info'))
 				$source_dir = rtrim(realpath($source_dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			}
 
-			// foreach (scandir($source_dir, 1) as $file) // In addition to being PHP5+, scandir() is simply not as fast
+			// Used to be foreach (scandir($source_dir, 1) as $file), but scandir() is simply not as fast
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				if (@is_dir($source_dir.$file) && $file[0] !== '.' && $top_level_only === FALSE)
+				if (is_dir($source_dir.$file) && $file[0] !== '.' && $top_level_only === FALSE)
 				{
 					get_dir_file_info($source_dir.$file.DIRECTORY_SEPARATOR, $top_level_only, TRUE);
 				}
@@ -233,8 +252,8 @@ if ( ! function_exists('get_dir_file_info'))
 					$_filedata[$file]['relative_path'] = $relative_path;
 				}
 			}
-			closedir($fp);
 
+			closedir($fp);
 			return $_filedata;
 		}
 
@@ -260,7 +279,6 @@ if ( ! function_exists('get_file_info'))
 	 */
 	function get_file_info($file, $returned_values = array('name', 'server_path', 'size', 'date'))
 	{
-
 		if ( ! file_exists($file))
 		{
 			return FALSE;
@@ -276,7 +294,7 @@ if ( ! function_exists('get_file_info'))
 			switch ($key)
 			{
 				case 'name':
-					$fileinfo['name'] = substr(strrchr($file, DIRECTORY_SEPARATOR), 1);
+					$fileinfo['name'] = basename($file);
 					break;
 				case 'server_path':
 					$fileinfo['server_path'] = $file;
@@ -291,8 +309,7 @@ if ( ! function_exists('get_file_info'))
 					$fileinfo['readable'] = is_readable($file);
 					break;
 				case 'writable':
-					// There are known problems using is_weritable on IIS.  It may not be reliable - consider fileperms()
-					$fileinfo['writable'] = is_writable($file);
+					$fileinfo['writable'] = is_really_writable($file);
 					break;
 				case 'executable':
 					$fileinfo['executable'] = is_executable($file);
@@ -320,24 +337,24 @@ if ( ! function_exists('get_mime_by_extension'))
 	 * Note: this is NOT an accurate way of determining file mime types, and is here strictly as a convenience
 	 * It should NOT be trusted, and should certainly NOT be used for security
 	 *
-	 * @param	string	path to file
-	 * @return	mixed
+	 * @param	string	$filename	File name
+	 * @return	string
 	 */
-	function get_mime_by_extension($file)
+	function get_mime_by_extension($filename)
 	{
-		$extension = strtolower(substr(strrchr($file, '.'), 1));
-
 		static $mimes;
 
 		if ( ! is_array($mimes))
 		{
-			$mimes =& get_mimes();
+			$mimes = get_mimes();
 
 			if (empty($mimes))
 			{
 				return FALSE;
 			}
 		}
+
+		$extension = strtolower(substr(strrchr($filename, '.'), 1));
 
 		if (isset($mimes[$extension]))
 		{
@@ -360,7 +377,7 @@ if ( ! function_exists('symbolic_permissions'))
 	 * Takes a numeric value representing a file's permissions and returns
 	 * standard symbolic notation representing that value
 	 *
-	 * @param	int
+	 * @param	int	$perms	Permissions
 	 * @return	string
 	 */
 	function symbolic_permissions($perms)
@@ -400,18 +417,18 @@ if ( ! function_exists('symbolic_permissions'))
 
 		// Owner
 		$symbolic .= (($perms & 0x0100) ? 'r' : '-')
-			. (($perms & 0x0080) ? 'w' : '-')
-			. (($perms & 0x0040) ? (($perms & 0x0800) ? 's' : 'x' ) : (($perms & 0x0800) ? 'S' : '-'));
+			.(($perms & 0x0080) ? 'w' : '-')
+			.(($perms & 0x0040) ? (($perms & 0x0800) ? 's' : 'x' ) : (($perms & 0x0800) ? 'S' : '-'));
 
 		// Group
 		$symbolic .= (($perms & 0x0020) ? 'r' : '-')
-			. (($perms & 0x0010) ? 'w' : '-')
-			. (($perms & 0x0008) ? (($perms & 0x0400) ? 's' : 'x' ) : (($perms & 0x0400) ? 'S' : '-'));
+			.(($perms & 0x0010) ? 'w' : '-')
+			.(($perms & 0x0008) ? (($perms & 0x0400) ? 's' : 'x' ) : (($perms & 0x0400) ? 'S' : '-'));
 
 		// World
 		$symbolic .= (($perms & 0x0004) ? 'r' : '-')
-			. (($perms & 0x0002) ? 'w' : '-')
-			. (($perms & 0x0001) ? (($perms & 0x0200) ? 't' : 'x' ) : (($perms & 0x0200) ? 'T' : '-'));
+			.(($perms & 0x0002) ? 'w' : '-')
+			.(($perms & 0x0001) ? (($perms & 0x0200) ? 't' : 'x' ) : (($perms & 0x0200) ? 'T' : '-'));
 
 		return $symbolic;
 	}
@@ -427,7 +444,7 @@ if ( ! function_exists('octal_permissions'))
 	 * Takes a numeric value representing a file's permissions and returns
 	 * a three character string representing the file's octal permissions
 	 *
-	 * @param	int
+	 * @param	int	$perms	Permissions
 	 * @return	string
 	 */
 	function octal_permissions($perms)
@@ -435,6 +452,3 @@ if ( ! function_exists('octal_permissions'))
 		return substr(sprintf('%o', $perms), -3);
 	}
 }
-
-/* End of file file_helper.php */
-/* Location: ./system/helpers/file_helper.php */

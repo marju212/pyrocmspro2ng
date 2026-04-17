@@ -20,7 +20,7 @@ class MY_Lang extends MX_Lang
 	 * @param string $line the language line
 	 * @return string
 	 */
-	public function line($line = '')
+	public function line($line = '', $log_errors = TRUE)
 	{
 		$translation = ($line == '' OR !isset($this->language[$line])) ? false : $this->language[$line];
 

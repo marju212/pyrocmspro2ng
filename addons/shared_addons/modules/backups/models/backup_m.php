@@ -230,7 +230,7 @@ class Backup_m extends MY_Model
 		
 		$backup =& $this->dbutil->backup($preferences);
 		$backup .= 'SET FOREIGN_KEY_CHECKS=0;';
-                $backup  =& utf8_decode( $backup );
+                $backup  = mb_convert_encoding( $backup, 'ISO-8859-1', 'UTF-8' );
               
                  //CHARSET=utf8 COLLATE=utf8_unicode_ci
 		$path = UPLOAD_PATH.'backups/';

@@ -1,32 +1,45 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * CodeIgniter Benchmark Class
+ * Benchmark Class
  *
  * This class enables you to mark points and calculate the time difference
  * between them. Memory consumption can also be displayed.
@@ -35,26 +48,24 @@
  * @subpackage	Libraries
  * @category	Libraries
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/benchmark.html
+ * @link		https://codeigniter.com/userguide3/libraries/benchmark.html
  */
 class CI_Benchmark {
 
 	/**
-	 * List of all benchmark markers and when they were added
+	 * List of all benchmark markers
 	 *
-	 * @var array
+	 * @var	array
 	 */
-	public $marker =	array();
-
-	// --------------------------------------------------------------------
+	public $marker = array();
 
 	/**
 	 * Set a benchmark marker
 	 *
 	 * Multiple calls to this function can be made so that several
-	 * execution points can be timed
+	 * execution points can be timed.
 	 *
-	 * @param	string	$name	name of the marker
+	 * @param	string	$name	Marker name
 	 * @return	void
 	 */
 	public function mark($name)
@@ -65,6 +76,8 @@ class CI_Benchmark {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Elapsed time
+	 *
 	 * Calculates the time difference between two marked points.
 	 *
 	 * If the first parameter is empty this function instead returns the
@@ -72,10 +85,13 @@ class CI_Benchmark {
 	 * execution time to be shown in a template. The output class will
 	 * swap the real value for this variable.
 	 *
-	 * @param	string	a particular marked point
-	 * @param	string	a particular marked point
-	 * @param	integer	the number of decimal places
-	 * @return	mixed
+	 * @param	string	$point1		A particular marked point
+	 * @param	string	$point2		A particular marked point
+	 * @param	int	$decimals	Number of decimal places
+	 *
+	 * @return	string	Calculated elapsed time on success,
+	 *			an '{elapsed_string}' if $point1 is empty
+	 *			or an empty string if $point1 is not found.
 	 */
 	public function elapsed_time($point1 = '', $point2 = '', $decimals = 4)
 	{
@@ -102,12 +118,13 @@ class CI_Benchmark {
 	/**
 	 * Memory Usage
 	 *
-	 * This function returns the {memory_usage} pseudo-variable.
+	 * Simply returns the {memory_usage} marker.
+	 *
 	 * This permits it to be put it anywhere in a template
 	 * without the memory being calculated until the end.
 	 * The output class will swap the real value for this variable.
 	 *
-	 * @return	string
+	 * @return	string	'{memory_usage}'
 	 */
 	public function memory_usage()
 	{
@@ -115,6 +132,3 @@ class CI_Benchmark {
 	}
 
 }
-
-/* End of file Benchmark.php */
-/* Location: ./system/core/Benchmark.php */

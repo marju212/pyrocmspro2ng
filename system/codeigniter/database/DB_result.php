@@ -1,29 +1,42 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
  * CodeIgniter
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An open source application development framework for PHP
  *
- * NOTICE OF LICENSE
+ * This content is released under the MIT License (MIT)
  *
- * Licensed under the Open Software License version 3.0
+ * Copyright (c) 2019 - 2022, CodeIgniter Foundation
  *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2012, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
+ * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://codeigniter.com
+ * @since	Version 1.0.0
  * @filesource
  */
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * Database Result Class
@@ -34,23 +47,72 @@
  *
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/userguide3/database/
  */
 class CI_DB_result {
 
+	/**
+	 * Connection ID
+	 *
+	 * @var	resource|object
+	 */
 	public $conn_id;
+
+	/**
+	 * Result ID
+	 *
+	 * @var	resource|object
+	 */
 	public $result_id;
+
+	/**
+	 * Result Array
+	 *
+	 * @var	array[]
+	 */
 	public $result_array			= array();
+
+	/**
+	 * Result Object
+	 *
+	 * @var	object[]
+	 */
 	public $result_object			= array();
+
+	/**
+	 * Custom Result Object
+	 *
+	 * @var	object[]
+	 */
 	public $custom_result_object		= array();
+
+	/**
+	 * Current Row index
+	 *
+	 * @var	int
+	 */
 	public $current_row			= 0;
+
+	/**
+	 * Number of rows
+	 *
+	 * @var	int
+	 */
 	public $num_rows;
+
+	/**
+	 * Row data
+	 *
+	 * @var	array
+	 */
 	public $row_data;
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Constructor
 	 *
-	 * @param	object
+	 * @param	object	$driver_object
 	 * @return	void
 	 */
 	public function __construct(&$driver_object)
@@ -89,7 +151,7 @@ class CI_DB_result {
 	/**
 	 * Query result. Acts as a wrapper function for the following functions.
 	 *
-	 * @param	string	'object', 'array' or a custom class name
+	 * @param	string	$type	'object', 'array' or a custom class name
 	 * @return	array
 	 */
 	public function result($type = 'object')
@@ -102,10 +164,8 @@ class CI_DB_result {
 		{
 			return $this->result_object();
 		}
-		else
-		{
-			return $this->custom_result_object($type);
-		}
+
+		return $this->custom_result_object($type);
 	}
 
 	// --------------------------------------------------------------------
@@ -113,8 +173,8 @@ class CI_DB_result {
 	/**
 	 * Custom query result.
 	 *
-	 * @param	string	A string that represents the type of object you want back
-	 * @return	array	of objects
+	 * @param	string	$class_name
+	 * @return	array
 	 */
 	public function custom_result_object($class_name)
 	{
@@ -153,7 +213,7 @@ class CI_DB_result {
 			return $this->custom_result_object[$class_name];
 		}
 
-		$this->_data_seek(0);
+		is_null($this->row_data) OR $this->data_seek(0);
 		$this->custom_result_object[$class_name] = array();
 
 		while ($row = $this->_fetch_object($class_name))
@@ -196,7 +256,7 @@ class CI_DB_result {
 			return $this->result_object;
 		}
 
-		$this->_data_seek(0);
+		is_null($this->row_data) OR $this->data_seek(0);
 		while ($row = $this->_fetch_object())
 		{
 			$this->result_object[] = $row;
@@ -237,7 +297,7 @@ class CI_DB_result {
 			return $this->result_array;
 		}
 
-		$this->_data_seek(0);
+		is_null($this->row_data) OR $this->data_seek(0);
 		while ($row = $this->_fetch_assoc())
 		{
 			$this->result_array[] = $row;
@@ -249,34 +309,34 @@ class CI_DB_result {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Query result.  Acts as a wrapper function for the following functions.
+	 * Row
 	 *
-	 * @param	string
-	 * @param	string	can be "object" or "array"
-	 * @return	mixed	either a result object or array
+	 * A wrapper method.
+	 *
+	 * @param	mixed	$n
+	 * @param	string	$type	'object' or 'array'
+	 * @return	mixed
 	 */
 	public function row($n = 0, $type = 'object')
 	{
 		if ( ! is_numeric($n))
 		{
 			// We cache the row data for subsequent uses
-			if ( ! is_array($this->row_data))
+			is_array($this->row_data) OR $this->row_data = $this->row_array(0);
+
+			// array_key_exists() instead of isset() to allow for NULL values
+			if (empty($this->row_data) OR ! array_key_exists($n, $this->row_data))
 			{
-				$this->row_data = $this->row_array(0);
+				return NULL;
 			}
 
-			// array_key_exists() instead of isset() to allow for MySQL NULL values
-			if (array_key_exists($n, $this->row_data))
-			{
-				return $this->row_data[$n];
-			}
-			// reset the $n variable if the result was not achieved
-			$n = 0;
+			return $this->row_data[$n];
 		}
 
 		if ($type === 'object') return $this->row_object($n);
 		elseif ($type === 'array') return $this->row_array($n);
-		else return $this->custom_row_object($n, $type);
+
+		return $this->custom_row_object($n, $type);
 	}
 
 	// --------------------------------------------------------------------
@@ -284,6 +344,8 @@ class CI_DB_result {
 	/**
 	 * Assigns an item into a particular column slot
 	 *
+	 * @param	mixed	$key
+	 * @param	mixed	$value
 	 * @return	void
 	 */
 	public function set_row($key, $value = NULL)
@@ -303,7 +365,7 @@ class CI_DB_result {
 			return;
 		}
 
-		if ($key !== '' && ! is_null($value))
+		if ($key !== '' && $value !== NULL)
 		{
 			$this->row_data[$key] = $value;
 		}
@@ -314,11 +376,13 @@ class CI_DB_result {
 	/**
 	 * Returns a single result row - custom object version
 	 *
+	 * @param	int	$n
+	 * @param	string	$type
 	 * @return	object
 	 */
 	public function custom_row_object($n, $type)
 	{
-		isset($this->custom_result_object[$type]) OR $this->custom_result_object($type);
+		isset($this->custom_result_object[$type]) OR $this->custom_result_object[$type] = $this->custom_result_object($type);
 
 		if (count($this->custom_result_object[$type]) === 0)
 		{
@@ -338,6 +402,7 @@ class CI_DB_result {
 	/**
 	 * Returns a single result row - object version
 	 *
+	 * @param	int	$n
 	 * @return	object
 	 */
 	public function row_object($n = 0)
@@ -361,6 +426,7 @@ class CI_DB_result {
 	/**
 	 * Returns a single result row - array version
 	 *
+	 * @param	int	$n
 	 * @return	array
 	 */
 	public function row_array($n = 0)
@@ -384,7 +450,8 @@ class CI_DB_result {
 	/**
 	 * Returns the "first" row
 	 *
-	 * @return	object
+	 * @param	string	$type
+	 * @return	mixed
 	 */
 	public function first_row($type = 'object')
 	{
@@ -397,7 +464,8 @@ class CI_DB_result {
 	/**
 	 * Returns the "last" row
 	 *
-	 * @return	object
+	 * @param	string	$type
+	 * @return	mixed
 	 */
 	public function last_row($type = 'object')
 	{
@@ -410,7 +478,8 @@ class CI_DB_result {
 	/**
 	 * Returns the "next" row
 	 *
-	 * @return	object
+	 * @param	string	$type
+	 * @return	mixed
 	 */
 	public function next_row($type = 'object')
 	{
@@ -420,12 +489,9 @@ class CI_DB_result {
 			return NULL;
 		}
 
-		if (isset($result[$this->current_row + 1]))
-		{
-			++$this->current_row;
-		}
-
-		return $result[$this->current_row];
+		return isset($result[$this->current_row + 1])
+			? $result[++$this->current_row]
+			: NULL;
 	}
 
 	// --------------------------------------------------------------------
@@ -433,7 +499,8 @@ class CI_DB_result {
 	/**
 	 * Returns the "previous" row
 	 *
-	 * @return	object
+	 * @param	string	$type
+	 * @return	mixed
 	 */
 	public function previous_row($type = 'object')
 	{
@@ -455,8 +522,8 @@ class CI_DB_result {
 	/**
 	 * Returns an unbuffered row and move pointer to next row
 	 *
-	 * @param	string	'array', 'object' or a custom class name
-	 * @return	mixed	either a result object or array
+	 * @param	string	$type	'array', 'object' or a custom class name
+	 * @return	mixed
 	 */
 	public function unbuffered_row($type = 'object')
 	{
@@ -475,7 +542,7 @@ class CI_DB_result {
 	// --------------------------------------------------------------------
 
 	/**
-	 * The following functions are normally overloaded by the identically named
+	 * The following methods are normally overloaded by the identically named
 	 * methods in the platform-specific driver -- except when query caching
 	 * is used. When caching is enabled we do not load the other driver.
 	 * These functions are primarily here to prevent undefined function errors
@@ -483,15 +550,117 @@ class CI_DB_result {
 	 * operational due to the unavailability of the database resource IDs with
 	 * cached results.
 	 */
-	public function num_fields() { return 0; }
-	public function list_fields() { return array(); }
-	public function field_data() { return array(); }
-	public function free_result() { $this->result_id = FALSE; }
-	protected function _data_seek() { return FALSE; }
-	protected function _fetch_assoc() { return array(); }
-	protected function _fetch_object() { return array(); }
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Number of fields in the result set
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @return	int
+	 */
+	public function num_fields()
+	{
+		return 0;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch Field Names
+	 *
+	 * Generates an array of column names.
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @return	array
+	 */
+	public function list_fields()
+	{
+		return array();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Field data
+	 *
+	 * Generates an array of objects containing field meta-data.
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @return	array
+	 */
+	public function field_data()
+	{
+		return array();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Free the result
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @return	void
+	 */
+	public function free_result()
+	{
+		$this->result_id = FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data Seek
+	 *
+	 * Moves the internal pointer to the desired offset. We call
+	 * this internally before fetching results to make sure the
+	 * result set starts at zero.
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @param	int	$n
+	 * @return	bool
+	 */
+	public function data_seek($n = 0)
+	{
+		return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Result - associative array
+	 *
+	 * Returns the result set as an array.
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @return	array
+	 */
+	protected function _fetch_assoc()
+	{
+		return array();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Result - object
+	 *
+	 * Returns the result set as an object.
+	 *
+	 * Overridden by driver result classes.
+	 *
+	 * @param	string	$class_name
+	 * @return	object
+	 */
+	protected function _fetch_object($class_name = 'stdClass')
+	{
+		return new $class_name();
+	}
 
 }
-
-/* End of file DB_result.php */
-/* Location: ./system/database/DB_result.php */
