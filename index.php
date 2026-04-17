@@ -46,100 +46,57 @@ if (!defined('ENVIRONMENT')) {
  * ERROR REPORTING
  *---------------------------------------------------------------
  *
- * Different environments require different error visibility. In development
- * we surface everything (minus E_DEPRECATED noise). Staging / production
- * stay quiet. All knobs can be overridden via .env:
+ * Driven by a single `APP_DEBUG` env flag. When unset, it defaults to ON for
+ * `development` and OFF for `staging` / `production`, so you usually don't
+ * need to set it at all.
  *
- *   APP_DISPLAY_ERRORS=true|false
- *   APP_ERROR_LOG=path/to/file (relative to project root, or absolute)
- *   APP_ERROR_REPORTING=E_ALL ^ E_DEPRECATED  (literal php tokens)
+ *   APP_DEBUG=true|false    toggles display_errors + error_reporting level
+ *   APP_ERROR_LOG=path      logs PHP errors via error_log() (relative to
+ *                           project root, or absolute). Independent of
+ *                           APP_DEBUG — you generally want this on
+ *                           everywhere, just to a different path per env.
+ *
+ * When debug is ON: display_errors=on, error_reporting=E_ALL ^ E_DEPRECATED
+ * (everything useful minus the PyroCMS/PHP 8 deprecation noise we silenced
+ * in Phase 5).
+ * When debug is OFF: display_errors=off, error_reporting=0 (let php.ini
+ * decide — production should be quiet to stdout; file logging stays on via
+ * APP_ERROR_LOG).
  */
 
-// Resolve a base error_reporting bitmask from an env-string like
-// "E_ALL ^ E_DEPRECATED". Tokenises on bitwise operators and looks each name
-// up via constant() — no eval, so a tampered .env can't run code. Unknown
-// tokens fall back to the env's default mask.
-$pyro_error_reporting_default = (ENVIRONMENT === PYRO_DEVELOPMENT)
-    ? (E_ALL ^ E_DEPRECATED)
-    : E_ALL;
-$pyro_error_reporting_expr = pyro_env('APP_ERROR_REPORTING', null);
-$pyro_error_reporting = $pyro_error_reporting_default;
-if (is_string($pyro_error_reporting_expr) && $pyro_error_reporting_expr !== '') {
-    // preg_split keeps the operator delimiters as their own tokens.
-    $pyro_tokens = preg_split('/(\||\^|&)/', $pyro_error_reporting_expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-    $pyro_acc = null;
-    $pyro_op  = null;
-    $pyro_ok  = true;
-    foreach ($pyro_tokens as $pyro_t) {
-        $pyro_t = trim($pyro_t);
-        if ($pyro_t === '') {
-            continue;
-        }
-        if ($pyro_t === '|' || $pyro_t === '^' || $pyro_t === '&') {
-            if ($pyro_acc === null) { $pyro_ok = false; break; }
-            $pyro_op = $pyro_t;
-            continue;
-        }
-        // Constant (E_ALL, E_DEPRECATED, …) or bare integer.
-        if (ctype_digit($pyro_t)) {
-            $pyro_v = (int) $pyro_t;
-        } elseif (preg_match('/^E_[A-Z_]+$/', $pyro_t) && defined($pyro_t)) {
-            $pyro_v = constant($pyro_t);
-            if (!is_int($pyro_v)) { $pyro_ok = false; break; }
-        } else {
-            $pyro_ok = false; break;
-        }
-        if ($pyro_acc === null) {
-            $pyro_acc = $pyro_v;
-        } else {
-            switch ($pyro_op) {
-                case '|': $pyro_acc = $pyro_acc | $pyro_v; break;
-                case '^': $pyro_acc = $pyro_acc ^ $pyro_v; break;
-                case '&': $pyro_acc = $pyro_acc & $pyro_v; break;
-                default:  $pyro_ok = false; break 2;
-            }
-            $pyro_op = null;
-        }
-    }
-    if ($pyro_ok && $pyro_acc !== null) {
-        $pyro_error_reporting = $pyro_acc;
-    }
-    unset($pyro_tokens, $pyro_acc, $pyro_op, $pyro_ok, $pyro_t, $pyro_v);
-}
-error_reporting($pyro_error_reporting);
+$pyro_debug_default = (ENVIRONMENT === PYRO_DEVELOPMENT);
+$pyro_debug         = pyro_env_bool('APP_DEBUG', $pyro_debug_default);
 
-switch (ENVIRONMENT) {
-    case PYRO_DEVELOPMENT:
-        ini_set('display_errors', pyro_env_bool('APP_DISPLAY_ERRORS', true) ? '1' : '0');
-        $pyro_error_log = pyro_env('APP_ERROR_LOG', '');
-        if ($pyro_error_log !== '') {
-            ini_set('log_errors', '1');
-            // Allow relative paths (resolved against the project root).
-            if (!preg_match('#^(/|[A-Za-z]:[/\\\\])#', $pyro_error_log)) {
-                $pyro_error_log = __DIR__ . '/' . ltrim($pyro_error_log, '/');
-            }
-            ini_set('error_log', $pyro_error_log);
-        }
-        break;
-
-    case PYRO_STAGING:
-    case PYRO_PRODUCTION:
-        ini_set('display_errors', pyro_env_bool('APP_DISPLAY_ERRORS', false) ? '1' : '0');
-        $pyro_error_log = pyro_env('APP_ERROR_LOG', '');
-        if ($pyro_error_log !== '') {
-            ini_set('log_errors', '1');
-            if (!preg_match('#^(/|[A-Za-z]:[/\\\\])#', $pyro_error_log)) {
-                $pyro_error_log = __DIR__ . '/' . ltrim($pyro_error_log, '/');
-            }
-            ini_set('error_log', $pyro_error_log);
-        }
-        break;
-
-    default:
-        exit('The environment is not set correctly. ENVIRONMENT = ' . ENVIRONMENT . '.');
+if ($pyro_debug) {
+    error_reporting(E_ALL ^ E_DEPRECATED);
+    ini_set('display_errors', '1');
+} else {
+    error_reporting(0);
+    ini_set('display_errors', '0');
 }
 
-unset($pyro_error_reporting_default, $pyro_error_reporting_expr, $pyro_error_reporting, $pyro_error_log);
+// Error-to-file logging is independent of APP_DEBUG — you generally want it
+// on everywhere, just pointed at a different path per environment.
+$pyro_error_log = pyro_env('APP_ERROR_LOG', '');
+if ($pyro_error_log !== '') {
+    ini_set('log_errors', '1');
+    // Allow relative paths (resolved against the project root).
+    if (!preg_match('#^(/|[A-Za-z]:[/\\\\])#', $pyro_error_log)) {
+        $pyro_error_log = __DIR__ . '/' . ltrim($pyro_error_log, '/');
+    }
+    ini_set('error_log', $pyro_error_log);
+}
+
+// Final environment validation — unchanged semantics from the upstream file,
+// but we check here so the more interesting error-reporting setup above has
+// already taken effect if someone mistypes PYRO_ENV.
+if (ENVIRONMENT !== PYRO_DEVELOPMENT
+    && ENVIRONMENT !== PYRO_STAGING
+    && ENVIRONMENT !== PYRO_PRODUCTION) {
+    exit('The environment is not set correctly. ENVIRONMENT = ' . ENVIRONMENT . '.');
+}
+
+unset($pyro_debug_default, $pyro_debug, $pyro_error_log);
 
 /*
 |---------------------------------------------------------------
