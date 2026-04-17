@@ -8,6 +8,7 @@
  * @copyright	Copyright (c) 2011 - 2013, Adam Fairholm
  * @link		https://github.com/adamfairholm/PyroStreams-Multiple-Relationships
  */
+#[\AllowDynamicProperties]
 class Field_multiple
 {
 	/**

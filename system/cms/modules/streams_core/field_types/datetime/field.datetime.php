@@ -7,6 +7,7 @@
  * @author        PyroCMS Dev Team
  * @copyright    Copyright (c) 2011 - 2013, PyroCMS
  */
+#[\AllowDynamicProperties]
 class Field_datetime
 {
     public $field_type_slug = 'datetime';
@@ -194,8 +195,10 @@ class Field_datetime
      */
     private function parse_single_restrict($string, $start_or_end, $prefix_vars = true)
     {
-        // No matter what we need to return an array
-        if (!trim($string)) {
+        // No matter what we need to return an array.
+        // PHP 8.1+ deprecates trim(null); restrict can be null when no
+        // start/end date is configured.
+        if (!trim((string) $string)) {
             if ($prefix_vars) {
                 return array(
                     $start_or_end . '_stamp' => null,

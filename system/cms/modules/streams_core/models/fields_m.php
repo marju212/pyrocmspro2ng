@@ -108,7 +108,11 @@ class Fields_m extends CI_Model {
 		foreach($fields as $key => $field)
 		{
 			$return_fields[$field['field_slug']] = $field;
- 			$return_fields[$field['field_slug']]['field_data'] = unserialize($field['field_data']);
+ 			// Some fields legitimately have NULL field_data (no extra config).
+ 			// PHP 8.1+ deprecates passing null into unserialize.
+ 			$return_fields[$field['field_slug']]['field_data'] = ($field['field_data'] === null || $field['field_data'] === '')
+ 				? array()
+ 				: unserialize($field['field_data']);
 		}
     	
     	return $return_fields;

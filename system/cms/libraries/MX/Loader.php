@@ -33,6 +33,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  **/
+// PHP 8.2 dynamic-property deprecation suppressor.
+#[\AllowDynamicProperties]
 class MX_Loader extends CI_Loader
 {
 	protected $_module;

@@ -36,13 +36,20 @@ require dirname(__FILE__).'/Base.php';
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  **/
+// PHP 8.2 dynamic-property deprecation suppressor — see MX/Base.php for the
+// rationale; PyroCMS attaches load/config/etc. as bare instance properties.
+#[\AllowDynamicProperties]
 class MX_Controller
 {
 	public $autoload = array();
 	
 	public function __construct()
 	{
-		$class = str_replace(CI::$APP->config->item('controller_suffix'), '', get_class($this));
+		// CI 3.x's default config sets controller_suffix to '' (no suffix); PHP
+		// 8.1 deprecates passing null OR string to str_replace as $search, so
+		// coerce empty/null to a non-matching sentinel.
+		$suffix = (string) CI::$APP->config->item('controller_suffix');
+		$class = ($suffix === '') ? get_class($this) : str_replace($suffix, '', get_class($this));
 		log_message('debug', $class." MX_Controller Initialized");	
 		
 		/* copy a loader instance and initialize */

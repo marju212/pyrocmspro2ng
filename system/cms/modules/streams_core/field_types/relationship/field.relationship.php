@@ -7,6 +7,7 @@
  * @author		PyroCMS Dev Team
  * @copyright	Copyright (c) 2011 - 2013, PyroCMS
  */
+#[\AllowDynamicProperties]
 class Field_relationship
 {
 	public $field_type_slug			= 'relationship';
@@ -46,9 +47,11 @@ class Field_relationship
 		}
 
 		$title_column = $stream->title_column;
-		
-		// Default to ID for title column
-		if ( ! trim($title_column) or !$this->CI->db->field_exists($title_column, $stream->stream_prefix.$stream->stream_slug))
+
+		// Default to ID for title column. title_column is null for streams
+		// that haven't had View Options configured; trim(null) deprecates in
+		// PHP 8.1+.
+		if ( ! trim((string) $title_column) or !$this->CI->db->field_exists($title_column, $stream->stream_prefix.$stream->stream_slug))
 		{
 			$title_column = 'id';
 		}

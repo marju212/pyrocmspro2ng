@@ -49,6 +49,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link		https://codeigniter.com/userguide3/libraries/uri.html
  */
+// PyroCMS-side deprecation suppressor (PHP 8.2). The CI_URI instance receives
+// $config injected by the framework bootstrap before any MY_URI override could
+// take effect, so we add the attribute directly here. This is the *only*
+// system/codeigniter/ file we modify for Phase 5; all other CI subclassing
+// goes through MY_/MX_ override classes in system/cms/.
+#[\AllowDynamicProperties]
 class CI_URI {
 
 	/**

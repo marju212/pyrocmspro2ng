@@ -10,6 +10,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @copyright           Copyright (c) 2011 - 2013, We dream pro
  * @link		https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType
  */
+#[\AllowDynamicProperties]
 class Field_multiple_images {
 
     public $field_type_slug = 'multiple_images';

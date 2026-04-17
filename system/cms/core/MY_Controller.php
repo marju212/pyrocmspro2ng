@@ -16,6 +16,7 @@ defined('AUTO_LANGUAGE') OR define('AUTO_LANGUAGE', 'en');
  * @author      PyroCMS Dev Team
  * @copyright   Copyright (c) 2012, PyroCMS LLC
  */
+#[\AllowDynamicProperties]
 class MY_Controller extends MX_Controller
 {
 

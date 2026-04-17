@@ -35,6 +35,8 @@ require dirname(__FILE__).'/Modules.php';
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  **/
+// PHP 8.2 dynamic-property deprecation suppressor.
+#[\AllowDynamicProperties]
 class MX_Router extends CI_Router
 {
 	private $module;

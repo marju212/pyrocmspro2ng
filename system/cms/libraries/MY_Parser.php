@@ -10,6 +10,7 @@
  * @link		http://philsturgeon.co.uk/code/codeigniter-dwoo
  */
 
+#[\AllowDynamicProperties]
 class MY_Parser extends CI_Parser {
 
 	private $_ci;

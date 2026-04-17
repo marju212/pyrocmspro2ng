@@ -19,6 +19,7 @@
  * Requirements: PHP5 or above
  *
  */
+#[\AllowDynamicProperties]
 class Ion_auth
 {
     /**

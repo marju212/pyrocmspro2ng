@@ -9,6 +9,7 @@
  * @author		PyroCMS Dev Team
  * @copyright	Copyright (c) 2011 - 2013, PyroCMS
  */
+#[\AllowDynamicProperties]
 class Fields
 {
 	public $field_type_events_run = array();

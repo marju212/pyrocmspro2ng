@@ -8,6 +8,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * @author    Rigo B Castro - WeDreamPro Team <@rigobcastro>
  * @copyright    Copyright (c) 2011 - 2013, Rigo B Castro
  */
+#[\AllowDynamicProperties]
 class Field_textarea_limited
 {
     public $field_type_name = 'Textarea Limited';

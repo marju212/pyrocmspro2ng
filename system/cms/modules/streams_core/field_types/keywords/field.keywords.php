@@ -7,6 +7,7 @@
  * @author		PyroCMS Dev Team
  * @copyright	Copyright (c) 2011 - 2013, PyroCMS
  */
+#[\AllowDynamicProperties]
 class Field_keywords
 {
 	public $field_type_slug    = 'keywords';

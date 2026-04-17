@@ -9,6 +9,7 @@
  * @license		http://parse19.com/pyrostreams/docs/license
  * @link		http://parse19.com/pyrostreams
  */
+#[\AllowDynamicProperties]
 class Field_image
 {
 	public $field_type_slug			= 'image';

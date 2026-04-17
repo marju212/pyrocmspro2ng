@@ -7,6 +7,7 @@
  * @author		Adam Fairholm
  * @copyright	Copyright (c) 2011 - 2013, Adam Fairholm
  */
+#[\AllowDynamicProperties]
 class Plugin_Streams extends Plugin
 {
 	/**
@@ -67,9 +68,11 @@ class Plugin_Streams extends Plugin
 	public function streams_attribute($param, $default = null)
 	{
 		$value = $this->attribute($param, $default);
-	
-		// See if we have any vars in there
-		if (strpos($value, '[') !== false)
+
+		// See if we have any vars in there. attribute() can return null when
+		// the param wasn't set and no default was given; strpos(null, …) is
+		// deprecated in PHP 8.1+.
+		if ($value !== null && strpos($value, '[') !== false)
 		{
 			$segs = array(
 				'segment_1' => $this->uri->segment(1),

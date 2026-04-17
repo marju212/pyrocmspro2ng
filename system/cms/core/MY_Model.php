@@ -14,6 +14,9 @@
  * @copyright Copyright (c) 2009, Jamie Rumbelow <http://jamierumbelow.net>
  * @package PyroCMS\Core\Libraries
  */
+// PHP 8.2 dynamic-property deprecation suppressor — covers Row_m, User_m,
+// File_m, etc. via inheritance.
+#[\AllowDynamicProperties]
 class MY_Model extends CI_Model
 {
 

@@ -9,6 +9,7 @@
  * @copyright	Copyright (c) 2011 - 2012, Adam Fairholm
  * @link 		https://github.com/adamfairholm/PyroStreams-Page-Field-Type
  */
+#[\AllowDynamicProperties]
 class Field_page
 {
 	

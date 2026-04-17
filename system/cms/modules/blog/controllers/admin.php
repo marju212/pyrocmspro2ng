@@ -282,7 +282,15 @@ class Admin extends Admin_Controller
 		$id or redirect('admin/blog');
 
 		$post = $this->blog_m->get($id);
-		
+
+		// PHP 8 hard-fatals on property access against null where PHP 7
+		// silently returned null. Redirect with a flash if the post is gone.
+		if ( ! $post)
+		{
+			$this->session->set_flashdata('error', sprintf('Blog post #%d not found.', $id));
+			redirect('admin/blog');
+		}
+
 		// They are trying to put this live
 		if ($post->status != 'live' and $this->input->post('status') == 'live')
 		{

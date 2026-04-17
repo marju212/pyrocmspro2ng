@@ -522,6 +522,10 @@ class CI_Pagination {
 			$this->cur_page = (string) $this->cur_page;
 		}
 
+		// PyroCMS-side PHP 8.1+ deprecation fix: $this->cur_page can be null
+		// when ?page=… is missing AND segment() returns null; ctype_digit(null)
+		// is deprecated. Coerce to string first.
+		$this->cur_page = (string) $this->cur_page;
 		// If something isn't quite right, back to the default base page.
 		if ( ! ctype_digit($this->cur_page) OR ($this->use_page_numbers && (int) $this->cur_page === 0))
 		{

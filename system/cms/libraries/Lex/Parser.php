@@ -9,6 +9,9 @@
 
 class LexParsingException extends Exception { }
 
+// PHP 8.2 dynamic-property deprecation suppressor — Lex assigns regex caches
+// onto $this lazily (callback_name_regex, recursive_regex, etc).
+#[\AllowDynamicProperties]
 class Lex_Parser
 {
 	protected $allow_php = false;
@@ -290,7 +293,10 @@ class Lex_Parser
 			{
 				$replacement = $this->value_to_literal($replacement);
 			}
-			$text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes($replacement, '\\$'), $text, 1);
+			// $replacement is the recursively-parsed sub-content; can be null
+			// when the recursive arm produced nothing. addcslashes(null) warns
+			// under PHP 8.1+; coerce to string.
+			$text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes((string) $replacement, '\\$'), $text, 1);
 			$text = $this->inject_extractions($text, 'nested_looped_tags');
 		}
 		return $text;
@@ -395,6 +401,12 @@ class Lex_Parser
 	 */
 	public function parse_recursives($text, $orig_text, $callback)
 	{
+		// Lex can be invoked with null content (e.g. an empty extracted
+		// section). preg_match($pattern, null) is deprecated in PHP 8.1+.
+		if ($text === null || $text === '') {
+			return (string) $text;
+		}
+
 		// Is there a {{ *recursive [array_key]* }} tag here, let's loop through it.
 		if (preg_match($this->recursive_regex, $text, $match))
 		{

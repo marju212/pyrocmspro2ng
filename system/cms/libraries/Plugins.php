@@ -6,6 +6,7 @@
  * @author   PyroCMS Dev Team
  * @package  PyroCMS\Core\Libraries
  */
+#[\AllowDynamicProperties]
 abstract class Plugin
 {
 	/**
@@ -230,6 +231,7 @@ abstract class Plugin
 	}
 }
 
+#[\AllowDynamicProperties]
 class Plugins
 {
 	private $loaded = array();

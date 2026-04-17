@@ -1288,15 +1288,21 @@ class Row_m extends MY_Model {
 				
 				if ($row_slug == 'created' or $row_slug == 'updated')
 				{
+					// `updated` is null on rows that have never been edited;
+					// strtotime(null) is deprecated in PHP 8.1+. Fall back to 0
+					// (the unix epoch) to preserve the int return type the
+					// templates expect.
+					$raw = $return_object ? $row->$row_slug : $row[$row_slug];
+					$ts  = ($raw === null || $raw === '') ? 0 : strtotime($raw);
 					if ($return_object)
 					{
-						$row->$row_slug = strtotime($row->$row_slug);
+						$row->$row_slug = $ts;
 					}
 					else
 					{
-						$row[$row_slug] = strtotime($row[$row_slug]);
+						$row[$row_slug] = $ts;
 					}
-				}	
+				}
 
 				// -------------------------------------
 				// Format Columns

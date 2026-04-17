@@ -36,6 +36,15 @@ require_once dirname(__FILE__).'/Config.php';
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  **/
+// PyroCMS attaches loaded libraries (config, db, load, session, etc.) onto
+// the controller instance as bare properties via load_class()/get_instance().
+// PHP 8.2 emits a Severity-8192 deprecation for every such write; this is the
+// root of the "Creation of dynamic property CI::$config is deprecated" noise
+// that filled system/cms/logs/log-*.php under the older runtime. The
+// attribute opts the whole class hierarchy back into dynamic-property storage
+// so the deprecation is suppressed permanently (not just when display_errors
+// is off in index.php).
+#[\AllowDynamicProperties]
 class CI extends CI_Controller
 {
 	public static $APP;
