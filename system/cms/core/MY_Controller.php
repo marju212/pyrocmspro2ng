@@ -2,6 +2,13 @@
 
 require APPPATH."libraries/MX/Controller.php";
 
+// AUTO_LANGUAGE is normally set by the pick_language pre_controller hook.
+// 404s and other early-routing failures bypass that hook but still load the
+// pages module (via MY_Exceptions::show_404), which extends Public_Controller
+// and reaches AUTO_LANGUAGE before pick_language has had a chance to run.
+// Under PHP 8 the bareword reference fatals; fall back to the configured default.
+defined('AUTO_LANGUAGE') OR define('AUTO_LANGUAGE', 'en');
+
 /**
  * Code here is run before ALL controllers
  * 
@@ -179,7 +186,11 @@ class MY_Controller extends MX_Controller
 		// certain places (such as the Dashboard) we aren't running a module, provide defaults
 		if ( ! $this->module)
 		{
-			$this->module_details = array(
+			// Mirror the assignment pattern from line 172/180 — without this,
+			// $template->module_details stays `false` and the admin partials
+			// (header.php, metadata.php) emit a wall of "Trying to access
+			// array offset on value of type bool" warnings under PHP 8.
+			$this->template->module_details = ci()->module_details = $this->module_details = array(
 				'name' => null,
 				'slug' => null,
 				'version' => null,

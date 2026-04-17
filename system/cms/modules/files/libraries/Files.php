@@ -379,7 +379,7 @@ class Files
 					'folder_id'		=> (int) $folder_id,
 					'user_id'		=> (int) ci()->current_user->id,
 					'type'			=> self::$_type,
-					'name'			=> $replace_file ? $replace_file->name : $name ? $name : $file['orig_name'],
+					'name'			=> $replace_file ? $replace_file->name : ($name ?: $file['orig_name']),
 					'path'			=> '{{ url:site }}files/large/'.$file['file_name'],
 					'description'	=> $replace_file ? $replace_file->description : '',
 					'alt_attribute'	=> trim($replace_file ? $replace_file->alt_attribute : $alt),

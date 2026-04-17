@@ -62,8 +62,15 @@ class Files_front extends Public_Controller
         else {
             $data = getimagesize($this->_path . $id) OR show_404();
 
-            $ext = '.' . end(explode('.', $id));
+            // PHP 8.1+ end() requires a variable; explode() returns a temporary
+            // and emits a deprecation otherwise.
+            $parts = explode('.', $id);
+            $ext = '.' . end($parts);
 
+            // PHP 8 disallows assigning properties to null. Pre-PHP-8 the first
+            // line below would auto-promote $file from null to a stdClass; now
+            // we have to construct it explicitly.
+            $file = new stdClass();
             $file->width = $data[0];
             $file->height = $data[1];
             $file->filename = $id;

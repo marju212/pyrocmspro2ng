@@ -44,12 +44,16 @@ $route['default_controller'] = 'pages';
 $route['404_override'] = 'pages';
 
 $route['admin/help/([a-zA-Z0-9_-]+)'] = 'admin/help/$1';
-$route['admin/([a-zA-Z0-9_-]+)/(:any)'] = '$1/admin/$2';
+// CI 3.x changed (:any) from `.+` to `[^/]+` (single segment only). The PyroCMS
+// admin URL pattern depends on multi-segment matching (e.g. /admin/streams/manage/5),
+// so use the explicit `(.+)` form to preserve the CI 2.x behavior. Without this,
+// every "Edit/Manage/Entries" link in the admin UI 404s.
+$route['admin/([a-zA-Z0-9_-]+)/(.+)'] = '$1/admin/$2';
 $route['admin/(login|logout|remove_installer_directory)'] = 'admin/$1';
 $route['admin/([a-zA-Z0-9_-]+)'] = '$1/admin/index';
 
-$route['api/ajax/(:any)'] = 'api/ajax/$1';
-$route['api/([a-zA-Z0-9_-]+)/(:any)'] = '$1/api/$2';
+$route['api/ajax/(.+)'] = 'api/ajax/$1';
+$route['api/([a-zA-Z0-9_-]+)/(.+)'] = '$1/api/$2';
 $route['api/([a-zA-Z0-9_-]+)'] = '$1/api/index';
 
 $route['blimedlem'] = 'users/register';

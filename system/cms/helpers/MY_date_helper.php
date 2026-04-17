@@ -44,6 +44,39 @@ if (!function_exists('format_date'))
 
 }
 
+if (!function_exists('mysql_to_unix'))
+{
+	/**
+	 * Converts a MySQL DATETIME ('YYYY-MM-DD HH:MM:SS') to a UNIX timestamp.
+	 *
+	 * Overrides CodeIgniter's date helper version, which passes the raw
+	 * substr() string slices straight into mktime(). PHP 8 enforces strict
+	 * int types on mktime(), so the unmodified helper fatals as
+	 * "mktime(): Argument #1 ($hour) must be of type int, string given" the
+	 * first time anything tries to render a datetime field (e.g. the
+	 * datetime field type's pre_output, blog publish dates, news ordering).
+	 */
+	function mysql_to_unix($time = '')
+	{
+		// Strip the YYYY-MM-DD HH:MM:SS punctuation so we have YYYYMMDDHHMMSS.
+		$time = str_replace(array('-', ':', ' '), '', (string) $time);
+
+		if (strlen($time) < 14)
+		{
+			return 0;
+		}
+
+		return mktime(
+			(int) substr($time, 8, 2),
+			(int) substr($time, 10, 2),
+			(int) substr($time, 12, 2),
+			(int) substr($time, 4, 2),
+			(int) substr($time, 6, 2),
+			(int) substr($time, 0, 4)
+		);
+	}
+}
+
 if (!function_exists('_pyro_strftime_compat'))
 {
 	/**

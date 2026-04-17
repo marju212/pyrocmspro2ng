@@ -73,10 +73,13 @@ class Field_datetime
         // a required field.
         $field_data = $this->CI->form_validation->field_data($field->field_slug);
 
-        // Determine required
+        // Determine required.
+        // CI 3.x can store form_validation rules either as a pipe-delimited
+        // string (legacy) or already as an array (new style PyroCMS uses) —
+        // accept both. PHP 8's strict explode() fatals on the array form.
         $rules = $field_data['rules'];
-        $rules_array = explode('|', $rules);
-        $required = (in_array('required', $rules_array)) ? true : false;
+        $rules_array = is_array($rules) ? $rules : explode('|', (string) $rules);
+        $required = in_array('required', $rules_array, true);
 
         // -------------------------------
         // Drop Down Required

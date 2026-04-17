@@ -151,23 +151,29 @@ class Type
 
 		foreach ($types_files as $type)
 		{
+			// CI 3.1's directory_map() returns directory names with a trailing slash
+			// (e.g. "text/"). Without stripping it we'd build paths like
+			// ".../text//field.text/.php" and silently load no field types — every
+			// stream value would then be nulled by row_m::format_column().
+			$type = rtrim($type, '/');
+
 			// Check if we've already loaded this field type
 			if ( ! property_exists($this->types, $type))
 			{
 				// Is this a directory w/ a field type?
 				if (is_dir($addon_path.$type) and is_file($addon_path.$type.'/field.'.$type.'.php'))
 				{
-					$this->types->$type = $this->_load_type($addon_path, 
+					$this->types->$type = $this->_load_type($addon_path,
 										$addon_path.$type.'/field.'.$type.'.php',
 										$type,
 										$mode);
-				}			
+				}
 				elseif (is_file($addon_path.'field.'.$type.'.php'))
 				{
-					$this->types->$type = $this->_load_type($addon_path, 
+					$this->types->$type = $this->_load_type($addon_path,
 										$addon_path.'field.'.$type.'.php',
 										$type,
-										$mode);												
+										$mode);
 				}
 			}
 		}

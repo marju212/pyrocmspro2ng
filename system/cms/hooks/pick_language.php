@@ -134,7 +134,10 @@ function pick_language()
 	$CI_config->set_item('language', $config['supported_languages'][$lang]['folder']);
 
 	// Sets a constant to use throughout ALL of CI.
-	define('AUTO_LANGUAGE', $lang);
+	// MY_Controller defines a fallback ('en') for routing failures that bypass
+	// pre_controller hooks; on the normal request path we get here first and
+	// pick_language wins, but if the fallback already ran, don't redefine.
+	defined('AUTO_LANGUAGE') OR define('AUTO_LANGUAGE', $lang);
 
 	log_message('debug', 'Defined const AUTO_LANGUAGE: '.AUTO_LANGUAGE);
 }

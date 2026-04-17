@@ -14,6 +14,7 @@ assets/page_types/default/*
 !assets/page_types/default/.htaccess
 system/cms/cache/*
 system/cms/logs/log-*.php
+system/cms/logs/php-fatals.log
 permissionfix
 system/cms/config/database.php
 addons/shared_addons/modules/sitelock
