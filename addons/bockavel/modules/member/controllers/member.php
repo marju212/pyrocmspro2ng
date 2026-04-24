@@ -94,14 +94,19 @@ class Member extends Public_Controller
             $smsMessage .= " (" . $userEmail . ")";
         }
 
-        foreach (config_item('sms_registered') as $user => $phone ) {
-            $sms = array(
-                "from" => "Medlemsreg",
-                "to" => $phone,
-                "message" => $smsMessage,
-            );
+        // SMS_ENABLED in .env is the master switch. Keep the SITE_REF guard as
+        // a belt-and-braces check because this addon is bockavel-only.
+        $sms_enabled = function_exists('pyro_env_bool') && pyro_env_bool('SMS_ENABLED', false);
+        $sms_from    = function_exists('env_str') ? env_str('SMS_FROM', 'Medlemsreg') : 'Medlemsreg';
 
-            SITE_REF == "bockavel" && ENVIRONMENT !== PYRO_DEVELOPMENT && $this->sendSMS($sms);
+        if ($sms_enabled && SITE_REF === 'bockavel') {
+            foreach (config_item('sms_registered') as $user => $phone) {
+                $this->sendSMS(array(
+                    'from'    => $sms_from,
+                    'to'      => $phone,
+                    'message' => $smsMessage,
+                ));
+            }
         }
 
         $this->template
@@ -110,22 +115,30 @@ class Member extends Public_Controller
     }
 
     public function sendSMS($sms) {
-        $username = "u8ef86f1553a31c2fc583b6a12a03ed69";
-        $password = "B0163A550E49EBA29CE0E767DE626FC6";
+        // 46elks Basic-auth creds live in .env (SMS_API_USER / SMS_API_PASS).
+        // Bail out quietly if they aren't configured — callers already gate
+        // on SMS_ENABLED, but a missing cred should never reach the network.
+        $username = function_exists('env_str') ? env_str('SMS_API_USER') : '';
+        $password = function_exists('env_str') ? env_str('SMS_API_PASS') : '';
+        if ($username === '' || $password === '') {
+            log_message('error', 'sendSMS: SMS_API_USER / SMS_API_PASS not configured; skipping send.');
+            return false;
+        }
+
         $context = stream_context_create(array(
             'http' => array(
-                'method' => 'POST',
-                'header'  => 'Authorization: Basic '.
-                    base64_encode($username.':'.$password). "\r\n".
-                    "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'header'  => 'Authorization: Basic ' . base64_encode($username . ':' . $password) . "\r\n" .
+                             "Content-type: application/x-www-form-urlencoded\r\n",
                 'content' => http_build_query($sms),
-                'timeout' => 10
-            )));
-        $response = file_get_contents("https://api.46elks.com/a1/sms",
-            false, $context);
+                'timeout' => 10,
+            ),
+        ));
+        $response = @file_get_contents('https://api.46elks.com/a1/sms', false, $context);
 
-        if (!strstr($http_response_header[0],"200 OK"))
-            return $http_response_header[0];
+        if ( ! isset($http_response_header[0]) || ! strstr($http_response_header[0], '200 OK')) {
+            return isset($http_response_header[0]) ? $http_response_header[0] : false;
+        }
         return $response;
     }
 

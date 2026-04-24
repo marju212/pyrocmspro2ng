@@ -20,31 +20,34 @@ class MY_Email extends CI_Email
     {
         parent::__construct($config);
 
-        //set mail protocol
-        $config['protocol'] = Settings::get('mail_protocol');
-
-        //set a few config items (duh)
-        $config['mailtype'] = "html";
-        $config['charset'] = "utf-8";
-        $config['crlf'] = Settings::get('mail_line_endings') ? "\r\n" : PHP_EOL;
-        $config['newline'] = Settings::get('mail_line_endings') ? "\r\n" : PHP_EOL;
-
-        //sendmail options
-        if (Settings::get('mail_protocol') == 'sendmail') {
-            if (Settings::get('mail_sendmail_path') == '') {
-                //set a default
-                $config['mailpath'] = '/usr/sbin/sendmail';
-            } else {
-                $config['mailpath'] = Settings::get('mail_sendmail_path');
-            }
+        // Each setting can be overridden by an env var so prod deploys can
+        // flip SMTP credentials without touching the DB / admin UI. Empty
+        // env falls through to Settings::get(), preserving current behaviour
+        // for installs that configure mail via admin panel.
+        $protocol = function_exists('env_str') ? env_str('MAIL_PROTOCOL') : '';
+        if ($protocol === '') {
+            $protocol = Settings::get('mail_protocol');
         }
 
-        //smtp options
-        if (Settings::get('mail_protocol') == 'smtp') {
-            $config['smtp_host'] = Settings::get('mail_smtp_host');
-            $config['smtp_user'] = Settings::get('mail_smtp_user');
-            $config['smtp_pass'] = Settings::get('mail_smtp_pass');
-            $config['smtp_port'] = Settings::get('mail_smtp_port');
+        $config['protocol'] = $protocol;
+        $config['mailtype'] = "html";
+        $config['charset']  = "utf-8";
+        $config['crlf']     = Settings::get('mail_line_endings') ? "\r\n" : PHP_EOL;
+        $config['newline']  = Settings::get('mail_line_endings') ? "\r\n" : PHP_EOL;
+
+        if ($protocol === 'sendmail') {
+            $path = function_exists('env_str') ? env_str('MAIL_SENDMAIL_PATH') : '';
+            if ($path === '') {
+                $path = Settings::get('mail_sendmail_path');
+            }
+            $config['mailpath'] = $path !== '' ? $path : '/usr/sbin/sendmail';
+        }
+
+        if ($protocol === 'smtp') {
+            $config['smtp_host'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_HOST')) !== '') ? $v : Settings::get('mail_smtp_host');
+            $config['smtp_user'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_USER')) !== '') ? $v : Settings::get('mail_smtp_user');
+            $config['smtp_pass'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_PASS')) !== '') ? $v : Settings::get('mail_smtp_pass');
+            $config['smtp_port'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_PORT')) !== '') ? $v : Settings::get('mail_smtp_port');
         }
 
         $this->initialize($config);

@@ -31,6 +31,14 @@ class Events_Templates
     {
         $this->ci =& get_instance();
 
+        // Master on/off. MAIL_ENABLED=false short-circuits every outbound
+        // email in the app — useful locally to keep dev registrations /
+        // password-resets from leaving the machine. Default: send (true)
+        // so unset env preserves the historical behaviour.
+        if (function_exists('pyro_env_bool') && ! pyro_env_bool('MAIL_ENABLED', true)) {
+            return true;
+        }
+
         $slug = $data['slug'];
         unset($data['slug']);
 
@@ -42,10 +50,28 @@ class Events_Templates
         //make sure we have something to work with
         if (!empty($templates)) {
             $lang = isset($data['lang']) ? $data['lang'] : Settings::get('site_lang');
-            $from = isset($data['from']) ? $data['from'] : Settings::get('server_email');
-            $from_name = null; //isset($data['name']) ? $data['name'] : null;
+
+            // MAIL_FROM_ADDRESS / MAIL_FROM_NAME / MAIL_CONTACT_EMAIL in .env
+            // override server_email, name, and contact_email respectively.
+            // Explicit per-trigger values (`$data['from']` / `$data['to']` /
+            // `$data['name']`) still win — the env is only a DB fallback.
+            $env_from    = function_exists('env_str') ? env_str('MAIL_FROM_ADDRESS')  : '';
+            $env_name    = function_exists('env_str') ? env_str('MAIL_FROM_NAME')     : '';
+            $env_contact = function_exists('env_str') ? env_str('MAIL_CONTACT_EMAIL') : '';
+
+            $from = isset($data['from'])
+                ? $data['from']
+                : ($env_from !== '' ? $env_from : Settings::get('server_email'));
+
+            $from_name = isset($data['name'])
+                ? $data['name']
+                : ($env_name !== '' ? $env_name : null);
+
             $reply_to = isset($data['reply-to']) ? $data['reply-to'] : $from;
-            $to = isset($data['to']) ? $data['to'] : Settings::get('contact_email');
+
+            $to = isset($data['to'])
+                ? $data['to']
+                : ($env_contact !== '' ? $env_contact : Settings::get('contact_email'));
 
             // perhaps they've passed a pipe separated string, let's switch it to commas for CodeIgniter
             if (!is_array($to)) $to = str_replace('|', ',', $to);
