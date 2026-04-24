@@ -14,12 +14,21 @@
 | path to your installation.
 |
 */
-// CI 3.1's empty-base_url fallback uses SERVER_ADDR (e.g. 127.0.0.1) instead
-// of HTTP_HOST; build base_url from HTTP_HOST so rendered {{ url:base }} /
-// site_url() point at the actual hostname.
-$config['base_url']    = isset($_SERVER['HTTP_HOST'])
-    ? ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'
-    : '';
+// Build base_url from the public-facing host/scheme. Prefer X-Forwarded-* so
+// tunnels (Expose, ngrok) and TLS-terminating reverse proxies render links
+// that resolve from the outside, not the internal Herd/.test hostname.
+// Falls back to HTTP_HOST + HTTPS when the forwarded headers aren't set.
+// Note: a production install that accepts Host-header overrides from
+// untrusted clients should populate $config['proxy_ips'] and add stricter
+// trust — this block intentionally trusts whatever set the headers.
+$pyro_fwd_host  = isset($_SERVER['HTTP_X_FORWARDED_HOST'])  ? trim(strtok($_SERVER['HTTP_X_FORWARDED_HOST'], ',')) : '';
+$pyro_fwd_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? strtolower(trim(strtok($_SERVER['HTTP_X_FORWARDED_PROTO'], ','))) : '';
+$pyro_host      = $pyro_fwd_host !== '' ? $pyro_fwd_host : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
+$pyro_scheme    = $pyro_fwd_proto !== '' ? $pyro_fwd_proto : ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https' : 'http');
+
+$config['base_url'] = $pyro_host !== '' ? $pyro_scheme . '://' . $pyro_host . '/' : '';
+
+unset($pyro_fwd_host, $pyro_fwd_proto, $pyro_host, $pyro_scheme);
 
 // Bockavel registered SMS recipients — sourced from .env (SMS_REGISTERED).
 // Format: comma-separated <name>:<phone> pairs. See .env.*.example.
