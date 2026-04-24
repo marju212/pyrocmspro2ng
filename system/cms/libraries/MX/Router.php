@@ -129,7 +129,25 @@ class MX_Router extends CI_Router
 				->join('core_domains alias', 'alias.site_id = site.id', 'left')
 				->get('core_sites site')
 				->row();
-			
+
+			// Domain didn't match any site or alias — fall back to DEFAULT_SITE
+			// so requests for unknown hostnames land on a real site with a real
+			// ref (matching uploads/ + addons/<ref>/ + <ref>_ci_sessions). The
+			// generic hardcoded 'default' fallback below still applies when
+			// DEFAULT_SITE is unset or names a non-existent ref.
+			if ( ! $site)
+			{
+				$default_site_ref = function_exists('env_str') ? env_str('DEFAULT_SITE') : '';
+				if ($default_site_ref !== '')
+				{
+					$site = DB()
+						->select('name, ref, domain, active')
+						->where('ref', $default_site_ref)
+						->get('core_sites')
+						->row();
+				}
+			}
+
 			// If the site is disabled we set the message in a constant for MY_Controller to display
 			if (isset($site->active) and ! $site->active)
 			{
