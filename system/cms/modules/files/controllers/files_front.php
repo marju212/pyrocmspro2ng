@@ -87,17 +87,25 @@ class Files_front extends Public_Controller
 
     public function thumb($id = 0, $width = 100, $height = 100, $mode = null)
     {
-        // Require a DB id (15-char hash or numeric). The old "filename passed
-        // directly" branch allowed $this->_path . $id concatenation, which is
-        // a path-traversal primitive even with image-only content.
-        if (!((strlen($id) === 15 && strpos($id, '.') === false) || (is_numeric($id) && strpos($id, '.') === false))) {
+        // Three accepted $id shapes:
+        //   - 15-char hash (new-style) or numeric (legacy) DB id, no dot
+        //   - safe filename: alnum/dot/dash/underscore only, rejects .. and
+        //     any path separator. _assert_readable() then realpath-validates
+        //     the resolved file against the uploads root — the filename is
+        //     only an index into a DB row; we never trust it to build a
+        //     path without canonicalization.
+        $is_id       = (strlen($id) === 15 && strpos($id, '.') === false) || (is_numeric($id) && strpos($id, '.') === false);
+        $is_filename = (bool) preg_match('/^[A-Za-z0-9_][A-Za-z0-9_.\-]*\.[A-Za-z0-9]+$/', (string) $id) && strpos($id, '..') === false;
+        if ( ! $is_id && ! $is_filename) {
             set_status_header(404);
             exit;
         }
 
-        $file = $this->file_m->select('files.*, file_folders.name as folder_name')
-            ->join('file_folders', 'file_folders.id = files.folder_id')
-            ->get_by('files.id', $id);
+        $q = $this->file_m->select('files.*, file_folders.name as folder_name')
+            ->join('file_folders', 'file_folders.id = files.folder_id');
+        $file = $is_id
+            ? $q->get_by('files.id', $id)
+            : $q->get_by('files.filename', $id);
 
         if (!$file) {
             set_status_header(404);
