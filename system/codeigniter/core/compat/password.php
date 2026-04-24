@@ -129,10 +129,7 @@ if ( ! function_exists('password_hash'))
 					return FALSE;
 				}
 			}
-			elseif (defined('MCRYPT_DEV_URANDOM'))
-			{
-				$options['salt'] = mcrypt_create_iv(16, MCRYPT_DEV_URANDOM);
-			}
+			// mcrypt_create_iv branch removed — mcrypt was dropped in PHP 7.2.
 			elseif (DIRECTORY_SEPARATOR === '/' && (is_readable($dev = '/dev/arandom') OR is_readable($dev = '/dev/urandom')))
 			{
 				if (($fp = fopen($dev, 'rb')) === FALSE)

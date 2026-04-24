@@ -23,33 +23,33 @@
                     <th>OS</th>
 
                     <?php foreach ($fields as $id => $label): ?>
-                    <th id="header-<?php echo $id; ?>"><?php echo $label; ?></th>
+                    <th id="header-<?php echo html_escape($id); ?>"><?php echo html_escape($label); ?></th>
                     <?php endforeach; ?>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($entries as $entry):?>
-            <?php !empty($entry->data) and $entry->data = unserialize($entry->data)?>
-                <tr id="entry-<?php echo $entry->id ?>">
+            <?php !empty($entry->data) and $entry->data = @unserialize($entry->data, array('allowed_classes' => false))?>
+                <tr id="entry-<?php echo (int) $entry->id ?>">
                 <td class="action-to"><?php echo form_checkbox('action_to[]', $entry->id) ?></td>
-                <td><?php echo (!empty($entry->username)) ? $entry->username:'Guest'; ?></td>
+                <td><?php echo html_escape((!empty($entry->username)) ? $entry->username : 'Guest'); ?></td>
                 <td><?php echo format_date($entry->created_on); ?></td>
-                <td><?php echo $entry->ip; ?></td>
-                <td><?php echo $entry->uagent; ?></td>
-                <td><?php echo $entry->os; ?></td>
+                <td><?php echo html_escape($entry->ip); ?></td>
+                <td><?php echo html_escape($entry->uagent); ?></td>
+                <td><?php echo html_escape($entry->os); ?></td>
                 <?php foreach ($fields as $id => $label): ?>
 
-                <?php $val = $entry->data[$id]; ?>
+                <?php $val = isset($entry->data[$id]) ? $entry->data[$id] : ''; ?>
 
                     <td><?php
                         if (is_array($val))
                         {
-                            echo implode(', ', $val);
+                            echo html_escape(implode(', ', $val));
                         } else{
                             if ($types[$id] == 'file')
                             {
-                                echo $val;
-                            }else echo (empty($val)) ? '&nbsp;' : $val;
+                                echo html_escape($val);
+                            }else echo (empty($val)) ? '&nbsp;' : html_escape($val);
                         }
                         ?>
                     </td>

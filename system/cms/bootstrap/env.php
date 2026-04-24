@@ -146,6 +146,46 @@ if ( ! function_exists('pyro_env_bool'))
     }
 }
 
+if ( ! function_exists('env_str'))
+{
+    /**
+     * Return an env value as a trimmed string, or $default if unset/empty.
+     * Strips surrounding whitespace and any leftover quote characters the
+     * loader didn't already remove.
+     */
+    function env_str($key, $default = '')
+    {
+        $v = pyro_env($key, null);
+        if ($v === null)
+        {
+            return $default;
+        }
+        $v = trim((string) $v, " \t\n\r\0\x0B\"'");
+        return $v === '' ? $default : $v;
+    }
+}
+
+if ( ! function_exists('env_list'))
+{
+    /**
+     * Parse a comma-separated env value into a list of trimmed strings.
+     * Empty entries are dropped. Returns $default when the key is unset.
+     *
+     * Example:  PROTECTED_FOLDERS=safe,member,video
+     *            ->  ['safe', 'member', 'video']
+     */
+    function env_list($key, array $default = array())
+    {
+        $raw = env_str($key, '');
+        if ($raw === '')
+        {
+            return $default;
+        }
+        $parts = array_map('trim', explode(',', $raw));
+        return array_values(array_filter($parts, 'strlen'));
+    }
+}
+
 // Auto-load if invoked via `require` from the front controller — the front
 // controller defines FCPATH (project root with trailing slash). Otherwise the
 // caller is responsible for invoking pyro_load_dotenv() with a path.

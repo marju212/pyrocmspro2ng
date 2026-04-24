@@ -1,0 +1,19 @@
+# Uploads are served exclusively through the Files module controller, which
+# enforces the protected-folder auth gate (see files_front.php). Direct HTTP
+# access bypasses that gate — deny everything at the webserver.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+# Belt and suspenders: even if the deny above is misconfigured on some host,
+# never execute PHP (or variants) out of the uploads tree.
+<FilesMatch "\.(php|phar|phtml|pht|phps)$">
+    SetHandler default-handler
+    ForceType text/plain
+</FilesMatch>
+Options -ExecCGI -Indexes

@@ -21,6 +21,29 @@ class Files_front extends Public_Controller
     }
 
     /**
+     * Enforce the protected-folder gate and resolve the on-disk path, rejecting
+     * anything that escapes the uploads root. Returns the canonicalized absolute
+     * path to the file on disk (never reached for cloud-hosted files; callers
+     * should guard for that).
+     */
+    private function _assert_readable($file)
+    {
+        if (in_array($file->folder_name, (array) config_item('protected_folders'))) {
+            $user = get_instance()->current_user;
+            if (empty($user) || empty($user->active)) {
+                show_error('You need to login to access this file', 403);
+            }
+        }
+
+        $full = realpath($this->_path . $file->filename);
+        $root = realpath($this->_path);
+        if ($full === false || $root === false || strpos($full, $root . DIRECTORY_SEPARATOR) !== 0) {
+            show_404();
+        }
+        return $full;
+    }
+
+    /**
      * Download a file
      */
     public function download($id = 0)
@@ -31,9 +54,12 @@ class Files_front extends Public_Controller
             ->join('file_folders', 'file_folders.id = files.folder_id')
             ->get_by('files.id', $id) OR show_404();
 
-        //Check if folder exist in protected_folder array
-        if (in_array($file->folder_name,config_item('protected_folders')) && !get_instance()->current_user->active){
-            show_error('You need to login to download the file',404);
+        // Protected-folder gate — must run before any counter increment or redirect.
+        if (in_array($file->folder_name, (array) config_item('protected_folders'))) {
+            $user = get_instance()->current_user;
+            if (empty($user) || empty($user->active)) {
+                show_error('You need to login to download this file', 403);
+            }
         }
 
         // increment the counter
@@ -44,8 +70,14 @@ class Files_front extends Public_Controller
             redirect($file->path);
         }
 
-        // Read the file's contents
-        $data = file_get_contents($this->_path . $file->filename);
+        // Canonicalize the path against the uploads root to reject ../ traversal.
+        $full = realpath($this->_path . $file->filename);
+        $root = realpath($this->_path);
+        if ($full === false || $root === false || strpos($full, $root . DIRECTORY_SEPARATOR) !== 0) {
+            show_404();
+        }
+
+        $data = file_get_contents($full);
 
         // if it's the default name it will contain the extension. Otherwise we need to add the extension
         $name = (strpos($file->name, $file->extension) !== false ? $file->name : $file->name . $file->extension);
@@ -55,33 +87,24 @@ class Files_front extends Public_Controller
 
     public function thumb($id = 0, $width = 100, $height = 100, $mode = null)
     {
-        // is it a 15 char hash with no file extension or is it an old style numeric id with no file extension?
-        if ((strlen($id) === 15 and strpos($id, '.') === false) or (is_numeric($id) and strpos($id, '.') === false)) {
-            $file = $this->file_m->get($id);
-        } // it's neither a legacy numeric id nor a new hash id so they've passed the filename itself
-        else {
-            $data = getimagesize($this->_path . $id) OR show_404();
-
-            // PHP 8.1+ end() requires a variable; explode() returns a temporary
-            // and emits a deprecation otherwise.
-            $parts = explode('.', $id);
-            $ext = '.' . end($parts);
-
-            // PHP 8 disallows assigning properties to null. Pre-PHP-8 the first
-            // line below would auto-promote $file from null to a stdClass; now
-            // we have to construct it explicitly.
-            $file = new stdClass();
-            $file->width = $data[0];
-            $file->height = $data[1];
-            $file->filename = $id;
-            $file->extension = $ext;
-            $file->mimetype = $data['mime'];
+        // Require a DB id (15-char hash or numeric). The old "filename passed
+        // directly" branch allowed $this->_path . $id concatenation, which is
+        // a path-traversal primitive even with image-only content.
+        if (!((strlen($id) === 15 && strpos($id, '.') === false) || (is_numeric($id) && strpos($id, '.') === false))) {
+            set_status_header(404);
+            exit;
         }
+
+        $file = $this->file_m->select('files.*, file_folders.name as folder_name')
+            ->join('file_folders', 'file_folders.id = files.folder_id')
+            ->get_by('files.id', $id);
 
         if (!$file) {
             set_status_header(404);
             exit;
         }
+
+        $source_full = $this->_assert_readable($file);
 
         $cache_dir = $this->config->item('cache_dir') . 'image_files/';
 
@@ -147,7 +170,7 @@ class Files_front extends Public_Controller
             header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expire) . ' GMT');
         }
 
-        $source_modified = filemtime($this->_path . $file->filename);
+        $source_modified = filemtime($source_full);
         $thumb_modified = filemtime($thumb_filename);
 
         if (!file_exists($thumb_filename) or ($thumb_modified < $source_modified)) {
@@ -176,7 +199,7 @@ class Files_front extends Public_Controller
 
                 // CONFIGURE IMAGE LIBRARY
                 $config['image_library'] = 'gd2';
-                $config['source_image'] = $this->_path . $file->filename;
+                $config['source_image'] = $source_full;
                 $config['new_image'] = $thumb_filename;
                 $config['maintain_ratio'] = is_null($mode);
                 $config['height'] = $height;
@@ -204,7 +227,7 @@ class Files_front extends Public_Controller
                 }
             } else {
                 $thumb_modified = $source_modified;
-                $thumb_filename = $this->_path . $file->filename;
+                $thumb_filename = $source_full;
             }
         } else if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
             (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $thumb_modified) && $expire
@@ -227,9 +250,17 @@ class Files_front extends Public_Controller
 
     public function cloud_thumb($id = 0, $width = 75, $height = 50, $mode = 'fit')
     {
-        $file = $this->file_m->select('files.*, file_folders.location')
+        $file = $this->file_m->select('files.*, file_folders.location, file_folders.name as folder_name')
             ->join('file_folders', 'file_folders.id = files.folder_id')
             ->get_by('files.id', $id);
+
+        // Protected-folder gate (the local-branch path check is handled by thumb()).
+        if ($file && in_array($file->folder_name, (array) config_item('protected_folders'))) {
+            $user = get_instance()->current_user;
+            if (empty($user) || empty($user->active)) {
+                show_error('Not authorized', 403);
+            }
+        }
 
         // it is a cloud file, we will return the thumbnail made when it was uploaded
         if ($file and $file->location !== 'local') {

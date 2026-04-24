@@ -48,16 +48,17 @@
         if (!isset($fields[$key])) continue;
     ?>
                     <tr>
-                        <td><?php echo $fields[$key]; ?></td>
+                        <td><?php echo html_escape($fields[$key]); ?></td>
                         <td><?php
         if (is_array($val))
         {
-            echo implode(', ', $val);
+            echo html_escape(implode(', ', $val));
         } else{
             if ($types[$key] == 'file')
             {
-                echo $val;
-            }else echo (empty($val)) ? '&nbsp;' : $val;
+                // File fields store a path/URL — render as a link and escape.
+                echo html_escape($val);
+            }else echo (empty($val)) ? '&nbsp;' : html_escape($val);
         }
         ?></td>
                     </tr>

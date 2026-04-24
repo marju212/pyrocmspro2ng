@@ -431,7 +431,12 @@ class Ion_auth_model extends CI_Model
 		{
 			$update_where = array_merge($update_where, $this->ion_auth->_extra_where);
 		}
-		$this->db->update($this->tables['users'], array('forgotten_password_code' => $key), $update_where);
+		// Stamp the issue time so forgotten_password_complete() can reject
+		// stale tokens. See migration 129_Add_forgotten_password_time.php.
+		$this->db->update($this->tables['users'], array(
+			'forgotten_password_code' => $key,
+			'forgotten_password_time' => time(),
+		), $update_where);
 
 		return $this->db->affected_rows() == 1;
 	}
@@ -451,24 +456,39 @@ class Ion_auth_model extends CI_Model
 			return false;
 		}
 
-		$this->db->where('forgotten_password_code', $code);
+		// Tokens are valid for one hour from issue time. Anything older is
+		// rejected — defends against leaked/expired reset links.
+		$expiry_seconds = 60 * 60;
 
-		if ($this->db->count_all_results($this->tables['users']) > 0)
+		$user = $this->db
+			->select('forgotten_password_time')
+			->where('forgotten_password_code', $code)
+			->get($this->tables['users'])
+			->row();
+
+		if ( ! $user || empty($user->forgotten_password_time))
 		{
-			$password = $this->salt();
-
-			$data = array(
-				'password'			=> $this->hash_password($password, $salt),
-				'forgotten_password_code'	=> '0',
-				'active'			=> 1,
-				);
-
-			$this->db->update($this->tables['users'], $data, array('forgotten_password_code' => $code));
-
-			return $password;
+			return false;
+		}
+		if ((time() - (int) $user->forgotten_password_time) > $expiry_seconds)
+		{
+			return false;
 		}
 
-		return false;
+		$password = $this->salt();
+
+		$data = array(
+			'password'                 => $this->hash_password($password, $salt),
+			'forgotten_password_code'  => '0',
+			// Clearing the timestamp makes the token single-use: a replay will
+			// fail the empty-time check above even inside the expiry window.
+			'forgotten_password_time'  => null,
+			'active'                   => 1,
+		);
+
+		$this->db->update($this->tables['users'], $data, array('forgotten_password_code' => $code));
+
+		return $password;
 	}
 
 	// --------------------------------------------------------------------------
@@ -716,10 +736,14 @@ class Ion_auth_model extends CI_Model
 	
 	public function _set_login($user, $remember)
 	{
-		file_put_contents('/tmp/auth.log', "[SET] uid=".$user->id." email=".$user->email." sid=".session_id()." sname=".session_name()."\n", FILE_APPEND);
 		$this->update_last_login($user->id);
 
 		$group_row = $this->db->select('name')->where('id', $user->group_id)->get($this->tables['groups'])->row();
+
+		// Rotate the session ID to prevent fixation: any pre-auth cookie an
+		// attacker planted on the victim is now invalid. `false` keeps the
+		// old session data intact so the user-data we set below survives.
+		$this->session->sess_regenerate(false);
 
 		$this->session->set_userdata(array(
 			'username' 			   => $user->username,

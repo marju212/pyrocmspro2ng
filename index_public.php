@@ -1,24 +1,22 @@
 <?php
 
+/*
+ *---------------------------------------------------------------
+ * .ENV LOADING
+ *---------------------------------------------------------------
+ *
+ * Mirrors index.php so env-driven config (ENCRYPTION_KEY, PROTECTED_FOLDERS,
+ * DB_*, APP_DEBUG, ...) resolves identically through this entry point.
+ */
+require __DIR__ . '/system/cms/bootstrap/env.php';
+pyro_load_dotenv(__DIR__ . '/.env');
+
 
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
  *---------------------------------------------------------------
- *
- * You can load different configurations depending on your
- * current environment. Setting the environment also influences
- * things like logging and error reporting.
- *
- * This can be set to anything, but default usage is:
- *
- *     local
- *     staging
- *     production
- *
- * NOTE: If you change these, also change the error_reporting() code below
- *
- *
+ * Driven by PYRO_ENV in .env / real environment.
  */
 
 if (!defined('PYRO_DEVELOPMENT')) {
@@ -33,10 +31,7 @@ if (!defined('PYRO_PRODUCTION')) {
 }
 
 if (!defined('ENVIRONMENT')) {
-
-    //define('ENVIRONMENT', (isset($_SERVER['PYRO_ENV']) ? $_SERVER['PYRO_ENV'] : PYRO_DEVELOPMENT));
-    define('ENVIRONMENT', (isset($_SERVER['PYRO_ENV']) ? $_SERVER['PYRO_ENV'] : PYRO_PRODUCTION));
-
+    define('ENVIRONMENT', pyro_env('PYRO_ENV', PYRO_PRODUCTION));
 }
 
 
@@ -45,25 +40,37 @@ if (!defined('ENVIRONMENT')) {
  * ERROR REPORTING
  *---------------------------------------------------------------
  *
- * Different environments will require different levels of error reporting.
- * By default development will show errors but testing and live will hide them.
+ * Same APP_DEBUG semantics as index.php: default ON in development, OFF in
+ * staging/production. Explicit APP_DEBUG in .env overrides the default.
  */
 
-error_reporting(E_ALL);
+$pyro_debug_default = (ENVIRONMENT === PYRO_DEVELOPMENT);
+$pyro_debug         = pyro_env_bool('APP_DEBUG', $pyro_debug_default);
 
-switch (ENVIRONMENT) {
-    case PYRO_DEVELOPMENT:
-        ini_set('display_errors', true);
-        break;
-
-    case PYRO_STAGING:
-    case PYRO_PRODUCTION:
-        ini_set('display_errors', false);
-        break;
-
-    default:
-        exit('The environment is not set correctly. ENVIRONMENT = ' . ENVIRONMENT . '.');
+if ($pyro_debug) {
+    error_reporting(E_ALL ^ E_DEPRECATED);
+    ini_set('display_errors', '1');
+} else {
+    error_reporting(0);
+    ini_set('display_errors', '0');
 }
+
+$pyro_error_log = pyro_env('APP_ERROR_LOG', '');
+if ($pyro_error_log !== '') {
+    ini_set('log_errors', '1');
+    if (!preg_match('#^(/|[A-Za-z]:[/\\\\])#', $pyro_error_log)) {
+        $pyro_error_log = __DIR__ . '/' . ltrim($pyro_error_log, '/');
+    }
+    ini_set('error_log', $pyro_error_log);
+}
+
+if (ENVIRONMENT !== PYRO_DEVELOPMENT
+    && ENVIRONMENT !== PYRO_STAGING
+    && ENVIRONMENT !== PYRO_PRODUCTION) {
+    exit('The environment is not set correctly. ENVIRONMENT = ' . ENVIRONMENT . '.');
+}
+
+unset($pyro_debug_default, $pyro_debug, $pyro_error_log);
 
 /*
 |---------------------------------------------------------------

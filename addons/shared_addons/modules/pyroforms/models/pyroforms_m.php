@@ -9,7 +9,10 @@ class Pyroforms_m extends MY_Model {
         'fldValidIsset'     => 'isset',
         'fldValidReq'       => 'required',
         'fldValidTrim'      => 'trim',
-        'fldValidClean'     => 'xss_clean',
+        // xss_clean is deprecated and was never safe to rely on: it mutates
+        // input in ways that still leave room for context-dependent XSS in
+        // rich-HTML fields and can break legitimate content. Views that render
+        // stored form data now html_escape() it at output instead.
         'fldValidUrl'       => 'prep_url',
         'fldValidEmail'     => 'valid_email',
         'fldValidAlpha'     => 'alpha',

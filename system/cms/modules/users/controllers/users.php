@@ -140,14 +140,18 @@ class Users extends Public_Controller
                 $this->session->set_flashdata('success', lang('user:logged_in'));
             }
 
-            // Don't allow protocols or cheeky requests
-            if (strpos($redirect_to, ':') !== false and strpos($redirect_to, site_url()) !== 0) {
-                // Just login to the homepage
-                redirect('');
-            } // Passes muster, on your way
-            else {
-                redirect($redirect_to ? $redirect_to : '');
-            }
+            // Strict same-site allowlist: empty, root-relative paths
+            // (exactly one leading '/', not '//'), or a URL that starts with
+            // our own site_url(). Rejects protocol-relative URLs, javascript:
+            // schemes, and cross-site redirects. Cheap open-redirect defense.
+            $rt = (string) $redirect_to;
+            $site_base = rtrim(site_url(), '/');
+            $is_safe = $rt === ''
+                || ($rt[0] === '/' && ( ! isset($rt[1]) || $rt[1] !== '/'))
+                || strpos($rt, $site_base . '/') === 0
+                || $rt === $site_base;
+
+            redirect($is_safe ? $rt : '');
         }
 
         if ($_POST and $this->input->is_ajax_request()) {

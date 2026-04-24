@@ -65,9 +65,16 @@ class Comments extends Public_Controller
 			show_404();
 		}
 
-		// Get information back from the entry hash
-		// @HACK This should be part of the controllers lib, but controllers & libs cannot share a name
-		$entry = unserialize($this->encrypt->decode($this->input->post('entry')));
+		// Get information back from the entry hash.
+		// @HACK This should be part of the controllers lib, but controllers & libs cannot share a name.
+		// allowed_classes=false prevents object-injection gadgets even if the
+		// encryption key ever leaks and an attacker forges a serialized payload.
+		$decoded = $this->encrypt->decode($this->input->post('entry'));
+		$entry   = ($decoded === false) ? null : @unserialize($decoded, array('allowed_classes' => false));
+		if ( ! is_array($entry))
+		{
+			show_404();
+		}
 
 		$comment = array(
 			'module' 		=> $module,

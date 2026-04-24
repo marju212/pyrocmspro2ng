@@ -21,17 +21,27 @@ $config['base_url']    = isset($_SERVER['HTTP_HOST'])
     ? ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on') ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].'/'
     : '';
 
-//Bockavel registered SMS users notification
-$config['sms_registered'] = [
-    'Staffan Hjort'=>'+46707788088',
-    'Elin Falk'=> '+46735601750',
-    'Marcus Junstrom'=> '+46763350850'
-];
+// Bockavel registered SMS recipients — sourced from .env (SMS_REGISTERED).
+// Format: comma-separated <name>:<phone> pairs. See .env.*.example.
+$config['sms_registered'] = array();
+foreach (env_list('SMS_REGISTERED') as $entry) {
+    if (strpos($entry, ':') === false) continue;
+    list($name, $phone) = array_map('trim', explode(':', $entry, 2));
+    if ($name !== '' && $phone !== '') {
+        $config['sms_registered'][$name] = $phone;
+    }
+}
 
-
-
-//Password protected folders, this is not derived in structure
-$config['protected_folders'] = ['safe','member','medlem_seminbockar','medlem_video','medlem_dokument','medlem_dokument_2022','medlem_2023','medlem_2024','medlem_2025','medlem_2026','medlem_bilder','medlem_2019'];
+// Password-protected folders (File Manager folder names, case-sensitive).
+// Sourced from .env (PROTECTED_FOLDERS). The fallback is the full known list
+// so we fail closed if PROTECTED_FOLDERS is accidentally unset.
+$config['protected_folders'] = env_list('PROTECTED_FOLDERS', array(
+    'safe', 'member',
+    'medlem_seminbockar', 'medlem_video',
+    'medlem_dokument', 'medlem_dokument_2022',
+    'medlem_bilder', 'medlem_2019',
+    'medlem_2023', 'medlem_2024', 'medlem_2025', 'medlem_2026',
+));
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -246,7 +256,13 @@ $config['cache_path'] = '';
 | MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = "Jiu348^&H%fa";
+// Read from ENCRYPTION_KEY in .env / real environment. Fail-closed: a
+// mis-provisioned host should show an error page, not silently run with an
+// empty key and produce broken session cookies / unverifiable CSRF tokens.
+$config['encryption_key'] = env_str('ENCRYPTION_KEY');
+if ($config['encryption_key'] === '') {
+    show_error('ENCRYPTION_KEY is not configured. Set it in .env.', 500);
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -276,11 +292,17 @@ $config['sess_expire_on_close']    = false;
 $config['sess_use_database']       = false;
 $config['sess_table_name']         = 'default_ci_sessions';
 $config['sess_save_path']          = FCPATH.'system/cms/cache/sessions';
-// Match-IP/UA cause session churn when the hook-based session (PHPSESSID from
-// pick_language) hands off to CI's own session name; keep them off so CI 3.1
-// doesn't discard the session on every request.
+// The original comment disabled these due to session churn from the
+// pick_language pre_controller hook. That hook now aligns the session cookie
+// name with CI's sess_cookie_name before session_start() (see
+// system/cms/hooks/pick_language.php), so the hand-off is stable and we can
+// enforce binding again.
+//
+// sess_match_useragent is cheap and catches cookie theft across devices.
+// sess_match_ip is strict and can churn on mobile / proxied traffic — keep
+// it off unless you've verified your deploy sees a stable REMOTE_ADDR.
 $config['sess_match_ip']           = false;
-$config['sess_match_useragent']    = false;
+$config['sess_match_useragent']    = true;
 $config['sess_time_to_update']     = 300;
 $config['sess_regenerate_destroy'] = false;
 
@@ -299,7 +321,13 @@ $config['sess_regenerate_destroy'] = false;
 $config['cookie_prefix']    = (substr_count($_SERVER['SERVER_NAME'], '.') > 1) ? substr($_SERVER['SERVER_NAME'], 0, strpos($_SERVER['SERVER_NAME'], '.')) . '_' : 'default_';
 $config['cookie_domain']    = ($_SERVER['SERVER_NAME'] == 'localhost') ? '' : $_SERVER['SERVER_NAME'];
 $config['cookie_path']        = BASE_URI;
-$config['cookie_secure']    = false;
+// Force Secure cookies in production, and opportunistically when HTTPS is
+// detected (e.g. behind a TLS-terminating proxy that sets $_SERVER['HTTPS']).
+$config['cookie_secure']    = (ENVIRONMENT === PYRO_PRODUCTION)
+                              || ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off');
+$config['cookie_httponly']  = true;
+// CI 3.1 honours this; CI 2.x ignores it safely.
+$config['cookie_samesite']  = 'Lax';
 
 /*
 |--------------------------------------------------------------------------
@@ -325,11 +353,14 @@ $config['global_xss_filtering'] = false;
 | 'csrf_expire' = The number in seconds the token should expire.
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection']         = (bool) preg_match('@\/aadmin(\/.+)?$@', $_SERVER['REQUEST_URI']); // only turn it on for admin panel
+$config['csrf_protection']         = true;
+// Don't regenerate the token on every request — breaks AJAX / multi-tab flows.
+$config['csrf_regenerate']         = false;
 $config['csrf_token_name']         = 'csrf_hash_name';
-$config['csrf_cookie_name']     = 'csrf_cookie_name';
+$config['csrf_cookie_name']        = 'csrf_cookie_name';
 $config['csrf_expire']             = 7200;
-$config['csrf_exclude_uris']     = array();
+// Add pure read-only APIs or external webhooks here (regex patterns).
+$config['csrf_exclude_uris']       = array();
 
 /*
 |--------------------------------------------------------------------------

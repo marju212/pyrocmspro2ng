@@ -4,6 +4,7 @@
 .settings
 .idea
 .htaccess
+!uploads/.htaccess
 CLAUDE.md
 webhook.php
 assets/cache/*

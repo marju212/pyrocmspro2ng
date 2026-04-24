@@ -17,8 +17,15 @@
 $config['base_url']    = '';
 
 
-//Password protected folders, this is not derived in structure
-$config['protected_folders'] = ['safe','member','medlem_seminbockar','medlem_video','medlem_dokument','medlem_bilder','medlem_2019'];
+// Password-protected folders — sourced from .env (PROTECTED_FOLDERS). See the
+// identical block in config.php for canonical docs.
+$config['protected_folders'] = env_list('PROTECTED_FOLDERS', array(
+    'safe', 'member',
+    'medlem_seminbockar', 'medlem_video',
+    'medlem_dokument', 'medlem_dokument_2022',
+    'medlem_bilder', 'medlem_2019',
+    'medlem_2023', 'medlem_2024', 'medlem_2025', 'medlem_2026',
+));
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -233,7 +240,11 @@ $config['cache_path'] = '';
 | MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = "Jiu348^&H%fa";
+// Read from ENCRYPTION_KEY in .env / real environment. See config.php for docs.
+$config['encryption_key'] = env_str('ENCRYPTION_KEY');
+if ($config['encryption_key'] === '') {
+    show_error('ENCRYPTION_KEY is not configured. Set it in .env.', 500);
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -279,7 +290,10 @@ $config['sess_time_to_update']    = 300;
 $config['cookie_prefix']    = (substr_count($_SERVER['SERVER_NAME'], '.') > 1) ? substr($_SERVER['SERVER_NAME'], 0, strpos($_SERVER['SERVER_NAME'], '.')) . '_' : 'default_';
 $config['cookie_domain']    = ($_SERVER['SERVER_NAME'] == 'localhost') ? '' : $_SERVER['SERVER_NAME'];
 $config['cookie_path']        = BASE_URI;
-$config['cookie_secure']    = false;
+$config['cookie_secure']    = (ENVIRONMENT === PYRO_PRODUCTION)
+                              || ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off');
+$config['cookie_httponly']  = true;
+$config['cookie_samesite']  = 'Lax';
 
 /*
 |--------------------------------------------------------------------------
@@ -305,11 +319,12 @@ $config['global_xss_filtering'] = false;
 | 'csrf_expire' = The number in seconds the token should expire.
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection']         = (bool) preg_match('@\/aadmin(\/.+)?$@', $_SERVER['REQUEST_URI']); // only turn it on for admin panel
+$config['csrf_protection']         = true;
+$config['csrf_regenerate']         = false;
 $config['csrf_token_name']         = 'csrf_hash_name';
-$config['csrf_cookie_name']     = 'csrf_cookie_name';
+$config['csrf_cookie_name']        = 'csrf_cookie_name';
 $config['csrf_expire']             = 7200;
-$config['csrf_exclude_uris']     = array();
+$config['csrf_exclude_uris']       = array();
 
 /*
 |--------------------------------------------------------------------------

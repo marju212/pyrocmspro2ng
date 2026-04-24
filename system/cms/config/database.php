@@ -30,7 +30,9 @@ $pyro_db_defaults = array(
     'dbdriver'   => 'mysqli',
     'dbprefix'   => '',
     'pconnect'   => FALSE,
-    'db_debug'   => TRUE,
+    // Dev/staging only — db_debug prints SQL + schema on errors which leaks
+    // structure to the response body. Off in production.
+    'db_debug'   => (ENVIRONMENT !== PYRO_PRODUCTION),
     'cache_on'   => FALSE,
     'char_set'   => 'utf8mb4',
     'dbcollat'   => 'utf8mb4_unicode_ci',
