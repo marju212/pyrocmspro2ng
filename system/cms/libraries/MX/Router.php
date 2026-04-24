@@ -145,6 +145,15 @@ class MX_Router extends CI_Router
 						->where('ref', $default_site_ref)
 						->get('core_sites')
 						->row();
+
+					// Shape-match the domain-lookup row above: the alias check
+					// below accesses these properties unconditionally, and PHP
+					// 8 warns on undefined-property reads.
+					if ($site)
+					{
+						$site->alias_domain = null;
+						$site->alias_type   = null;
+					}
 				}
 			}
 
