@@ -20,7 +20,11 @@
 	{
 		instance = (window.tinymce && window.tinymce.activeEditor) || null;
 	}
+</script>
 
+<?php include APPPATH.'modules/wysiwyg/views/content_css_shim.php'; ?>
+
+<script type="text/javascript">
 	(function($) {
 		$(function(){
 

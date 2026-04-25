@@ -59,7 +59,7 @@
 				'<a href="javascript:void(0)" class="remove-chunk btn red">' + pyro.lang.remove + '</a>' +
 				'<span class="sort-handle"></span>' +
 				'</div><br style="clear:both" />' +
-				'<span class="chunky"><textarea id="' + key + '" class="pages wysiwyg-advanced" rows="20" style="width:100%" name="chunk_body[' + key + ']"></textarea>' +
+				'<span class="chunky"><textarea id="' + key + '" class="pages wysiwyg-advanced" rows="20" style="width:100%" name="chunk_body[' + key + ']" data-chunk-class=""></textarea>' +
 				'</span></li>');
 
 			// initialize the editor using the view from fragments/wysiwyg.php
@@ -80,6 +80,21 @@
 				$(this).closest('li.page-chunk').slideUp('slow', function(){ $(this).remove(); });
 				if ($('#page-content').find('li.page-chunk').length < 2) {
 				}
+			}
+		});
+
+		// Reflect the chunk's user-set CSS class onto the editor body via the
+		// shim in content_css_shim.php — keeps WYSIWYG preview in sync with how
+		// the chunk will render on the front-end.
+		$('input[name^=chunk_class]').live('change', function() {
+			var chunk    = $(this).closest('li.page-chunk');
+			var textarea = $('textarea', chunk);
+			textarea.attr('data-chunk-class', this.value || '');
+
+			if (typeof tinymce !== 'undefined' &&
+				(textarea.hasClass('wysiwyg-simple') || textarea.hasClass('wysiwyg-advanced'))) {
+				tinymce.remove('#' + textarea.attr('id'));
+				pyro.init_wysiwyg();
 			}
 		});
 

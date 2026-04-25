@@ -15,7 +15,7 @@
 		</div>
 		<br style="clear:both" />
 		<span class="chunky">
-			<?php echo form_textarea(array('id' => $chunk['slug'].'_'.$count, 'name'=>'chunk_body['.$count.']', 'value' => $chunk['body'], 'rows' => 20, 'class'=> $chunk['type'])); ?>
+			<?php echo form_textarea(array('id' => $chunk['slug'].'_'.$count, 'name'=>'chunk_body['.$count.']', 'value' => $chunk['body'], 'rows' => 20, 'class'=> $chunk['type'], 'data-chunk-class' => $chunk['class'])); ?>
 		</span>
 	</li>
 	<?php $count++; endforeach; ?>
