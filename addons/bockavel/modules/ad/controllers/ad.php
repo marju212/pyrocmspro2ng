@@ -20,7 +20,7 @@ class Ad extends Public_Controller
         $mode=' mode="new" ';
         $this->template
             ->title('Mina Annonser')
-            ->build('index',compact(['mode','hasEntries']));
+            ->build('index',compact('mode'));
     }
     public function edit($id)
     {

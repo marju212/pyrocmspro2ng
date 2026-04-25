@@ -328,8 +328,11 @@ class Lex_Parser
 
 			$condition = $match[2];
 
-			// Extract all literal string in the conditional to make it easier
-			if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches))
+			// Extract all literal string in the conditional to make it easier.
+			// /s so multi-line string literals (e.g. value_to_literal output for
+			// HTML with newlines) are extracted as one piece — otherwise the
+			// second var-substitution pass would mangle words inside them.
+			if (preg_match_all('/(["\']).*?(?<!\\\\)\1/s', $condition, $str_matches))
 			{
 				foreach ($str_matches[0] as $m)
 				{
@@ -359,7 +362,7 @@ class Lex_Parser
 				$condition = $this->parse_callback_tags($condition, $data, $callback);
 
 				// Re-extract the strings that have now been possibly added.
-				if (preg_match_all('/(["\']).*?(?<!\\\\)\1/', $condition, $str_matches))
+				if (preg_match_all('/(["\']).*?(?<!\\\\)\1/s', $condition, $str_matches))
 				{
 					foreach ($str_matches[0] as $m)
 					{
