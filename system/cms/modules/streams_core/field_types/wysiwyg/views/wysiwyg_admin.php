@@ -1,24 +1,34 @@
-<script src="<?php echo Asset::get_filepath_js('ckeditor/ckeditor.js') ?>"></script>
-<script src="<?php echo Asset::get_filepath_js('ckeditor/adapters/jquery.js') ?>"></script>
+<script src="<?php echo Asset::get_filepath_js('tinymce/tinymce.min.js') ?>"></script>
 
 <script type="text/javascript">
 
-	var instance;
+	if (typeof SITE_URL === 'undefined') { var SITE_URL = "<?php echo site_url() ?>"; }
 
+	var pyroEditorPlugins = {
+		pyroimages: '<?php echo BASE_URL ?>system/cms/modules/wysiwyg/tinymce/plugins/pyroimages/plugin.js',
+		pyrofiles:  '<?php echo BASE_URL ?>system/cms/modules/wysiwyg/tinymce/plugins/pyrofiles/plugin.js'
+	};
+
+	var instance = null;
 	function update_instance()
 	{
-		instance = CKEDITOR.currentInstance;
+		instance = (window.tinymce && window.tinymce.activeEditor) || null;
 	}
 
 	(function($) {
 		$(function(){
 
-			pyro.init_ckeditor = function(){
-				<?php echo $this->parser->parse_string(Settings::get('ckeditor_config'), $this, true) ?>
-				pyro.init_ckeditor_maximize();
+			pyro.init_wysiwyg = function(){
+				<?php echo $this->parser->parse_string(Settings::get('wysiwyg_config'), $this, true) ?>
+				if (typeof pyro.init_wysiwyg_maximize === 'function') {
+					pyro.init_wysiwyg_maximize();
+				}
 			};
-			pyro.init_ckeditor();
-			
+
+			pyro.init_ckeditor = pyro.init_wysiwyg;
+
+			pyro.init_wysiwyg();
+
 		});
 	})(jQuery);
 </script>

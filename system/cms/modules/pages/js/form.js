@@ -29,13 +29,13 @@
 			items: 'li',
 			cursor:"move",
 			start: function () {
-				$('.wysiwyg-advanced, .wysiwyg-simple').each(function() {
-					$(this).ckeditorGet().destroy();
-				});
+				if (typeof tinymce !== 'undefined') {
+					tinymce.remove('textarea.wysiwyg-advanced, textarea.wysiwyg-simple');
+				}
 			},
 			stop: function(ev,ui){
 				$('.chunky').show();
-				pyro.init_ckeditor();
+				pyro.init_wysiwyg();
 			}
 		});
 		
@@ -63,7 +63,7 @@
 				'</span></li>');
 
 			// initialize the editor using the view from fragments/wysiwyg.php
-			pyro.init_ckeditor();
+			pyro.init_wysiwyg();
 			$("#page-chunks").sortable("refresh");
 
 			// Update Chosen
@@ -87,20 +87,21 @@
 			chunk = $(this).closest('li.page-chunk');
 			textarea = $('textarea', chunk);
 
-			// Destroy existing WYSIWYG instance
+			// Destroy existing WYSIWYG instance attached to this textarea.
 			if (textarea.hasClass('wysiwyg-simple') || textarea.hasClass('wysiwyg-advanced'))
 			{
 				textarea.removeClass('wysiwyg-simple');
 				textarea.removeClass('wysiwyg-advanced');
 
-				var instance = CKEDITOR.instances[textarea.attr('id')];
-				instance && instance.destroy();
+				if (typeof tinymce !== 'undefined') {
+					tinymce.remove('#' + textarea.attr('id'));
+				}
 			}
 
 			// Set up the new instance
 			textarea.addClass(this.value);
 
-			pyro.init_ckeditor();
+			pyro.init_wysiwyg();
 		});
 
 	});

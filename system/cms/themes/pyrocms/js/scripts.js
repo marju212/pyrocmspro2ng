@@ -44,26 +44,27 @@ jQuery(function ($) {
     });
 
     /**
-     * Hides admin header to avoid overlapping when CKEDITOR is maximized
+     * Hides admin header to avoid overlapping when the WYSIWYG editor is fullscreened.
+     * Wired to TinyMCE 6 fullscreen plugin via FullscreenStateChanged events.
      */
-    pyro.init_ckeditor_maximize = function () {
-        if (typeof CKEDITOR != 'undefined') {
-            $.each(CKEDITOR.instances, function (instance) {
-                CKEDITOR.instances[instance].on('maximize', function (e) {
-                    if (e.data == 1) //maximize
-                    {
-                        $('.hide-on-ckeditor-maximize').addClass('hidden');
-                        $('.cke_button__maximize').addClass('ckeditor-pyro-logo');
-                    }
-                    else if (e.data == 2) //snap back
-                    {
-                        $('.hide-on-ckeditor-maximize').removeClass('hidden');
-                        $('.cke_button__maximize').removeClass('ckeditor-pyro-logo');
-                    }
-                });
-            });
+    pyro.init_wysiwyg_maximize = function () {
+        if (typeof tinymce === 'undefined') {
+            return;
         }
+        tinymce.editors.forEach(function (editor) {
+            if (editor.__pyroMaximizeBound) return;
+            editor.__pyroMaximizeBound = true;
+            editor.on('FullscreenStateChanged', function (e) {
+                if (e.state) {
+                    $('.hide-on-wysiwyg-maximize, .hide-on-ckeditor-maximize').addClass('hidden');
+                } else {
+                    $('.hide-on-wysiwyg-maximize, .hide-on-ckeditor-maximize').removeClass('hidden');
+                }
+            });
+        });
     };
+    // Backwards-compat alias.
+    pyro.init_ckeditor_maximize = pyro.init_wysiwyg_maximize;
 
     /**
      * Autocomplete Search
@@ -475,7 +476,7 @@ jQuery(function ($) {
     $(document).ready(function () {
         pyro.init();
         pyro.chosen();
-        pyro.init_ckeditor_maximize();
+        pyro.init_wysiwyg_maximize();
         pyro.init_autocomplete_search();
     });
 

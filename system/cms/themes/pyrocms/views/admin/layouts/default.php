@@ -50,7 +50,7 @@
 
 		<section id="content">
 			
-			<header class="hide-on-ckeditor-maximize">
+			<header class="hide-on-wysiwyg-maximize">
 			<?php file_partial('header'); ?>
 			</header>
 

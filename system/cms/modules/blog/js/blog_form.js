@@ -18,17 +18,18 @@
 			var chunk = $(this).closest('li.editor');
 			var textarea = $('textarea', chunk);
 
-			// Destroy existing WYSIWYG instance
+			// Destroy existing WYSIWYG instance attached to this textarea.
 			if (textarea.hasClass('wysiwyg-simple') || textarea.hasClass('wysiwyg-advanced')) {
 				textarea.removeClass('wysiwyg-simple');
 				textarea.removeClass('wysiwyg-advanced');
 
-				var instance = CKEDITOR.instances[textarea.attr('id')];
-				instance && instance.destroy();
+				if (typeof tinymce !== 'undefined') {
+					tinymce.remove('#' + textarea.attr('id'));
+				}
 			}
 			// Set up the new instance
 			textarea.addClass(this.value);
-			pyro.init_ckeditor();
+			pyro.init_wysiwyg();
 		});
 
 		$(document.getElementById('blog-options-tab')).find('ul').find('li').first().find('a').colorbox({

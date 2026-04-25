@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<!-- Always force latest IE rendering engine & Chrome Frame -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	
+
 	<title><?php echo $template['title']; ?></title>
 
 	<script type="text/javascript">
@@ -18,24 +18,27 @@
 
 	<script type="text/javascript">
 
-		var CKEDITOR = window.parent.CKEDITOR;
-
+		// Closes the dialog this iframe is hosted in. Used by the
+		// file-picker views via insertImage()/insertFile() in wysiwyg.js,
+		// which now talks directly to window.parent.tinymce.
 		function windowClose()
 		{
-			CKEDITOR.dialog.getCurrent().hide();
+			var ed = window.parent && window.parent.tinymce && window.parent.tinymce.activeEditor;
+			if (ed && ed.windowManager && typeof ed.windowManager.close === 'function') {
+				ed.windowManager.close();
+			}
 		}
 
 		function insertHTML(html)
 		{
-			window.parent.instance.insertHtml(html);
+			var ed = window.parent && window.parent.tinymce && window.parent.tinymce.activeEditor;
+			if (ed) {
+				ed.insertContent(html);
+			}
 		}
 
 		(function($)
 		{
-			$(window).ready(function() {
-				window.parent.jQuery('.cke_dialog_footer').hide();
-			});
-
 			$(function()
 			{
 				// Fancybox modal window
@@ -47,19 +50,6 @@
 						onClosed: function(){ location.reload(); }
 					});
 				});
-
-//
-//				$('a[rel="modal-large"], a.modal-large').livequery(function() {
-//					$(this).fancybox({
-//						overlayOpacity: 0.8,
-//						overlayColor: '#000',
-//						hideOnContentClick: false,
-//						frameWidth: 900,
-//						frameHeight: 600
-//					});
-//				});
-//				// End Fancybox modal window
-
 			});
 		})(jQuery);
 	</script>
@@ -70,4 +60,4 @@
 	<?php $this->load->view('admin/partials/notices') ?>
 	<?php echo $template['body']; ?>
 </body>
-</html>	
+</html>
