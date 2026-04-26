@@ -1,0 +1,175 @@
+/* prose.css — typography baseline for editable page chunks.
+ *
+ * Loaded in two contexts:
+ *   - inside the TinyMCE editor iframe (after the theme's content_css)
+ *   - on the public site, for theme layouts that <link> this file in
+ *
+ * All rules are scoped under .page-chunk so they only style chunk content,
+ * never the surrounding theme chrome (nav, header, footer). On the public
+ * site .page-chunk is the <section> wrapper produced by page_m.php; in the
+ * editor iframe the shim adds .page-chunk to the iframe <body>. */
+
+.page-chunk {
+	font-size: 16px;
+	line-height: 1.75;
+	color: #222;
+	word-wrap: break-word;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.page-chunk > *:first-child { margin-top: 0; }
+.page-chunk > *:last-child  { margin-bottom: 0; }
+
+.page-chunk p {
+	margin: 1.25em 0;
+}
+
+/* Headings */
+.page-chunk h1,
+.page-chunk h2,
+.page-chunk h3,
+.page-chunk h4,
+.page-chunk h5,
+.page-chunk h6 {
+	color: #111;
+	font-weight: 700;
+	line-height: 1.25;
+	margin: 1.6em 0 0.6em;
+}
+.page-chunk h1 { font-size: 2.25em; line-height: 1.15; }
+.page-chunk h2 { font-size: 1.6em;  line-height: 1.2;  border-bottom: 1px solid #eee; padding-bottom: .3em; }
+.page-chunk h3 { font-size: 1.3em; }
+.page-chunk h4 { font-size: 1.1em; }
+.page-chunk h5 { font-size: 1em;    text-transform: uppercase; letter-spacing: .04em; }
+.page-chunk h6 { font-size: .9em;   color: #555; text-transform: uppercase; letter-spacing: .05em; }
+
+/* Inline */
+.page-chunk strong,
+.page-chunk b { font-weight: 700; color: #111; }
+.page-chunk em,
+.page-chunk i { font-style: italic; }
+.page-chunk small { font-size: .85em; color: #555; }
+.page-chunk mark  { background: #fef3a8; color: inherit; padding: 0 .15em; border-radius: 2px; }
+
+/* Links */
+.page-chunk a {
+	color: #2563eb;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-thickness: 1px;
+}
+.page-chunk a:hover { color: #1d4ed8; }
+
+/* Lists */
+.page-chunk ul,
+.page-chunk ol {
+	margin: 1.25em 0;
+	padding-left: 1.6em;
+}
+.page-chunk ul { list-style-type: disc; }
+.page-chunk ol { list-style-type: decimal; }
+.page-chunk ul ul,
+.page-chunk ol ul { list-style-type: circle; }
+.page-chunk ul ul ul,
+.page-chunk ol ol ul { list-style-type: square; }
+.page-chunk li { margin: .4em 0; }
+.page-chunk li > p { margin: .5em 0; }
+.page-chunk li > ul,
+.page-chunk li > ol { margin: .4em 0; }
+
+/* Definition lists */
+.page-chunk dl { margin: 1.25em 0; }
+.page-chunk dt { font-weight: 700; margin-top: .8em; }
+.page-chunk dd { margin: .2em 0 .8em 1.4em; }
+
+/* Blockquote */
+.page-chunk blockquote {
+	margin: 1.5em 0;
+	padding: .25em 1.1em;
+	border-left: 4px solid #d1d5db;
+	color: #4b5563;
+	font-style: italic;
+}
+.page-chunk blockquote p:first-of-type::before { content: "\201C"; }
+.page-chunk blockquote p:last-of-type::after   { content: "\201D"; }
+
+/* Inline code + code blocks */
+.page-chunk code,
+.page-chunk kbd,
+.page-chunk samp {
+	font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+	font-size: .9em;
+}
+.page-chunk :not(pre) > code {
+	background: #f3f4f6;
+	padding: .15em .35em;
+	border-radius: 3px;
+	color: #b91c1c;
+}
+.page-chunk pre {
+	background: #0f172a;
+	color: #e2e8f0;
+	padding: 1em 1.2em;
+	border-radius: 6px;
+	overflow-x: auto;
+	line-height: 1.55;
+	margin: 1.5em 0;
+}
+.page-chunk pre code { background: transparent; padding: 0; color: inherit; }
+
+.page-chunk kbd {
+	background: #f9fafb;
+	border: 1px solid #d1d5db;
+	border-bottom-width: 2px;
+	border-radius: 3px;
+	padding: .05em .4em;
+	font-size: .85em;
+}
+
+/* Horizontal rule */
+.page-chunk hr {
+	border: 0;
+	border-top: 1px solid #e5e7eb;
+	margin: 2.5em 0;
+}
+
+/* Tables */
+.page-chunk table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.5em 0;
+	font-size: .95em;
+}
+.page-chunk th,
+.page-chunk td {
+	border-bottom: 1px solid #e5e7eb;
+	padding: .55em .75em;
+	text-align: left;
+	vertical-align: top;
+}
+.page-chunk th {
+	font-weight: 700;
+	color: #111;
+	border-bottom-width: 2px;
+}
+.page-chunk tbody tr:hover { background: #f9fafb; }
+
+/* Media — !important defends against width/height attrs TinyMCE adds when
+ * inserting an image. The image must never blow out its container. */
+.page-chunk img,
+.page-chunk video {
+	max-width: 100% !important;
+	height: auto !important;
+	margin: 1.5em 0;
+	border-radius: 4px;
+}
+.page-chunk figure { margin: 1.75em 0; }
+.page-chunk figcaption {
+	font-size: .85em;
+	color: #6b7280;
+	text-align: center;
+	margin-top: .5em;
+}
+
+.page-chunk ::selection { background: #c7d2fe; color: #111; }

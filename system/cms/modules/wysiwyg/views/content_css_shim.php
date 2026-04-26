@@ -12,6 +12,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 ci()->load->helper('wysiwyg/wysiwyg');
 $pyroTheme = wysiwyg_resolve_content_css();
+
+// Always append the editor-only prose stylesheet last so its typography wins
+// inside the iframe regardless of what the theme set. cache-bust on filemtime.
+$prose_path = APPPATH.'modules/wysiwyg/css/prose.css';
+$prose_url  = BASE_URL.'system/cms/modules/wysiwyg/css/prose.css'.(is_file($prose_path) ? '?v='.filemtime($prose_path) : '');
+$pyroTheme['css'][] = $prose_url;
 ?>
 <script>
 	var pyroEditorContentCss = <?php echo json_encode($pyroTheme['css']); ?>;
@@ -29,13 +35,24 @@ $pyroTheme = wysiwyg_resolve_content_css();
 			else if (typeof existing === 'string' && existing.length) opts.content_css = [existing].concat(extra);
 			else                                                      opts.content_css = extra;
 
-			if (!opts.body_class && window.pyroEditorBodyClass) opts.body_class = window.pyroEditorBodyClass;
+			// Always tag the iframe body with .page-chunk so prose.css rules apply,
+			// then layer on the theme manifest's body_class and the per-chunk class.
+			var bodyClasses = ['page-chunk'];
+			if (window.pyroEditorBodyClass) bodyClasses.push(window.pyroEditorBodyClass);
+			if (opts.body_class) bodyClasses.push(opts.body_class);
+			opts.body_class = bodyClasses.join(' ');
 
-			// Force a readable editing surface regardless of theme: white background,
-			// dark text. Theme typography (font, sizes, headings) still applies via
-			// content_css — only the page chrome is overridden.
-			var bgReset = 'html,body{background:#fff!important;background-image:none!important;color:#222!important;}';
-			opts.content_style = opts.content_style ? (opts.content_style + ' ' + bgReset) : bgReset;
+			// Editor-only page chrome: white readable surface, centered column, no
+			// theme hero image. prose.css ships only element-level rules; container
+			// sizing belongs here so the public stylesheet doesn't constrain layout.
+			// max-width on images defends against the explicit width attrs TinyMCE
+			// adds when inserting from the file picker.
+			var editorChrome = [
+				'html,body{background:#fff!important;background-image:none!important;}',
+				'body{padding:1rem 1.25rem 3rem;}',
+				'.page-chunk img,.page-chunk video{max-width:100%!important;height:auto!important;}'
+			].join(' ');
+			opts.content_style = opts.content_style ? (opts.content_style + ' ' + editorChrome) : editorChrome;
 
 			var origSetup = opts.setup;
 			opts.setup = function(editor) {
