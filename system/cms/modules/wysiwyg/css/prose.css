@@ -9,10 +9,15 @@
  * site .page-chunk is the <section> wrapper produced by page_m.php; in the
  * editor iframe the shim adds .page-chunk to the iframe <body>. */
 
+/* Core typography uses !important so any leftover inline font-size / color
+ * from CK-era content (or rows the cleanup script hasn't touched yet) still
+ * gets overridden visually. Spacing and layout rules below stay un-!important
+ * so themes can refine them via per-theme CSS or wysiwyg.php manifests. */
 .page-chunk {
-	font-size: 16px;
-	line-height: 1.75;
-	color: #222;
+	font-size: 16px !important;
+	line-height: 1.75 !important;
+	color: #222 !important;
+	font-family: inherit;
 	word-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -23,26 +28,30 @@
 
 .page-chunk p {
 	margin: 1.25em 0;
+	font-size: inherit !important;
+	line-height: inherit !important;
+	color: inherit !important;
+	font-family: inherit !important;
 }
 
-/* Headings */
+/* Headings — font-size + color !important to defeat legacy inline styles. */
 .page-chunk h1,
 .page-chunk h2,
 .page-chunk h3,
 .page-chunk h4,
 .page-chunk h5,
 .page-chunk h6 {
-	color: #111;
+	color: #111 !important;
 	font-weight: 700;
-	line-height: 1.25;
+	line-height: 1.25 !important;
 	margin: 1.6em 0 0.6em;
 }
-.page-chunk h1 { font-size: 2.25em; line-height: 1.15; }
-.page-chunk h2 { font-size: 1.6em;  line-height: 1.2;  border-bottom: 1px solid #eee; padding-bottom: .3em; }
-.page-chunk h3 { font-size: 1.3em; }
-.page-chunk h4 { font-size: 1.1em; }
-.page-chunk h5 { font-size: 1em;    text-transform: uppercase; letter-spacing: .04em; }
-.page-chunk h6 { font-size: .9em;   color: #555; text-transform: uppercase; letter-spacing: .05em; }
+.page-chunk h1 { font-size: 2.25em !important; line-height: 1.15 !important; }
+.page-chunk h2 { font-size: 1.6em  !important; line-height: 1.2  !important; border-bottom: 1px solid #eee; padding-bottom: .3em; }
+.page-chunk h3 { font-size: 1.3em  !important; }
+.page-chunk h4 { font-size: 1.1em  !important; }
+.page-chunk h5 { font-size: 1em    !important; text-transform: uppercase; letter-spacing: .04em; }
+.page-chunk h6 { font-size: .9em   !important; color: #555 !important; text-transform: uppercase; letter-spacing: .05em; }
 
 /* Inline */
 .page-chunk strong,
@@ -52,14 +61,15 @@
 .page-chunk small { font-size: .85em; color: #555; }
 .page-chunk mark  { background: #fef3a8; color: inherit; padding: 0 .15em; border-radius: 2px; }
 
-/* Links */
+/* Links — color !important so legacy <font color="..."> wrappers we missed
+ * don't visually leak. */
 .page-chunk a {
-	color: #2563eb;
+	color: #2563eb !important;
 	text-decoration: underline;
 	text-underline-offset: 2px;
 	text-decoration-thickness: 1px;
 }
-.page-chunk a:hover { color: #1d4ed8; }
+.page-chunk a:hover { color: #1d4ed8 !important; }
 
 /* Lists */
 .page-chunk ul,

@@ -11,7 +11,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // any future ones an admin adds).
 
 ci()->load->helper('wysiwyg/wysiwyg');
-$pyroTheme = wysiwyg_resolve_content_css();
+$pyroTheme    = wysiwyg_resolve_content_css();
+$pyroSanitize = (function_exists('pyro_env_bool') && pyro_env_bool('WYSIWYG_SANITIZE', true));
 
 // Always append the editor-only prose stylesheet last so its typography wins
 // inside the iframe regardless of what the theme set. cache-bust on filemtime.
@@ -22,6 +23,7 @@ $pyroTheme['css'][] = $prose_url;
 <script>
 	var pyroEditorContentCss = <?php echo json_encode($pyroTheme['css']); ?>;
 	var pyroEditorBodyClass  = <?php echo json_encode($pyroTheme['body_class']); ?>;
+	var pyroEditorSanitize   = <?php echo $pyroSanitize ? 'true' : 'false'; ?>;
 
 	(function(){
 		if (!window.tinymce || window.tinymce.__pyroContentCssShimInstalled) return;
@@ -53,6 +55,21 @@ $pyroTheme['css'][] = $prose_url;
 				'.page-chunk img,.page-chunk video{max-width:100%!important;height:auto!important;}'
 			].join(' ');
 			opts.content_style = opts.content_style ? (opts.content_style + ' ' + editorChrome) : editorChrome;
+
+			// Forward protection: keep TinyMCE from persisting CK-era inline
+			// typography. Only set defaults if the admin's wysiwyg_config
+			// hasn't already specified them. Skipped entirely when
+			// WYSIWYG_SANITIZE=false in .env.
+			if (window.pyroEditorSanitize) {
+				if (typeof opts.valid_styles === 'undefined') {
+					opts.valid_styles = {
+						'*': 'text-align,float,clear,vertical-align,width,height,max-width,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,display'
+					};
+				}
+				if (typeof opts.invalid_elements === 'undefined') {
+					opts.invalid_elements = 'font,center,o:p,u';
+				}
+			}
 
 			var origSetup = opts.setup;
 			opts.setup = function(editor) {

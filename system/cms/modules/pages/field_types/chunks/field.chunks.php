@@ -131,17 +131,36 @@ class Field_chunks
 		// old page chunks.
 		$this->CI->page_chunk_m->delete_by('page_id', ci()->page_id);
 
-		// If we have chunks, let's go ahead and add them. 
+		// If we have chunks, let's go ahead and add them.
 		if ($chunks)
 		{
+			// Forward protection: strip CK-era inline typography from wysiwyg
+			// chunks on save. Same library used by the one-shot CLI cleanup
+			// script. Skip html/markdown chunks entirely — html is author-
+			// controlled raw markup and markdown is parsed separately.
+			// Gated by WYSIWYG_SANITIZE in .env (default on).
+			$sanitize = (function_exists('pyro_env_bool') && pyro_env_bool('WYSIWYG_SANITIZE', true));
+			if ($sanitize && ! class_exists('Wysiwyg_sanitizer'))
+			{
+				require_once APPPATH.'modules/wysiwyg/libraries/Wysiwyg_sanitizer.php';
+			}
+
 			$i = 1;
 			foreach ($chunks as $chunk)
 			{
+				$body = $chunk->body;
+				if ($sanitize
+					&& in_array($chunk->type, array('wysiwyg-simple', 'wysiwyg-advanced'), true)
+					&& Wysiwyg_sanitizer::needs_cleaning($body))
+				{
+					$body = Wysiwyg_sanitizer::clean($body);
+				}
+
 				$this->CI->page_chunk_m->insert(array(
 					'slug' 		=> preg_replace('/[^a-zA-Z0-9_-]/', '', $chunk->slug),
 					'class' 	=> preg_replace('/[^a-zA-Z0-9_-\s]/', '', $chunk->class),
 					'page_id' 	=> ci()->page_id,
-					'body' 		=> $chunk->body,
+					'body' 		=> $body,
 					'parsed'	=> ($chunk->type == 'markdown') ? parse_markdown($chunk->body) : '',
 					'type' 		=> $chunk->type,
 					'sort' 		=> $i++,

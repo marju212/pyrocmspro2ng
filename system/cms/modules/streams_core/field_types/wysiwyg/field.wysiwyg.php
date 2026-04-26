@@ -25,8 +25,26 @@ class Field_wysiwyg
 	// --------------------------------------------------------------------------
     public function pre_save($input)
     {
-        return $this->removeEntetiesFromPlugins($input);
+        $input = $this->removeEntetiesFromPlugins($input);
 
+        // Forward protection: strip the same legacy CKEditor typography junk
+        // (font tags, inline font-size/color/family, Word Mso* leftovers) on
+        // every save, so future edits stay clean even if a paste reintroduces
+        // it. Same library used by the one-shot CLI cleanup script. Gated by
+        // WYSIWYG_SANITIZE in .env (default on).
+        if (function_exists('pyro_env_bool') && pyro_env_bool('WYSIWYG_SANITIZE', true))
+        {
+            if ( ! class_exists('Wysiwyg_sanitizer'))
+            {
+                require_once APPPATH.'modules/wysiwyg/libraries/Wysiwyg_sanitizer.php';
+            }
+            if (Wysiwyg_sanitizer::needs_cleaning($input))
+            {
+                $input = Wysiwyg_sanitizer::clean($input);
+            }
+        }
+
+        return $input;
     }
 	/**
 	 * Event
