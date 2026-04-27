@@ -1,95 +1,70 @@
 <?php
 /**
- * CodeIgniter
+ * CodeIgniter — Swedish translation of date/timezone strings.
  *
- * An open source application development framework for PHP
+ * Original strings: Copyright (c) 2008–2022 EllisLab / BCIT / CodeIgniter
+ * Foundation, MIT License (see system/codeigniter/language/english/
+ * date_lang.php for the full notice).
  *
- * This content is released under the MIT License (MIT)
- *
- * Copyright (c) 2019 - 2022, CodeIgniter Foundation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2019, British Columbia Institute of Technology (https://bcit.ca/)
- * @copyright	Copyright (c) 2019 - 2022, CodeIgniter Foundation (https://codeigniter.com/)
- * @license	https://opensource.org/licenses/MIT	MIT License
- * @link	https://codeigniter.com
- * @since	Version 1.0.0
- * @filesource
+ * The relative-date words (Year/Month/Day/…) get full translations.
+ * Timezone labels are mostly proper nouns and are kept in English; only
+ * the descriptive "Standard Time" / "Time" suffixes are localized to
+ * Swedish "standardtid" / "tid".
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['date_year'] = 'Year';
-$lang['date_years'] = 'Years';
-$lang['date_month'] = 'Month';
-$lang['date_months'] = 'Months';
-$lang['date_week'] = 'Week';
-$lang['date_weeks'] = 'Weeks';
-$lang['date_day'] = 'Day';
-$lang['date_days'] = 'Days';
-$lang['date_hour'] = 'Hour';
-$lang['date_hours'] = 'Hours';
-$lang['date_minute'] = 'Minute';
-$lang['date_minutes'] = 'Minutes';
-$lang['date_second'] = 'Second';
-$lang['date_seconds'] = 'Seconds';
+$lang['date_year']    = 'år';
+$lang['date_years']   = 'år';
+$lang['date_month']   = 'månad';
+$lang['date_months']  = 'månader';
+$lang['date_week']    = 'vecka';
+$lang['date_weeks']   = 'veckor';
+$lang['date_day']     = 'dag';
+$lang['date_days']    = 'dagar';
+$lang['date_hour']    = 'timme';
+$lang['date_hours']   = 'timmar';
+$lang['date_minute']  = 'minut';
+$lang['date_minutes'] = 'minuter';
+$lang['date_second']  = 'sekund';
+$lang['date_seconds'] = 'sekunder';
 
-$lang['UM12']	= '(UTC -12:00) Baker/Howland Island';
-$lang['UM11']	= '(UTC -11:00) Niue';
-$lang['UM10']	= '(UTC -10:00) Hawaii-Aleutian Standard Time, Cook Islands, Tahiti';
-$lang['UM95']	= '(UTC -9:30) Marquesas Islands';
-$lang['UM9']	= '(UTC -9:00) Alaska Standard Time, Gambier Islands';
-$lang['UM8']	= '(UTC -8:00) Pacific Standard Time, Clipperton Island';
-$lang['UM7']	= '(UTC -7:00) Mountain Standard Time';
-$lang['UM6']	= '(UTC -6:00) Central Standard Time';
-$lang['UM5']	= '(UTC -5:00) Eastern Standard Time, Western Caribbean Standard Time';
-$lang['UM45']	= '(UTC -4:30) Venezuelan Standard Time';
-$lang['UM4']	= '(UTC -4:00) Atlantic Standard Time, Eastern Caribbean Standard Time';
-$lang['UM35']	= '(UTC -3:30) Newfoundland Standard Time';
-$lang['UM3']	= '(UTC -3:00) Argentina, Brazil, French Guiana, Uruguay';
-$lang['UM2']	= '(UTC -2:00) South Georgia/South Sandwich Islands';
-$lang['UM1']	= '(UTC -1:00) Azores, Cape Verde Islands';
-$lang['UTC']	= '(UTC) Greenwich Mean Time, Western European Time';
-$lang['UP1']	= '(UTC +1:00) Central European Time, West Africa Time';
-$lang['UP2']	= '(UTC +2:00) Central Africa Time, Eastern European Time, Kaliningrad Time';
-$lang['UP3']	= '(UTC +3:00) Moscow Time, East Africa Time, Arabia Standard Time';
-$lang['UP35']	= '(UTC +3:30) Iran Standard Time';
-$lang['UP4']	= '(UTC +4:00) Azerbaijan Standard Time, Samara Time';
-$lang['UP45']	= '(UTC +4:30) Afghanistan';
-$lang['UP5']	= '(UTC +5:00) Pakistan Standard Time, Yekaterinburg Time';
-$lang['UP55']	= '(UTC +5:30) Indian Standard Time, Sri Lanka Time';
-$lang['UP575']	= '(UTC +5:45) Nepal Time';
-$lang['UP6']	= '(UTC +6:00) Bangladesh Standard Time, Bhutan Time, Omsk Time';
-$lang['UP65']	= '(UTC +6:30) Cocos Islands, Myanmar';
-$lang['UP7']	= '(UTC +7:00) Krasnoyarsk Time, Cambodia, Laos, Thailand, Vietnam';
-$lang['UP8']	= '(UTC +8:00) Australian Western Standard Time, Beijing Time, Irkutsk Time';
-$lang['UP875']	= '(UTC +8:45) Australian Central Western Standard Time';
-$lang['UP9']	= '(UTC +9:00) Japan Standard Time, Korea Standard Time, Yakutsk Time';
-$lang['UP95']	= '(UTC +9:30) Australian Central Standard Time';
-$lang['UP10']	= '(UTC +10:00) Australian Eastern Standard Time, Vladivostok Time';
-$lang['UP105']	= '(UTC +10:30) Lord Howe Island';
-$lang['UP11']	= '(UTC +11:00) Srednekolymsk Time, Solomon Islands, Vanuatu';
-$lang['UP115']	= '(UTC +11:30) Norfolk Island';
-$lang['UP12']	= '(UTC +12:00) Fiji, Gilbert Islands, Kamchatka Time, New Zealand Standard Time';
-$lang['UP1275']	= '(UTC +12:45) Chatham Islands Standard Time';
-$lang['UP13']	= '(UTC +13:00) Samoa Time Zone, Phoenix Islands Time, Tonga';
-$lang['UP14']	= '(UTC +14:00) Line Islands';
+$lang['UM12']   = '(UTC -12:00) Baker/Howland Island';
+$lang['UM11']   = '(UTC -11:00) Niue';
+$lang['UM10']   = '(UTC -10:00) Hawaii-Aleutiska standardtiden, Cooköarna, Tahiti';
+$lang['UM95']   = '(UTC -9:30) Marquesasöarna';
+$lang['UM9']    = '(UTC -9:00) Alaska standardtid, Gambieröarna';
+$lang['UM8']    = '(UTC -8:00) Pacific standardtid, Clipperton';
+$lang['UM7']    = '(UTC -7:00) Mountain standardtid';
+$lang['UM6']    = '(UTC -6:00) Central standardtid';
+$lang['UM5']    = '(UTC -5:00) Eastern standardtid, Västra Karibien standardtid';
+$lang['UM45']   = '(UTC -4:30) Venezuela standardtid';
+$lang['UM4']    = '(UTC -4:00) Atlantic standardtid, Östra Karibien standardtid';
+$lang['UM35']   = '(UTC -3:30) Newfoundland standardtid';
+$lang['UM3']    = '(UTC -3:00) Argentina, Brasilien, Franska Guyana, Uruguay';
+$lang['UM2']    = '(UTC -2:00) Sydgeorgien/Sydsandwichöarna';
+$lang['UM1']    = '(UTC -1:00) Azorerna, Kap Verde';
+$lang['UTC']    = '(UTC) Greenwich-tid, Västeuropeisk tid';
+$lang['UP1']    = '(UTC +1:00) Centraleuropeisk tid, Västafrikansk tid';
+$lang['UP2']    = '(UTC +2:00) Centralafrikansk tid, Östeuropeisk tid, Kaliningrad-tid';
+$lang['UP3']    = '(UTC +3:00) Moskva-tid, Östafrikansk tid, Arabisk standardtid';
+$lang['UP35']   = '(UTC +3:30) Iran standardtid';
+$lang['UP4']    = '(UTC +4:00) Azerbajdzjan standardtid, Samara-tid';
+$lang['UP45']   = '(UTC +4:30) Afghanistan';
+$lang['UP5']    = '(UTC +5:00) Pakistan standardtid, Jekaterinburg-tid';
+$lang['UP55']   = '(UTC +5:30) Indien standardtid, Sri Lanka-tid';
+$lang['UP575']  = '(UTC +5:45) Nepal-tid';
+$lang['UP6']    = '(UTC +6:00) Bangladesh standardtid, Bhutan-tid, Omsk-tid';
+$lang['UP65']   = '(UTC +6:30) Kokosöarna, Myanmar';
+$lang['UP7']    = '(UTC +7:00) Krasnojarsk-tid, Kambodja, Laos, Thailand, Vietnam';
+$lang['UP8']    = '(UTC +8:00) Australien västra standardtid, Beijing-tid, Irkutsk-tid';
+$lang['UP875']  = '(UTC +8:45) Australien centrala västra standardtid';
+$lang['UP9']    = '(UTC +9:00) Japan standardtid, Korea standardtid, Jakutsk-tid';
+$lang['UP95']   = '(UTC +9:30) Australien centrala standardtid';
+$lang['UP10']   = '(UTC +10:00) Australien östra standardtid, Vladivostok-tid';
+$lang['UP105']  = '(UTC +10:30) Lord Howe-ön';
+$lang['UP11']   = '(UTC +11:00) Srednekolymsk-tid, Salomonöarna, Vanuatu';
+$lang['UP115']  = '(UTC +11:30) Norfolkön';
+$lang['UP12']   = '(UTC +12:00) Fiji, Gilbertöarna, Kamtjatka-tid, Nya Zeeland standardtid';
+$lang['UP1275'] = '(UTC +12:45) Chathamöarna standardtid';
+$lang['UP13']   = '(UTC +13:00) Samoa-tidszon, Phoenixöarna, Tonga';
+$lang['UP14']   = '(UTC +14:00) Lineöarna';

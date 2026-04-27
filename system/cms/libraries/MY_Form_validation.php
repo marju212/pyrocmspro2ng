@@ -333,7 +333,24 @@ class MY_Form_validation extends CI_Form_validation
 			{
 				if ( ! isset($this->_error_messages[$rule]))
 				{
-					if (false === ($line = $this->CI->lang->line($rule)))
+					// Look up the modern CI3-style key first
+					// (form_validation_*), then fall back to the legacy
+					// non-prefixed key, then to a generic message. The
+					// shipped lang files (system/codeigniter/language/
+					// {english,swedish}/form_validation_lang.php) use the
+					// prefixed keys, so without this lookup every rule
+					// failed to a "Unable to access an error message…"
+					// fallback. Pass FALSE as the second arg to lang->line
+					// so misses don't spam the error log.
+					if (false !== ($l = $this->CI->lang->line('form_validation_'.$rule, false)))
+					{
+						$line = $l;
+					}
+					elseif (false !== ($l = $this->CI->lang->line($rule, false)))
+					{
+						$line = $l;
+					}
+					else
 					{
 						$line = 'Unable to access an error message corresponding to your field name.'.$rule;
 					}
@@ -350,8 +367,20 @@ class MY_Form_validation extends CI_Form_validation
 					$param = $this->_translate_fieldname($this->_field_data[$param]['label']);
 				}
 
-				// Build the error message
-				$message = sprintf($line, $this->_translate_fieldname($row['label']), $param);
+				$field_label = $this->_translate_fieldname($row['label']);
+
+				// Modern lang lines use {field}/{param} placeholders;
+				// legacy custom messages may still use sprintf %s tokens.
+				// Detect which format is in use and substitute accordingly
+				// — sprintf on a non-format string is a PHP 8 warning.
+				if (strpos($line, '{field}') !== false || strpos($line, '{param}') !== false)
+				{
+					$message = str_replace(array('{field}', '{param}'), array($field_label, $param), $line);
+				}
+				else
+				{
+					$message = sprintf($line, $field_label, $param);
+				}
 
 				// Save the error message
 				$this->_field_data[$row['field']]['error'] = $message;
