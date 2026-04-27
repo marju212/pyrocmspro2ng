@@ -40,6 +40,7 @@ tinymce.init({
     menubar: false,
     branding: false,
     promotion: false,
+    toolbar_mode: 'wrap',
     plugins: 'lists link autolink',
     external_plugins: pyroEditorPlugins,
     toolbar: 'pyroimages | bold italic | numlist bullist | link unlink',
@@ -53,18 +54,21 @@ tinymce.init({
     menubar: false,
     branding: false,
     promotion: false,
+    toolbar_mode: 'wrap',
     plugins: 'lists link autolink',
     toolbar: 'bold italic | numlist bullist | link unlink',
     height: 200,
     width: '99%'
 });
 
-{{# Advanced editor — full toolbar with fullscreen, table, source view, file picker. #}}
+{{# Advanced editor — full toolbar wraps to multiple rows instead of using #}}
+{{# the floating three-dots overflow (toolbar_mode: 'wrap'). #}}
 tinymce.init({
     selector: 'textarea.wysiwyg-advanced',
     menubar: false,
     branding: false,
     promotion: false,
+    toolbar_mode: 'wrap',
     plugins: 'fullscreen lists link autolink table searchreplace code visualblocks visualchars charmap pagebreak directionality',
     external_plugins: pyroEditorPlugins,
     toolbar: 'fullscreen | pyroimages pyrofiles | undo redo | searchreplace | link unlink | bold italic strikethrough | alignleft aligncenter alignright alignjustify | ltr rtl | styles fontsize subscript superscript | numlist bullist outdent indent blockquote | table pagebreak charmap | visualblocks visualchars removeformat code',

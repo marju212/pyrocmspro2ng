@@ -326,17 +326,37 @@ $config['sess_regenerate_destroy'] = false;
 | 'cookie_secure' =  Cookies will only be set if a secure HTTPS connection exists.
 |
 */
+// Derive the public-facing host/proto the same way base_url does — through
+// X-Forwarded-* when present — so cookies set behind a tunnel (Expose,
+// ngrok) or TLS-terminating proxy match the host the browser is actually
+// on. Otherwise Set-Cookie is rejected (domain mismatch) and the next
+// POST has no CSRF cookie, which fails validation with a 403.
+$pyro_cookie_fwd_host  = isset($_SERVER['HTTP_X_FORWARDED_HOST'])  ? trim(strtok($_SERVER['HTTP_X_FORWARDED_HOST'], ',')) : '';
+$pyro_cookie_fwd_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? strtolower(trim(strtok($_SERVER['HTTP_X_FORWARDED_PROTO'], ','))) : '';
+$pyro_cookie_host      = $pyro_cookie_fwd_host !== ''
+    ? $pyro_cookie_fwd_host
+    : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : (isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : ''));
+// Strip any :port suffix — cookie_domain takes a hostname only. Skip when
+// the host is bracketed IPv6 ([::1]) since the colons there aren't a port.
+if (strpos($pyro_cookie_host, ']') === false && ($pyro_cookie_colon = strrpos($pyro_cookie_host, ':')) !== false)
+{
+	$pyro_cookie_host = substr($pyro_cookie_host, 0, $pyro_cookie_colon);
+}
+$pyro_cookie_https = ($pyro_cookie_fwd_proto === 'https')
+                     || ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off');
+
 // for multi-site logins to work properly we have to set a prefix. We use the subdomain for that or default_ if none exists.
-$config['cookie_prefix']    = (substr_count($_SERVER['SERVER_NAME'], '.') > 1) ? substr($_SERVER['SERVER_NAME'], 0, strpos($_SERVER['SERVER_NAME'], '.')) . '_' : 'default_';
-$config['cookie_domain']    = ($_SERVER['SERVER_NAME'] == 'localhost') ? '' : $_SERVER['SERVER_NAME'];
+$config['cookie_prefix']    = (substr_count($pyro_cookie_host, '.') > 1) ? substr($pyro_cookie_host, 0, strpos($pyro_cookie_host, '.')) . '_' : 'default_';
+$config['cookie_domain']    = ($pyro_cookie_host === 'localhost' || $pyro_cookie_host === '') ? '' : $pyro_cookie_host;
 $config['cookie_path']        = BASE_URI;
 // Force Secure cookies in production, and opportunistically when HTTPS is
-// detected (e.g. behind a TLS-terminating proxy that sets $_SERVER['HTTPS']).
-$config['cookie_secure']    = (ENVIRONMENT === PYRO_PRODUCTION)
-                              || ( ! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off');
+// detected directly or via a TLS-terminating proxy (X-Forwarded-Proto).
+$config['cookie_secure']    = (ENVIRONMENT === PYRO_PRODUCTION) || $pyro_cookie_https;
 $config['cookie_httponly']  = true;
 // CI 3.1 honours this; CI 2.x ignores it safely.
 $config['cookie_samesite']  = 'Lax';
+
+unset($pyro_cookie_fwd_host, $pyro_cookie_fwd_proto, $pyro_cookie_host, $pyro_cookie_https, $pyro_cookie_colon);
 
 /*
 |--------------------------------------------------------------------------

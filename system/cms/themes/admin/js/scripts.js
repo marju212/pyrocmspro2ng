@@ -48,10 +48,13 @@ jQuery(function ($) {
      * Wired to TinyMCE 6 fullscreen plugin via FullscreenStateChanged events.
      */
     pyro.init_wysiwyg_maximize = function () {
-        if (typeof tinymce === 'undefined') {
+        // tinymce.editors is gone in TinyMCE 6 — use tinymce.get() which
+        // returns an array of all current editors. Guard against the
+        // initial state where TinyMCE hasn't booted yet.
+        if (typeof tinymce === 'undefined' || typeof tinymce.get !== 'function') {
             return;
         }
-        tinymce.editors.forEach(function (editor) {
+        tinymce.get().forEach(function (editor) {
             if (editor.__pyroMaximizeBound) return;
             editor.__pyroMaximizeBound = true;
             editor.on('FullscreenStateChanged', function (e) {
@@ -70,8 +73,17 @@ jQuery(function ($) {
      * Autocomplete Search
      */
     pyro.init_autocomplete_search = function () {
+        var $search = $(".search-query");
+        // Skip when the topbar search isn't on the page (e.g. some edit
+        // views) — otherwise the chained .data("autocomplete") below
+        // returns undefined and setting _renderItem on it throws,
+        // breaking every livequery init that runs after this in the
+        // ready handler (notably the .tabs() init).
+        if ( ! $search.length) {
+            return;
+        }
         var cache = {}, lastXhr;
-        $(".search-query").autocomplete({
+        $search.autocomplete({
             minLength: 2,
             delay: 250,
             source: function (request, response) {

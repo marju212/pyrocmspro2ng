@@ -860,12 +860,26 @@ class Asset {
 	 */
 	protected static function process_filepath($filepath, $type, $remote = null)
 	{
+		if ($remote === null)
+		{
+			$remote = (strpos($filepath, '//') !== false);
+		}
 		if (self::$filepath_callback)
 		{
-			if ($remote === null)
-				$remote = (strpos($filepath, '//') !== false);
 			$func = self::$filepath_callback;
 			$filepath = $func($filepath, $type, $remote);
+		}
+		// Append a ?v=<filemtime> cache buster for local files so browsers
+		// pick up edits without a hard reload. Skips remote URLs and files
+		// that already carry their own query string. Misses (file moved or
+		// not yet on disk) silently fall through unversioned.
+		if ( ! $remote && strpos($filepath, '?') === false)
+		{
+			$abs = FCPATH.$filepath;
+			if (is_file($abs) && ($mtime = @filemtime($abs)))
+			{
+				$filepath .= '?v='.$mtime;
+			}
 		}
 		return $filepath;
 	}
