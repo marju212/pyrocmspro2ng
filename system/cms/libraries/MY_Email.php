@@ -48,7 +48,26 @@ class MY_Email extends CI_Email
             $config['smtp_user'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_USER')) !== '') ? $v : Settings::get('mail_smtp_user');
             $config['smtp_pass'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_PASS')) !== '') ? $v : Settings::get('mail_smtp_pass');
             $config['smtp_port'] = (function_exists('env_str') && ($v = env_str('MAIL_SMTP_PORT')) !== '') ? $v : Settings::get('mail_smtp_port');
+
+            // Encrypt the SMTP submission. Default to STARTTLS ('tls') because
+            // we'd otherwise send AUTH LOGIN credentials in cleartext. Allow
+            // 'ssl' for providers that require implicit TLS on port 465 / 8465,
+            // or '' to opt out (only for explicit local-relay debugging).
+            $crypto = function_exists('env_str') ? env_str('MAIL_SMTP_CRYPTO', 'tls') : 'tls';
+            if ($crypto !== '') {
+                $config['smtp_crypto'] = $crypto;
+            }
+
+            // CI's default smtp_timeout is 5s — too tight for cross-region SMTP
+            // on flaky connections. 15s is comfortable without hanging the
+            // request thread for too long if the relay is down.
+            $timeout = function_exists('env_str') ? env_str('MAIL_SMTP_TIMEOUT', '15') : '15';
+            $config['smtp_timeout'] = (int) $timeout;
         }
+
+        // Catch syntactically invalid recipients before they hit the relay so
+        // a typo surfaces as a CI validation error instead of an SMTP bounce.
+        $config['validate'] = true;
 
         $this->initialize($config);
     }
