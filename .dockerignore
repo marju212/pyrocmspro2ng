@@ -1,0 +1,45 @@
+# Things that should never bake into the image.
+
+# VCS / IDE / OS clutter
+.git
+.gitignore
+.gitattributes
+.github
+.idea
+.vscode
+.DS_Store
+*.swp
+
+# Local-only state
+.env
+.env.local
+.env.*.local
+.playwright-mcp
+*.log
+permissionfix
+
+# Docs and dev-only bits — keep the README so it's discoverable on the box.
+CLAUDE.md
+CLEANUP_WYSIWYG_README.md
+SMTP_SETUP.md
+UPGRADE_STATE.md
+docs
+tests
+phpdoc.dist.xml
+.travis.yml
+
+# Coolify metadata
+polyscope.json
+
+# Generated runtime data — these paths are recreated empty inside the image
+# and should be backed by a persistent volume in production.
+assets/cache/*
+!assets/cache/.gitkeep
+system/cms/cache/*
+!system/cms/cache/.gitkeep
+system/cms/logs/log-*.php
+system/cms/logs/php-fatals.log
+
+# The Dockerfile + .dockerignore themselves
+Dockerfile
+.dockerignore
