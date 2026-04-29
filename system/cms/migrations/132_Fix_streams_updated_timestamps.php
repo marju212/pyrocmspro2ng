@@ -25,6 +25,17 @@ class Migration_Fix_streams_updated_timestamps extends CI_Migration
 {
     public function up()
     {
+        // MySQL 8 + strict mode rejects comparisons against
+        // '0000-00-00 00:00:00' with error 1292, which makes the WHERE
+        // clauses below blow up before we get a chance to backfill.
+        // Drop strict mode for the duration of this session so the
+        // existing zero-date rows can be queried + replaced. We restore
+        // it at the end (or on early return).
+        $prev_mode = (string) ($this->db->query('SELECT @@SESSION.sql_mode AS m')->row()->m ?? '');
+        $this->db->query("SET SESSION sql_mode = ''");
+
+        try
+        {
         $db_name = $this->db->database;
 
         // Tables with both id + updated columns.
@@ -87,6 +98,13 @@ class Migration_Fix_streams_updated_timestamps extends CI_Migration
                     DEFAULT CURRENT_TIMESTAMP
                     ON UPDATE CURRENT_TIMESTAMP
             ");
+        }
+        }
+        finally
+        {
+            // Restore the original session sql_mode regardless of whether
+            // the migration body threw.
+            $this->db->query('SET SESSION sql_mode = '.$this->db->escape($prev_mode));
         }
     }
 
