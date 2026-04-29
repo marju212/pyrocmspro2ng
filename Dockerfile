@@ -158,6 +158,33 @@ RUN set -eux; \
     find uploads assets/cache system/cms/cache system/cms/logs \
         -type f -exec chmod 0664 {} +
 
+# PyroCMS / CI 2.x case-sensitivity shim. CI core's Loader::model() does
+# ucfirst() on the model name before searching the filesystem, so it looks
+# for `Foo_m.php` while PyroCMS ships the files as `foo_m.php`. macOS APFS
+# is case-insensitive so this just works locally; on Linux the lookup
+# fails with "Unable to locate the model you have specified". Same problem
+# bites views and controllers occasionally. Create capitalized symlinks
+# next to every lowercase model/view/controller file so both spellings
+# resolve. Idempotent: skips files that already start with an upper-case
+# letter, and safely no-ops re-runs (`ln -snf`).
+RUN set -eux; \
+    find /var/www/html/system/cms/modules \
+         /var/www/html/addons \
+         -type f \
+         \( -path '*/models/*.php' -o -path '*/controllers/*.php' -o -path '*/libraries/*.php' \) \
+         -print 2>/dev/null \
+    | while IFS= read -r f; do \
+        base=$(basename "$f"); \
+        first=$(printf %.1s "$base"); \
+        case "$first" in \
+            [a-z]) \
+                cap=$(printf '%s%s' "$(printf %.1s "$base" | tr a-z A-Z)" "${base#?}"); \
+                target="$(dirname "$f")/$cap"; \
+                [ -e "$target" ] || ln -s "$base" "$target"; \
+                ;; \
+        esac; \
+    done
+
 # Static health endpoint. The probe deliberately doesn't hit the front
 # controller — that would couple liveness to PHP/DB/router/template state,
 # and Coolify would roll back deploys for config issues (DB DNS, missing env
