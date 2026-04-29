@@ -237,17 +237,22 @@ set -e
 
 # Cache directories that should be wiped on every container start so a
 # redeploy never serves stale rendered partials, query caches, combined
-# JS/CSS, or thumb caches. The actual *uploaded* files in uploads/ are
-# preserved; only generated derivatives go.
+# JS/CSS, or thumb caches. *Sessions* (system/cms/cache/sessions) are
+# explicitly preserved — that path is PyroCMS's CodeIgniter file-session
+# store, and wiping it logs every signed-in user out on every container
+# restart. Likewise *uploads* are never touched here.
 for cache in \
     /var/www/html/system/cms/cache \
     /var/www/html/assets/cache
 do
     if [ -d "$cache" ]; then
-        # Glob-delete contents only — keep the directory itself so the
-        # subsequent chown/chmod block has something to work on. Tolerate
-        # ENOENT (empty dir) and EROFS (read-only volume) silently.
-        find "$cache" -mindepth 1 -delete 2>/dev/null || true
+        # Top-level glob only, skipping `sessions/`. -mindepth 1 keeps
+        # the cache root itself; -maxdepth 1 means we delete each child
+        # as a unit (so directory subtrees go in one shot) without
+        # descending into `sessions/` first. Tolerate ENOENT / EROFS.
+        find "$cache" -mindepth 1 -maxdepth 1 \
+            ! -name 'sessions' \
+            -exec rm -rf {} + 2>/dev/null || true
     fi
 done
 
