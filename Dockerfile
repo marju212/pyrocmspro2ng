@@ -158,12 +158,16 @@ RUN set -eux; \
     find uploads assets/cache system/cms/cache system/cms/logs \
         -type f -exec chmod 0664 {} +
 
+# Static health endpoint. The probe deliberately doesn't hit the front
+# controller — that would couple liveness to PHP/DB/router/template state,
+# and Coolify would roll back deploys for config issues (DB DNS, missing env
+# vars) that the container itself is not responsible for. Apache serving a
+# byte off disk is enough proof "the container is up; route to me."
+RUN echo 'OK' > /var/www/html/healthz.html
+
 EXPOSE 80
 
-# Liveness probe: the front controller answers on / with a 200 (login page) or
-# 302 (redirect to /admin). A non-2xx/3xx means the app crashed during boot.
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl -fsS --max-time 4 -o /dev/null -w '%{http_code}\n' \
-        http://127.0.0.1/ | grep -Eq '^(200|301|302)$' || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -fsS --max-time 4 http://127.0.0.1/healthz.html || exit 1
 
 CMD ["apache2-foreground"]
