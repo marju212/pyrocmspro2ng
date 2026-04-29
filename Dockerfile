@@ -35,9 +35,10 @@ FROM php:8.2-apache
 # -----------------------------------------------------------------------------
 # System packages + PHP extensions
 # -----------------------------------------------------------------------------
-# - libonig-dev      : mbstring
-# - libpng/libjpeg/libwebp/libfreetype : gd
+# - libcurl4-openssl-dev : curl (PHP ext)
+# - libfreetype/libpng/libjpeg/libwebp : gd
 # - libicu-dev       : intl
+# - libonig-dev      : mbstring
 # - libxml2-dev      : xml/dom
 # - libzip-dev       : zip
 RUN set -eux; \
@@ -45,6 +46,7 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
+        libcurl4-openssl-dev \
         libfreetype6-dev \
         libicu-dev \
         libjpeg-dev \
@@ -59,6 +61,7 @@ RUN set -eux; \
     docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype; \
     docker-php-ext-install -j"$(nproc)" \
         bcmath \
+        curl \
         exif \
         gd \
         intl \
