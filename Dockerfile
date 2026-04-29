@@ -169,6 +169,8 @@ RUN set -eux; \
 # letter, and safely no-ops re-runs (`ln -snf`).
 RUN set -eux; \
     find /var/www/html/system/cms/modules \
+         /var/www/html/system/cms/libraries \
+         /var/www/html/system/sparks \
          /var/www/html/addons \
          -type f \
          \( -path '*/models/*.php' -o -path '*/controllers/*.php' -o -path '*/libraries/*.php' \) \
