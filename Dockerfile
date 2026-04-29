@@ -197,6 +197,7 @@ BASH
 # letter, and safely no-ops re-runs (`ln -snf`).
 RUN set -eux; \
     find /var/www/html/system/cms/modules \
+         /var/www/html/system/cms/controllers \
          /var/www/html/system/cms/libraries \
          /var/www/html/system/sparks \
          /var/www/html/addons \
