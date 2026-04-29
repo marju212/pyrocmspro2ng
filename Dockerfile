@@ -223,9 +223,37 @@ RUN set -eux; \
 # byte off disk is enough proof "the container is up; route to me."
 RUN echo 'OK' > /var/www/html/healthz.html
 
+# Startup permission fix. Coolify (or any runtime volume mount) overlays
+# its own ownership/mode on top of the build-time chowned dirs — if the
+# volume comes in as root:root 0755, Apache (www-data) can't write into
+# uploads/ and PyroCMS's file uploads end up either silently zero-byte
+# or readable but not writable on subsequent edits. Fix at startup so
+# every container instance gets correct perms regardless of how the
+# volume was provisioned. Idempotent: cheap to re-run.
+RUN <<'BASH'
+cat > /usr/local/bin/pyro-entrypoint.sh <<'SH'
+#!/bin/sh
+set -e
+for d in \
+    /var/www/html/uploads \
+    /var/www/html/assets/cache \
+    /var/www/html/system/cms/cache \
+    /var/www/html/system/cms/logs
+do
+    [ -d "$d" ] || mkdir -p "$d"
+    chown -R www-data:www-data "$d" 2>/dev/null || true
+    find "$d" -type d -exec chmod 0775 {} + 2>/dev/null || true
+    find "$d" -type f -exec chmod 0664 {} + 2>/dev/null || true
+done
+exec "$@"
+SH
+chmod +x /usr/local/bin/pyro-entrypoint.sh
+BASH
+
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -fsS --max-time 4 http://127.0.0.1/healthz.html || exit 1
 
+ENTRYPOINT ["/usr/local/bin/pyro-entrypoint.sh"]
 CMD ["apache2-foreground"]
