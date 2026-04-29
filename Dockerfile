@@ -234,6 +234,27 @@ RUN <<'BASH'
 cat > /usr/local/bin/pyro-entrypoint.sh <<'SH'
 #!/bin/sh
 set -e
+
+# Cache directories that should be wiped on every container start so a
+# redeploy never serves stale rendered partials, query caches, combined
+# JS/CSS, or thumb caches. The actual *uploaded* files in uploads/ are
+# preserved; only generated derivatives go.
+for cache in \
+    /var/www/html/system/cms/cache \
+    /var/www/html/assets/cache
+do
+    if [ -d "$cache" ]; then
+        # Glob-delete contents only — keep the directory itself so the
+        # subsequent chown/chmod block has something to work on. Tolerate
+        # ENOENT (empty dir) and EROFS (read-only volume) silently.
+        find "$cache" -mindepth 1 -delete 2>/dev/null || true
+    fi
+done
+
+# Persistent runtime directories: ensure they exist + are writable by
+# the webserver user. Coolify (or any volume mount) overlays its own
+# ownership/mode on top of the build-time chowned dirs — typically
+# root:root 0755 — so re-apply at every startup.
 for d in \
     /var/www/html/uploads \
     /var/www/html/assets/cache \
@@ -245,6 +266,7 @@ do
     find "$d" -type d -exec chmod 0775 {} + 2>/dev/null || true
     find "$d" -type f -exec chmod 0664 {} + 2>/dev/null || true
 done
+
 exec "$@"
 SH
 chmod +x /usr/local/bin/pyro-entrypoint.sh

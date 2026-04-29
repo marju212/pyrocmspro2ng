@@ -17,7 +17,7 @@
 						<td>
 							<strong><?php echo $target; ?></strong>
 							<?php if ($target > $current): ?>
-								&nbsp;<span style="color: #c00;">— <?php echo ($target - $current); ?> migration(s) pending. Run any page on the site to trigger them.</span>
+								&nbsp;<span style="color: #c00;">— <?php echo ($target - $current); ?> migration(s) pending. Hit any page on the site to trigger them.</span>
 							<?php elseif ($target < $current): ?>
 								&nbsp;<span style="color: #c00;">— DB is ahead of code. Investigate before redeploying older code.</span>
 							<?php else: ?>

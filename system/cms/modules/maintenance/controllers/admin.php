@@ -74,65 +74,6 @@ class Admin extends Admin_Controller
 	}
 
 
-	/**
-	 * Read-only diagnostics page: show the current migration version,
-	 * list every migration file shipped in the codebase, and mark which
-	 * have been applied. Useful for confirming that a freshly-deployed
-	 * image actually executed the migrations it ships.
-	 *
-	 * Live URL: /admin/maintenance/migrations
-	 */
-	public function migrations()
-	{
-		// Current applied version. The CI migration library tracks this
-		// in a table called `migrations` with a single `version` column.
-		$current = 0;
-		if ($this->db->table_exists('migrations'))
-		{
-			$row = $this->db->get('migrations')->row();
-			if ($row && isset($row->version))
-			{
-				$current = (int) $row->version;
-			}
-		}
-
-		// Configured target version. CI runs up() until it reaches this.
-		$target = (int) $this->config->item('migration_version');
-
-		// Walk the migrations directory, parse `NNN_Name.php` filenames,
-		// and bucket each by applied / pending.
-		$path = APPPATH.'migrations/';
-		$files = glob($path.'*.php') ?: array();
-		sort($files);
-
-		$migrations = array();
-		foreach ($files as $file)
-		{
-			$base = basename($file, '.php');
-			if ( ! preg_match('/^(\d+)_(.+)$/', $base, $m))
-			{
-				continue;
-			}
-
-			$version = (int) $m[1];
-			$migrations[] = array(
-				'version' => $version,
-				'name'    => str_replace('_', ' ', $m[2]),
-				'file'    => $base.'.php',
-				'applied' => $version <= $current,
-				'pending' => $version > $current && $version <= $target,
-			);
-		}
-
-		$this->template
-			->title($this->module_details['name'].' :: Migrations')
-			->set('current', $current)
-			->set('target',  $target)
-			->set('migrations', $migrations)
-			->build('admin/migrations');
-	}
-
-
 	public function cleanup($name = '', $andfolder = 0)
 	{
 		if ( ! empty($name))
