@@ -21,7 +21,8 @@
 			list-style: none;
 		}
 		#filters.users-filters form > ul > li {
-			width: 440px;
+			flex: 1 1 280px;
+			max-width: 360px;
 			margin: 0;
 			padding: 0;
 			float: none;
@@ -29,7 +30,8 @@
 			list-style: none;
 		}
 		#filters.users-filters form > ul > li.filter-reset {
-			width: auto;
+			flex: 0 0 auto;
+			max-width: none;
 			align-self: flex-end;
 			margin-left: auto;
 		}
@@ -45,6 +47,23 @@
 			width: 100%;
 			box-sizing: border-box;
 			margin: 0;
+		}
+		/* Selects are upgraded to chosen.js which writes an inline width
+		   on .chzn-container based on the original select's intrinsic width.
+		   Override that so the dropdown fills its <li>. */
+		#filters.users-filters form > ul > li .chzn-container {
+			width: 100% !important;
+		}
+		#filters.users-filters form > ul > li .chzn-container .chzn-drop {
+			width: 100% !important;
+		}
+		/* None of the filter dropdowns has enough options to warrant chosen's
+		   built-in search box — hide it. */
+		#filters.users-filters form > ul > li .chzn-container .chzn-search {
+			display: none;
+		}
+		#filters.users-filters form > ul > li .chzn-container .chzn-drop {
+			padding-top: 0 !important;
 		}
 	</style>
 
