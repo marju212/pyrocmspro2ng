@@ -36,6 +36,17 @@ $lang['user:joined_label']                     = 'Joined';
 $lang['user:last_visit_label']                 = 'Last visit';
 $lang['user:never_label']                      = 'Never';
 
+// Filter labels (admin/users)
+$lang['user:filter_name']                      = 'Name';
+$lang['user:filter_email']                     = 'Email';
+$lang['user:filter_keywords']                  = 'Search';
+$lang['user:filter_joined']                    = 'Joined';
+$lang['user:filter_last_visit']                = 'Last visit';
+$lang['user:filter_date_7days']                = 'Last 7 days';
+$lang['user:filter_date_30days']               = 'Last 30 days';
+$lang['user:filter_date_this_year']            = 'This year';
+$lang['user:filter_reset']                     = 'Reset';
+
 $lang['user:no_inactives']                     = 'There are no inactive users.';
 $lang['user:no_registred']                     = 'There are no registered users.';
 

@@ -39,6 +39,17 @@ $lang['user:membernumber_label'] = 'Medlem Nr';
 $lang['user:joined_label'] = 'Blev medlem';
 $lang['user:last_visit_label'] = 'Senaste besök';
 $lang['user:never_label'] = 'Aldrig';
+
+// Filterrubriker (admin/users)
+$lang['user:filter_name']           = 'Namn';
+$lang['user:filter_email']          = 'E-post';
+$lang['user:filter_keywords']       = 'Sök';
+$lang['user:filter_joined']         = 'Blev medlem';
+$lang['user:filter_last_visit']     = 'Senaste besök';
+$lang['user:filter_date_7days']     = 'Senaste 7 dagarna';
+$lang['user:filter_date_30days']    = 'Senaste 30 dagarna';
+$lang['user:filter_date_this_year'] = 'Detta år';
+$lang['user:filter_reset']          = 'Återställ';
 $lang['user:no_inactives'] = 'Det finna inga inaktiva användare.';
 $lang['user:no_registred'] = 'Det finns inga registrerade användare.';
 $lang['account_changes_saved'] = 'Dina användaruppgifter är sparade.';

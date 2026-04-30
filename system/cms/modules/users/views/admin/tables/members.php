@@ -25,7 +25,7 @@
 			<?php foreach ($users as $member): ?>
 				<tr>
 					<td class="align-center"><?php echo form_checkbox('action_to[]', $member->id) ?></td>
-                    <td class="collapse"><?php echo ($member->membernumber) ?></td>
+                    <td class="collapse"><?php echo isset($member->membernumber) ? $member->membernumber : '' ?></td>
 					<td>
 					<?php if ($link_profiles) : ?>
 						<?php echo anchor('admin/users/preview/' . $member->id, $member->display_name, 'target="_blank" class="modal-large"') ?>

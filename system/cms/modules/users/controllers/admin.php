@@ -78,34 +78,30 @@ class Admin extends Admin_Controller
      */
     public function index()
     {
-        $base_where = array('active' => 0);
+        // Non-admin viewers should never see admin accounts in the list or
+        // pagination total.
+        $skip_admin = ($this->current_user->group != 'admin');
 
-        // ---------------------------
-        // User Filters
-        // ---------------------------
+        // Normalised filter set — the same array drives both the count and the
+        // result query so pagination can never report more rows than render.
+        $filters = array(
+            'active'            => (int) $this->input->post('f_active'),
+            'group_id'          => (int) $this->input->post('f_group'),
+            'name'              => (string) $this->input->post('f_name'),
+            'email'             => (string) $this->input->post('f_email'),
+            'joined_preset'     => (string) $this->input->post('f_joined'),
+            'last_visit_preset' => (string) $this->input->post('f_last_visit'),
+        );
 
-        // Determine active param
-        $base_where['active'] = $this->input->post('f_module') ? (int)$this->input->post('f_active') : $base_where['active'];
+        $total = $this->user_m->count_by($filters, $skip_admin);
+        $pagination = create_pagination('admin/users/index', $total);
 
-        // Determine group param
-        $base_where = $this->input->post('f_group') ? $base_where + array('group_id' => (int)$this->input->post('f_group')) : $base_where;
-
-        // Keyphrase param
-        $base_where = $this->input->post('f_keywords') ? $base_where + array('name' => $this->input->post('f_keywords')) : $base_where;
-
-        // Create pagination links
-        $pagination = create_pagination('admin/users/index', $this->user_m->count_by($base_where));
-
-        //Skip admin
-        $skip_admin = ($this->current_user->group != 'admin') ? 'admin' : '';
-
-        // Using this data, get the relevant results
-        $this->db->order_by('active', 'desc')
-            ->join('groups', 'groups.id = users.group_id')
-            ->where_not_in('groups.name', $skip_admin)
-            ->limit($pagination['limit'], $pagination['offset']);
-
-        $users = $this->user_m->get_many_by($base_where);
+        $users = $this->user_m->get_many_by(
+            $filters,
+            $skip_admin,
+            $pagination['limit'],
+            $pagination['offset']
+        );
 
         // Unset the layout if we have an ajax request
         if ($this->input->is_ajax_request()) {
@@ -119,8 +115,6 @@ class Admin extends Admin_Controller
             ->set('users', $users)
             ->set_partial('filters', 'admin/partials/filters')
             ->append_js('admin/filter.js');
-
-
 
         $this->input->is_ajax_request() ? $this->template->build('admin/tables/'.((SITE_REF=='bockavel')?'members':'users')) : $this->template->build('admin/index');
     }
