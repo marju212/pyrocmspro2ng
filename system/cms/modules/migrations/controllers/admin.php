@@ -26,7 +26,11 @@ class Admin extends Admin_Controller
             }
         }
 
-        // Configured target — CI runs up() until it reaches this.
+        // Configured target — CI runs up() until it reaches this. The
+        // migration config isn't auto-loaded in the admin request, so
+        // pull it explicitly before reading the value (otherwise the
+        // page reports target=0 even when the file says 134).
+        $this->config->load('migration', false, true);
         $target = (int) $this->config->item('migration_version');
 
         // Walk the migrations directory and bucket each file.
