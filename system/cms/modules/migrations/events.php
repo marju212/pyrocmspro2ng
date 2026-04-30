@@ -39,8 +39,24 @@ class Events_Migrations
      */
     public function bust_cache()
     {
+        // Pyrocache's config defines cache_dir. It auto-loads when the
+        // Pyrocache library is loaded, but we don't want to depend on
+        // that timing — explicitly pull the config before reading the
+        // path so this handler works on every code path that triggers
+        // a streams save.
+        $ci = function_exists('ci') ? ci() : get_instance();
+        if ($ci && isset($ci->config))
+        {
+            $ci->config->load('pyrocache', false, true);
+        }
+
         $dir = config_item('cache_dir');
-        if ( ! $dir || ! is_dir($dir))
+        if ( ! $dir)
+        {
+            // Fall back to the same path the config file builds.
+            $dir = APPPATH.'cache/'.SITE_REF.'/';
+        }
+        if ( ! is_dir($dir))
         {
             return;
         }
