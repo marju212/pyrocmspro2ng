@@ -17,6 +17,8 @@
 .playwright-mcp
 *.log
 permissionfix
+# Local PHP overrides — Docker has its own zz-pyrocms.ini in conf.d.
+.user.ini
 
 # Docs and dev-only bits — keep the README so it's discoverable on the box.
 CLAUDE.md
