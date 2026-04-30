@@ -334,6 +334,33 @@ class Files
 	 */
 	public static function upload($folder_id, $name = false, $field = 'userfile', $width = false, $height = false, $ratio = false, $allowed_types = false, $alt = NULL, $replace_file = false)
 	{
+		// If the request exceeded post_max_size PHP discards $_POST and $_FILES
+		// silently — caller will look like "no file submitted". Detect it via
+		// CONTENT_LENGTH and surface a meaningful error so we never write a
+		// half-uploaded file or a phantom DB row.
+		if (empty($_FILES) && empty($_POST) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0)
+		{
+			$post_max = self::_ini_bytes(ini_get('post_max_size'));
+			return self::result(
+				false,
+				sprintf(
+					lang('files:file_too_big_post') ?: 'Uploaded data is larger than the server allows (post_max_size = %s).',
+					self::_format_bytes($post_max)
+				)
+			);
+		}
+
+		// upload_max_filesize hit on this single field — PHP keeps $_FILES['name']
+		// populated but error = UPLOAD_ERR_INI_SIZE and tmp_name is empty. Catch
+		// before we try to do anything with the (non-existent) temp file.
+		if (isset($_FILES[$field]) && (int) $_FILES[$field]['error'] !== UPLOAD_ERR_OK)
+		{
+			$msg = self::_upload_error_message((int) $_FILES[$field]['error'], $_FILES[$field]['name']);
+			if ($msg !== null) {
+				return self::result(false, $msg, $_FILES[$field]['name']);
+			}
+		}
+
 		if ( ! $check_dir = self::check_dir(self::$path))
 		{
 			return $check_dir;
@@ -1249,7 +1276,7 @@ class Files
 		$allowed	= config_item('files:allowed_file_ext');
 
 		foreach ($allowed as $type => $ext_arr)
-		{				
+		{
 			if (in_array(strtolower($ext), $ext_arr))
 			{
 				self::$_type		= $type;
@@ -1260,6 +1287,82 @@ class Files
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Map a $_FILES[$field]['error'] code (PHP UPLOAD_ERR_*) to a user-facing
+	 * message. Returns null for UPLOAD_ERR_OK and UPLOAD_ERR_NO_FILE so the
+	 * caller can keep its existing "no file submitted" handling.
+	 */
+	private static function _upload_error_message($error_code, $original_name = '')
+	{
+		switch ($error_code) {
+			case UPLOAD_ERR_OK:
+			case UPLOAD_ERR_NO_FILE:
+				return null;
+
+			case UPLOAD_ERR_INI_SIZE:
+				$limit = self::_ini_bytes(ini_get('upload_max_filesize'));
+				return sprintf(
+					lang('files:file_too_big_ini') ?: 'The file "%s" is larger than the server allows (upload_max_filesize = %s).',
+					$original_name,
+					self::_format_bytes($limit)
+				);
+
+			case UPLOAD_ERR_FORM_SIZE:
+				return sprintf(
+					lang('files:file_too_big_form') ?: 'The file "%s" exceeds the form-declared MAX_FILE_SIZE.',
+					$original_name
+				);
+
+			case UPLOAD_ERR_PARTIAL:
+				return sprintf(
+					lang('files:file_partial') ?: 'The file "%s" was only partially uploaded — please retry.',
+					$original_name
+				);
+
+			case UPLOAD_ERR_NO_TMP_DIR:
+				return lang('files:file_no_tmp_dir') ?: 'Server upload error: missing temporary folder.';
+
+			case UPLOAD_ERR_CANT_WRITE:
+				return lang('files:file_cant_write') ?: 'Server upload error: could not write the file to disk.';
+
+			case UPLOAD_ERR_EXTENSION:
+				return lang('files:file_blocked') ?: 'Upload blocked by a server extension.';
+
+			default:
+				return lang('files:upload_error') ?: 'There was a problem uploading the file.';
+		}
+	}
+
+	/**
+	 * Convert an ini-style size string like "8M" / "256K" / "2G" into bytes.
+	 */
+	private static function _ini_bytes($value)
+	{
+		$value = trim((string) $value);
+		if ($value === '') {
+			return 0;
+		}
+		$unit = strtolower(substr($value, -1));
+		$num  = (int) $value;
+		switch ($unit) {
+			case 'g': return $num * 1024 * 1024 * 1024;
+			case 'm': return $num * 1024 * 1024;
+			case 'k': return $num * 1024;
+			default:  return (int) $value;
+		}
+	}
+
+	/**
+	 * Render a byte count in the closest power-of-1024 unit (e.g. "2 MB").
+	 */
+	private static function _format_bytes($bytes)
+	{
+		$units = array('B', 'KB', 'MB', 'GB');
+		$bytes = max(0, (int) $bytes);
+		$pow   = $bytes > 0 ? min(floor(log($bytes, 1024)), count($units) - 1) : 0;
+		return round($bytes / pow(1024, $pow), 1) . ' ' . $units[$pow];
 	}
 
 	/**
