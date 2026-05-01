@@ -347,7 +347,13 @@ $pyro_cookie_https = ($pyro_cookie_fwd_proto === 'https')
 
 // for multi-site logins to work properly we have to set a prefix. We use the subdomain for that or default_ if none exists.
 $config['cookie_prefix']    = (substr_count($pyro_cookie_host, '.') > 1) ? substr($pyro_cookie_host, 0, strpos($pyro_cookie_host, '.')) . '_' : 'default_';
-$config['cookie_domain']    = ($pyro_cookie_host === 'localhost' || $pyro_cookie_host === '') ? '' : $pyro_cookie_host;
+// Leave cookie_domain empty so cookies are host-only (no Domain attribute).
+// Setting it to $pyro_cookie_host stranded users with two pyrocms cookies in
+// the jar — one host-only from earlier deploys (when this was derived from
+// $_SERVER['SERVER_NAME']) and one Domain-scoped from current ones — and the
+// browser sent both, so $_COOKIE['pyrocms'] picked the wrong session id and
+// left the user "logged in but anonymous" after the post-login redirect.
+$config['cookie_domain']    = '';
 $config['cookie_path']        = BASE_URI;
 // Force Secure cookies in production, and opportunistically when HTTPS is
 // detected directly or via a TLS-terminating proxy (X-Forwarded-Proto).
