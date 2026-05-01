@@ -14,7 +14,7 @@
 	</li>
 	<li>
 		<label for="password"><?php echo lang('global:password') ?></label>
-		<input type="password" id="password" name="password" maxlength="20" />
+		<input type="password" id="password" name="password" />
 	</li>
 	<li id="remember_me">
 		<label><?php echo lang('user:remember') ?></label>

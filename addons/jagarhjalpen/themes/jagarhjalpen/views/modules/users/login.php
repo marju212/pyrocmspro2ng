@@ -19,7 +19,7 @@
 
 		<div class="form-group">
 			<label for="password"><?php echo lang('global:password') ?></label>
-			<input type="password" id="password" name="password" maxlength="20" class="form-control">
+			<input type="password" id="password" name="password" class="form-control">
 		</div>
 
 		<div class="checkbox">
