@@ -1202,12 +1202,12 @@ class Files
 			{
 				return self::result(false, lang('files:mkdir_error'), $path);
 			}
-			else
-			{
-				// create a catch all html file for safety
-				$uph = fopen($path . 'index.html', 'w');
-				fclose($uph);
-			}
+
+			// create a catch all html file for safety
+			$uph = fopen($path . 'index.html', 'w');
+			fclose($uph);
+
+			return self::result(true);
 		}
 		else
 		{
@@ -1215,6 +1215,8 @@ class Files
 			{
 				return self::result(false, lang('files:chmod_error'));
 			}
+
+			return self::result(true);
 		}
 	}
 	
