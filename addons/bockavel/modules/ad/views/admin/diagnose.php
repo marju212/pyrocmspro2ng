@@ -55,5 +55,25 @@ $pp = function ($v) {
 
         <h3>Ad module row in <code><?= htmlspecialchars(SITE_REF) ?>_modules</code></h3>
         <?= $pp($diag['ad_module_row']) ?>
+
+        <h3>Files config &amp; writability</h3>
+        <?= $pp($diag['files_paths']) ?>
+
+        <h3>File folders (<code><?= htmlspecialchars(SITE_REF) ?>_file_folders</code>)</h3>
+        <?= $pp($diag['file_folders']) ?>
+
+        <h3>Stream field config for <code>ad_image_1/2/3</code> + <code>ad_pdf_file</code></h3>
+        <?= $pp($diag['stream_fields']) ?>
+
+        <?php if (isset($diag['recent_files'])): ?>
+            <h3>10 most-recent rows in <code><?= htmlspecialchars(SITE_REF) ?>_files</code></h3>
+            <?= $pp($diag['recent_files']) ?>
+        <?php endif; ?>
+
+        <h3>10 newest files on disk in <code><?= htmlspecialchars($diag['uploads_dir_listing']['path']) ?></code></h3>
+        <?= $pp($diag['uploads_dir_listing']['files']) ?>
+
+        <h3>Flashdata (only populated if a previous request just set one)</h3>
+        <?= $pp($diag['flashdata']) ?>
     </div>
 </section>
