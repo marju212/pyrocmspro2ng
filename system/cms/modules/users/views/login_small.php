@@ -7,7 +7,7 @@
 	</li>
 	<li class="pword">
 		<label for="password"><?php echo lang('global:password') ?></label>
-		<input type="password" id="password" name="password" maxlength="20" />
+		<input type="password" id="password" name="password" />
 	</li>
 	<li class="form-buttons">
 		<input type="submit" value="<?php echo lang('user:login_btn') ?>" name="btnLogin" />

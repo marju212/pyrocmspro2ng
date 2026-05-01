@@ -763,6 +763,35 @@ class CI_Session {
 	 */
 	public function sess_regenerate($destroy = FALSE)
 	{
+		// PyroCMS: this library's init block (~line 155) emits a refresh
+		// Set-Cookie for the current session id on every request that
+		// arrives with a matching session cookie. When the application
+		// then regenerates the id (ion_auth's _set_login does this on
+		// every successful login), PHP emits a *second* Set-Cookie with
+		// the new id. Two Set-Cookie headers for the same name went out
+		// in the login response; some proxies / older browsers keep the
+		// first one, so the user followed the redirect carrying the old
+		// (pre-auth) id and looked logged out with no error message.
+		// Strip the stale refresh header before we regenerate so the
+		// response carries only the new id.
+		if ( ! headers_sent())
+		{
+			$marker = 'Set-Cookie: '.$this->_config['cookie_name'].'=';
+			$kept = array();
+			foreach (headers_list() as $h)
+			{
+				if (stripos($h, 'Set-Cookie:') === 0 && stripos($h, $marker) !== 0)
+				{
+					$kept[] = $h;
+				}
+			}
+			header_remove('Set-Cookie');
+			foreach ($kept as $h)
+			{
+				header($h, FALSE);
+			}
+		}
+
 		$_SESSION['__ci_last_regenerate'] = time();
 		session_regenerate_id($destroy);
 	}

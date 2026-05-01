@@ -21,7 +21,7 @@
 
         <div class="form-group">
             <label for="password">Lösenord</label>
-            <input type="password" id="password" name="password" maxlength="20" class="form-control">
+            <input type="password" id="password" name="password" class="form-control">
         </div>
 
         <div class="checkbox">
