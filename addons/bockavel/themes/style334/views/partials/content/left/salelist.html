@@ -17,7 +17,7 @@
             <div class="row">
                 {{# Show all news but hide the present one if is any #}}
                 {{ streams:cycle stream="ads" sort="desc" order_by="updated" no_results="<div class='col-lg-12'><p class='text-center'>För tillfället finns det inga annonser.</p></div>"
-                limit="6" where="<?php echo SITE_REF ?>_ads.updated BETWEEN SUBDATE(CURDATE(), INTERVAL 2 MONTH) AND NOW()" }}
+                limit="6" where="<?php echo SITE_REF ?>_ads.updated >= SUBDATE(CURDATE(), INTERVAL 2 MONTH)" }}
                 <div class="col-lg-12" style="cursor:pointer;" onclick="window.location.href='{{ site }}ad/show/{{ id }}'">
                     <li class="media">
                         <div class="pull-left" >
