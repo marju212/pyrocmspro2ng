@@ -13,6 +13,7 @@ class Events_Ad
         Events::register('streams_save_validation_error', array($this, 'validationError'));
         Events::register('streams_pre_insert_entry', array($this, 'validSubmit'));
         Events::register('streams_pre_insert_entry', array($this, 'createdToUpdated'));
+        Events::register('streams_pre_update_entry', array($this, 'refreshUpdatedOnEdit'));
 
     }
 
@@ -38,6 +39,17 @@ class Events_Ad
     {
         if ($data['stream']->stream_slug=='ads'){
             $data['insert_data']['updated']=date('Y-m-d H:i:s');
+        }
+        return true;
+    }
+
+    public function refreshUpdatedOnEdit($data)
+    {
+        // Listing filters by `updated BETWEEN 2 MONTH AGO AND NOW`, and the
+        // /ad/index UI promises "skapas eller uppdateras". Keep `updated`
+        // current on edits so resaved ads stay visible.
+        if ($data['stream']->stream_slug=='ads'){
+            $data['update_data']['updated']=date('Y-m-d H:i:s');
         }
         return true;
     }

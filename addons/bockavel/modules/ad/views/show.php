@@ -84,14 +84,12 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="row">
-                    {{ if ad_image_1 }}
                     <div class="col-sm-12" style="padding-bottom:10px;">
                         <a href="{{ ad_image_1:image }}" id="img1" target="_blank"><img src="{{ ad_image_1:image }}" class="img-thumbnail main-img" style="width:100%;"/></a>
                     </div>
-                    {{ endif }}
                     <div class="col-sm-12">
 
-                        {{ if ( ad_image_1 && ( ad_image_2 || ad_image_3 ) ) }}
+                        {{ if ( ad_image_2 || ad_image_3 ) }}
                         <img src="{{ ad_image_1:image }}" class="img-thumbnail small-img" style="max-width:112px;"/>
                         {{ endif }}
                         {{ if ad_image_2 }}
