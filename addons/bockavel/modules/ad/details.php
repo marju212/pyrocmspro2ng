@@ -15,7 +15,7 @@ class Module_Ad extends Module
                 'en' => 'Annonshantering PyroCMS modul.'
             ),
             'frontend' => TRUE,
-            'backend' => FALSE,
+            'backend' => TRUE,
             'menu' => 'none', // You can also place modules in their top level menu. For example try: 'menu' => 'Sample',
             'sections' => array(
                 'items' => array(
