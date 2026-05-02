@@ -83,7 +83,7 @@
 							<p><?php echo $file->filename ?></p>
 							<p><?php echo format_date($file->date_added) ?></p>
 						</td>
-						<td class="meta width"><?php echo $file->mimetype ?></td>
+						<td class="meta width"><span class="mime-pill"><?php echo $file->mimetype ?></span></td>
 					</tr>
 					<?php endforeach ?>
 				</tbody>

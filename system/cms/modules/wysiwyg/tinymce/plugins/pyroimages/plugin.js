@@ -36,8 +36,8 @@
                 editor.windowManager.openUrl({
                     title: 'Image',
                     url: (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + 'admin/wysiwyg/image',
-                    width: 800,
-                    height: 500,
+                    width: 1000,
+                    height: 600,
                     buttons: [
                         { type: 'cancel', name: 'cancel', text: 'Close' }
                     ]

@@ -19,8 +19,8 @@
                 editor.windowManager.openUrl({
                     title: 'Files',
                     url: (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + 'admin/wysiwyg/files_wysiwyg',
-                    width: 700,
-                    height: 400,
+                    width: 1000,
+                    height: 600,
                     buttons: [
                         { type: 'cancel', name: 'cancel', text: 'Close' }
                     ]

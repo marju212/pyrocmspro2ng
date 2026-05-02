@@ -1,3 +1,4 @@
+<?php if (defined('PYRO_WYSIWYG_FRAGMENT_RENDERED')) return; define('PYRO_WYSIWYG_FRAGMENT_RENDERED', true); ?>
 <script type="text/javascript" src="<?php echo BASE_URL?>system/cms/themes/admin/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 

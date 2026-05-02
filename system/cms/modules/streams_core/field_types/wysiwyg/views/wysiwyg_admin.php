@@ -1,3 +1,4 @@
+<?php if (defined('PYRO_WYSIWYG_FRAGMENT_RENDERED')) return; define('PYRO_WYSIWYG_FRAGMENT_RENDERED', true); ?>
 <script src="<?php echo Asset::get_filepath_js('tinymce/tinymce.min.js') ?>"></script>
 
 <script type="text/javascript">

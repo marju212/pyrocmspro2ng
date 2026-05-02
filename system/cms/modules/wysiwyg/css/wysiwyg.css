@@ -1,271 +1,599 @@
-h3 span {
-	font-size: 14px;
-	padding-left: 10px;
+/* ----------------------------------------------------------------------------
+ * WYSIWYG file/image picker popup styles
+ *
+ * Loaded by every iframe view spawned from the pyroimages / pyrofiles TinyMCE
+ * plugins. Scope is the iframe body only — these styles never reach the host
+ * admin page.
+ *
+ * HTML contract (see views/files/index.php and views/image/index.php):
+ *   #files_browser
+ *     #files_left_pane           folder nav (ul#files-nav, li.current)
+ *     #files_right_pane
+ *       h3                       current folder name
+ *       #files_toolbar           subfolder dropdown
+ *       table.table-list         rows of files; td.image button = "Insert"
+ *   #upload-box                  hidden by default; toggled when uploading
+ * -------------------------------------------------------------------------- */
+
+:root {
+    --pf-surface: #ffffff;
+    --pf-canvas: #f5f6f8;
+    --pf-sidebar: #fafafa;
+    --pf-border: #e5e7eb;
+    --pf-border-strong: #d1d5db;
+    --pf-text: #111827;
+    --pf-text-muted: #6b7280;
+    --pf-text-subtle: #9ca3af;
+    --pf-row-hover: #f9fafb;
+    --pf-accent: #FAA537;            /* admin theme orange */
+    --pf-accent-soft: #fff4e0;
+    --pf-primary: #111827;
+    --pf-primary-hover: #1f2937;
+    --pf-radius: 10px;
+    --pf-radius-sm: 6px;
+    --pf-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 4px 16px rgba(15, 23, 42, .06);
 }
-select {
-    width: 20em;
+
+body {
+    background: var(--pf-canvas);
+    color: var(--pf-text);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 16px;
 }
-input#insert_width {
-    border: 0;
-    font-weight: bold;
+
+/* ----------------------------------------------------------------------------
+ * Container
+ * -------------------------------------------------------------------------- */
+#files_browser {
+    display: flex;
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius);
+    box-shadow: var(--pf-shadow);
+    min-height: 340px;
+}
+
+/* ----------------------------------------------------------------------------
+ * Sidebar — folder navigation
+ * -------------------------------------------------------------------------- */
+#files_left_pane {
+    flex: 0 0 200px;
+    background: var(--pf-sidebar);
+    border-right: 1px solid var(--pf-border);
+    padding: 14px 10px;
+    box-sizing: border-box;
+}
+
+#files_left_pane h3 {
+    margin: 0 8px 10px;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--pf-text-subtle);
+}
+
+#files_left_pane ul,
+#files_left_pane ul li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#files_left_pane li {
+    margin-bottom: 2px;
+}
+
+#files_left_pane li a {
+    display: block;
+    padding: 7px 10px;
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.3;
+    transition: background-color .12s ease, color .12s ease;
+}
+
+#files_left_pane li a:hover {
+    background: rgba(17, 24, 39, .05);
+    text-decoration: none;
+}
+
+#files_left_pane li.current a {
+    background: var(--pf-accent-soft);
+    color: var(--pf-text);
+    box-shadow: inset 3px 0 0 var(--pf-accent);
+    font-weight: 600;
+}
+
+#files_left_pane li.upload {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--pf-border);
+}
+
+#files_left_pane li.upload a {
+    color: var(--pf-text-muted);
+    font-weight: 500;
+}
+
+#files_left_pane li.upload a:hover {
+    color: var(--pf-text);
+}
+
+/* ----------------------------------------------------------------------------
+ * Right pane — file list
+ * -------------------------------------------------------------------------- */
+#files_right_pane {
+    flex: 1 1 auto;
+    padding: 14px 18px 18px;
+    min-width: 0;
+}
+
+#files_browser h3 {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+#files_right_pane > #files-wrapper > h3 {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--pf-border);
+    margin-bottom: 12px;
+}
+
+/* Subfolder toolbar */
+#files_toolbar {
+    padding: 0 0 12px;
+}
+
+#files_toolbar ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#files_toolbar li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+}
+
+#files_toolbar label {
+    font-size: 12px;
+    color: var(--pf-text-muted);
+    font-weight: 500;
+    margin: 0;
+}
+
+#files_toolbar select,
+#upload-box select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border-strong);
+    border-radius: var(--pf-radius-sm);
+    padding: 6px 28px 6px 10px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--pf-text);
+    width: auto;
+    min-width: 200px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%236b7280' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+#files_toolbar select:focus,
+#upload-box select:focus,
+#upload-box input:focus,
+#upload-box textarea:focus {
+    outline: none;
+    border-color: var(--pf-accent);
+    box-shadow: 0 0 0 3px rgba(250, 165, 55, .18);
+}
+
+/* ----------------------------------------------------------------------------
+ * File table
+ * -------------------------------------------------------------------------- */
+table.table-list {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    table-layout: fixed;              /* keep columns from blowing out the card */
+}
+
+/* Column widths: insert button (auto-narrow) | name (flex) | date (~115px) | mime (~120px) */
+table.table-list th:nth-child(1),
+table.table-list td:nth-child(1) { width: 90px; }
+
+table.table-list th:nth-child(3),
+table.table-list td:nth-child(3) { width: 115px; }
+
+table.table-list th:nth-child(4),
+table.table-list td:nth-child(4) { width: 130px; }
+
+/* Long filenames need to wrap inside the flex column */
+table.table-list td.name-description {
+    overflow-wrap: anywhere;
+}
+
+table.table-list thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--pf-text-subtle);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--pf-border);
+    background: transparent;
+}
+
+table.table-list tbody tr {
+    background: transparent;
+    transition: background-color .1s ease;
+}
+
+table.table-list tbody tr:hover {
+    background: var(--pf-row-hover);
+}
+
+table.table-list tbody tr.alt {
+    background: transparent;       /* drop the legacy zebra; hover is enough */
+}
+
+table.table-list tbody td {
+    padding: 10px;
+    border-bottom: 1px solid var(--pf-border);
+    vertical-align: middle;
+    color: var(--pf-text);
+}
+
+table.table-list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table.table-list td p {
+    margin: 0;
+    line-height: 1.35;
+}
+
+table.table-list td.name-description p:first-child {
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+table.table-list td.name-description p + p,
+table.table-list td.filename p + p {
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* The first <p> is the encrypted on-disk filename (e.g. a 32-char hex hash).
+ * It's noise for the user — the human-readable name is already shown in the
+ * "Namn/Beskrivning" column — and its monospace width pushes the MIME column
+ * off the edge of the card. Hide it; the second <p> (the date) becomes the
+ * column's content. View markup is untouched. */
+table.table-list td.filename p:first-child {
+    display: none;
+}
+
+table.table-list td.filename p + p {
+    margin-top: 0;
+    color: var(--pf-text);
+    font-size: 13px;
+}
+
+/* MIME column — small monospace pill */
+table.table-list td.meta {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mime-pill {
+    display: inline-block;
+    padding: 3px 8px;
+    background: var(--pf-canvas);
+    border: 1px solid var(--pf-border);
+    border-radius: 999px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--pf-text-muted);
+}
+
+/* Insert button column */
+table.table-list td.image {
+    width: 1%;
+    white-space: nowrap;
+}
+
+table.table-list td.image button,
+#upload-box .button,
+#upload-box input[type="submit"] {
+    background: var(--pf-primary);
+    color: #fff;
+    border: 1px solid var(--pf-primary);
+    border-radius: var(--pf-radius-sm);
+    padding: 6px 14px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color .12s ease, transform .04s ease;
+}
+
+table.table-list td.image button:hover,
+#upload-box .button:hover,
+#upload-box input[type="submit"]:hover {
+    background: var(--pf-primary-hover);
+}
+
+table.table-list td.image button:active {
+    transform: translateY(1px);
+}
+
+/* Empty state */
+#files-wrapper > p {
+    margin: 24px 0;
+    padding: 24px;
+    text-align: center;
+    color: var(--pf-text-muted);
+    background: var(--pf-canvas);
+    border: 1px dashed var(--pf-border-strong);
+    border-radius: var(--pf-radius-sm);
+}
+
+.blank-slate {
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--pf-text-muted);
+}
+
+.blank-slate h2 {
+    margin: 0;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--pf-text-muted);
 }
+
+/* ----------------------------------------------------------------------------
+ * Upload box (modal-ish overlay)
+ * -------------------------------------------------------------------------- */
+#upload-box {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 99;
+    display: none;
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius);
+    box-shadow: var(--pf-shadow);
+    padding: 16px 18px 18px;
+}
+
+#upload-box h2 {
+    margin: 0 0 12px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--pf-border);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pf-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#upload-box h2 .close {
+    cursor: pointer;
+    color: var(--pf-text-muted);
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color .12s ease, color .12s ease;
+}
+
+#upload-box h2 .close:hover {
+    background: var(--pf-row-hover);
+    color: var(--pf-text);
+}
+
+#upload-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#upload-box li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+#upload-box label {
+    flex: 0 0 110px;
+    padding-top: 7px;
+    color: var(--pf-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+}
+
+#upload-box input[type="text"],
+#upload-box input[type="file"],
+#upload-box textarea,
+#upload-box select {
+    flex: 1 1 auto;
+    background: var(--pf-surface);
+    border: 1px solid var(--pf-border-strong);
+    border-radius: var(--pf-radius-sm);
+    padding: 7px 10px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--pf-text);
+    box-sizing: border-box;
+    width: auto;
+}
+
+#upload-box textarea {
+    height: 90px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+#upload-box input[type="file"] {
+    padding: 6px 10px;
+    background: var(--pf-canvas);
+}
+
+#upload-box .btn.cancel,
+#upload-box a.cancel {
+    margin-left: 8px;
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: var(--pf-radius-sm);
+}
+
+#upload-box .btn.cancel:hover,
+#upload-box a.cancel:hover {
+    color: var(--pf-text);
+    background: var(--pf-row-hover);
+    text-decoration: none;
+}
+
+/* ----------------------------------------------------------------------------
+ * Image picker — extra widgets shared with files popup
+ * -------------------------------------------------------------------------- */
+#options-bar,
+#radio-group {
+    margin-bottom: 12px;
+}
+
 #options-bar {
     float: left;
 }
-#options-bar, #radio-group {
-    margin-bottom: 10px;
-}
+
 #radio-group {
     float: right;
-	display: none;
-}
-#radio-group > label {
-	display: inline-block;
-	font-weight: bold;
-	font-size: 110%;
-	text-align: right;
-	padding-right: 10px;
-}
-#radio-group > .set {
-	display: inline-block;
-}
-#slider {
-    margin: 0 0 10px 0;
-    clear: both;
-	display: none;
-}
-#files_browser {
-	display: table;
-	width: 100%;
-	margin-bottom: 20px;
-	background-color: #FFFFFF;
-	color: #333333;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-o-border-radius: 5px;
-	border-radius: 5px;
-	border: 1px solid #CCCCCC;
-}
-#files_left_pane {
-	width: 20%;
-	display: table-cell;
-	border-right: 1px solid #CCCCCC;
-	padding: 10px 0;
-	vertical-align: top;
-}
-#files_left_pane ul,
-#files_left_pane ul li,
-#files_toolbar ul,
-#files_toolbar ul li {
-	list-style: none;
-	padding: 0px;
-	margin: 0px;
-}
-#files_browser h3 {
-	margin: 0px;
-	padding: 3px 0 5px 0px;
-}
-#files_browser .table-list .pyro-image {
-	cursor:pointer;
-}
-#files_left_pane h3 {
-	padding-left: 10px;
-}
-#files_right_pane {
-	width: 80%;
-	display: table-cell;
-	padding: 10px;
-}
-#files_right_pane > * {
-/*	display: none;*/
-}
-#files_left_pane li a {
-	padding: 10px;
-	background: transparent;
-	display: block;
-	text-decoration: none;
-	color: #666666;
-}
-#files_left_pane li a:hover {
-	background-color: #F4F4F4;
-	color: #333333;
-}
-#files_left_pane li.current a {
-	background-color: #3a4043;
-	color: #FFFFFF;
-}
-#files_left_pane li.upload a {
-	font-weight: bold;
-	margin-top: 10px;
-}
-#files_toolbar {
-	padding: 5px;
-}
-#files_toolbar ul li {
-	display: inline-block;
-	padding-left: 5px;
-}
-#files_toolbar label {
-	font-weight: bold;
-}
-/** Tables **/
-table {
-	width: 100%;
-	border-collapse: separate;
-}
-table th,
-table td {
-	padding: 4px;
-	vertical-align: middle;
+    display: none;
 }
 
-table thead th {
-	font-weight: bold;
-	font-size: 12px;
-	border-bottom: 1px solid #c2c2c2;
-	text-align: left;
+#radio-group > label {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 12px;
+    padding-right: 10px;
+    color: var(--pf-text-muted);
 }
-table thead th.checkboxes {
-	width: 18px;
+
+#radio-group > .set {
+    display: inline-block;
 }
-table tfoot td {
-	padding: 0;
-	border-bottom: 1px solid #DDDDDD;
+
+#slider {
+    margin: 0 0 12px;
+    clear: both;
+    display: none;
 }
-table tbody tr.alt {
-	background-color: #F3F3F3;
-}
-td p {
-    margin: 0;
-}
-td.image {
-    width: 42px;
-}
-td.name-description {
-    width: 160px;
-}
-td.meta {
-    width: 40px;
+
+input#insert_width {
+    border: 1px solid var(--pf-border-strong);
+    border-radius: var(--pf-radius-sm);
+    padding: 4px 8px;
+    font-weight: 600;
+    font-size: 13px;
+    width: 5em;
     text-align: center;
 }
-#upload-box {
-	background-color: #ffffff;
-	border: 2px solid #c2c2c2;
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 7px;
-	width: 96%;
-	padding: 8px;
-	z-index: 99;
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
-}
-#upload-box form label {
-	padding: 0 10px 0 0;
-	display: block;
-	float: left;
-	width: 100px;
-}
-#upload-box form li {
-	list-style: none;
-	padding-top: 10px;
-}
-#upload-box form textarea {
-	height: 100px;
-}
-#upload-box h2 span {
-	float: right;
-}
-span.close {
-	cursor: pointer;
+
+#files_browser .table-list .pyro-image {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: outline-color .12s ease;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
 }
 
+#files_browser .table-list .pyro-image:hover {
+    outline-color: var(--pf-accent);
+}
 
-
-
-/* Alerts */
+/* ----------------------------------------------------------------------------
+ * Alerts (kept for the upload flow) — flat, no gradients
+ * -------------------------------------------------------------------------- */
 .alert {
-  background-color: rgba(0, 0, 0, 0.15);
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(transparent), to(rgba(0, 0, 0, 0.15)));
-  background-image: -moz-linear-gradient(transparent, rgba(0, 0, 0, 0.15));
-  background-image: -ms-linear-gradient(transparent, rgba(0, 0, 0, 0.15));
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, transparent), color-stop(100%, rgba(0, 0, 0, 0.15)));
-  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.15));
-  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.15));
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.15));
-  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#15000000')";
-  background-color: #e6e6e6;
-  margin-bottom: 18px;
-  padding: 8px 15px;
-  color: #333333;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    font-size: 13px;
+    color: var(--pf-text);
+    background: var(--pf-canvas);
 }
 
 .alert p {
-  color: #ffffff;
-  margin: 0;
+    margin: 0;
+    color: inherit;
 }
 
 .alert p + p {
-  margin-top: 5px;
+    margin-top: 4px;
 }
 
 .alert.error {
-  background-color: #d83a2e;
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#e4776f), to(#d83a2e));
-  background-image: -moz-linear-gradient(#e4776f, #d83a2e);
-  background-image: -ms-linear-gradient(#e4776f, #d83a2e);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e4776f), color-stop(100%, #d83a2e));
-  background-image: -webkit-linear-gradient(#e4776f, #d83a2e);
-  background-image: -o-linear-gradient(#e4776f, #d83a2e);
-  background-image: linear-gradient(#e4776f, #d83a2e);
-  border-bottom-color: #b32b21;
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
 }
 
 .alert.warning {
-  background-color: #ffd040;
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#ffe38d), to(#ffd040));
-  background-image: -moz-linear-gradient(#ffe38d, #ffd040);
-  background-image: -ms-linear-gradient(#ffe38d, #ffd040);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffe38d), color-stop(100%, #ffd040));
-  background-image: -webkit-linear-gradient(#ffe38d, #ffd040);
-  background-image: -o-linear-gradient(#ffe38d, #ffd040);
-  background-image: linear-gradient(#ffe38d, #ffd040);
-  border-bottom-color: #ffc40d;
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
 }
 
 .alert.success {
-  background-color: #62bc62;
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#97d397), to(#62bc62));
-  background-image: -moz-linear-gradient(#97d397, #62bc62);
-  background-image: -ms-linear-gradient(#97d397, #62bc62);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #97d397), color-stop(100%, #62bc62));
-  background-image: -webkit-linear-gradient(#97d397, #62bc62);
-  background-image: -o-linear-gradient(#97d397, #62bc62);
-  background-image: linear-gradient(#97d397, #62bc62);
-  border-bottom-color: #46a546;
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
 }
 
 .alert.info {
-  background-color: #04aef4;
-  background-repeat: repeat-x;
-  background-image: -khtml-gradient(linear, left top, left bottom, from(#62cffc), to(#04aef4));
-  background-image: -moz-linear-gradient(#62cffc, #04aef4);
-  background-image: -ms-linear-gradient(#62cffc, #04aef4);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #62cffc), color-stop(100%, #04aef4));
-  background-image: -webkit-linear-gradient(#62cffc, #04aef4);
-  background-image: -o-linear-gradient(#62cffc, #04aef4);
-  background-image: linear-gradient(#62cffc, #04aef4);
-  border-bottom-color: #049cdb;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.alert .close {
+    float: right;
+    color: inherit;
+    opacity: .55;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.alert .close:hover {
+    opacity: 1;
+    text-decoration: none;
 }
