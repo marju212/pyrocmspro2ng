@@ -9,73 +9,152 @@
  * site .page-chunk is the <section> wrapper produced by page_m.php; in the
  * editor iframe the shim adds .page-chunk to the iframe <body>. */
 
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* Design tokens — change these in one place to retune the whole reading look. */
+.page-chunk {
+	--prose-ink:        #18181b;   /* primary text */
+	--prose-ink-soft:   #3f3f46;   /* secondary text */
+	--prose-ink-mute:   #71717a;   /* captions, small */
+	--prose-rule:       #e5e7eb;   /* hairlines */
+	--prose-rule-soft:  #f1f5f9;
+	--prose-accent:     #1d4ed8;   /* links */
+	--prose-accent-hi:  #1e40af;   /* link hover */
+	--prose-mark:       #fef08a;   /* highlight */
+	--prose-quote-bar:  #1d4ed8;
+	--prose-quote-bg:   #f8fafc;
+	--prose-code-bg:    #f4f4f5;
+	--prose-code-ink:   #be123c;
+	--prose-pre-bg:     #0b1020;
+	--prose-pre-ink:    #e2e8f0;
+	--prose-serif:      'Fraunces', Georgia, 'Times New Roman', serif;
+	--prose-sans:       'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--prose-mono:       ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
 /* Core typography uses !important so any leftover inline font-size / color
  * from CK-era content (or rows the cleanup script hasn't touched yet) still
  * gets overridden visually. Spacing and layout rules below stay un-!important
  * so themes can refine them via per-theme CSS or wysiwyg.php manifests. */
 .page-chunk {
-	font-size: 16px !important;
-	line-height: 1.75 !important;
-	color: #222 !important;
-	font-family: inherit;
+	font-family: var(--prose-sans) !important;
+	font-size: 17px !important;
+	line-height: 1.7 !important;
+	color: var(--prose-ink) !important;
 	word-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	font-feature-settings: 'kern', 'liga', 'calt';
 }
 
 .page-chunk > *:first-child { margin-top: 0; }
 .page-chunk > *:last-child  { margin-bottom: 0; }
 
 .page-chunk p {
-	margin: 1.25em 0;
+	margin: 1.2em 0;
 	font-size: inherit !important;
 	line-height: inherit !important;
 	color: inherit !important;
 	font-family: inherit !important;
+	hanging-punctuation: first last;
 }
 
-/* Headings — font-size + color !important to defeat legacy inline styles. */
+/* Lead paragraph — the first paragraph after a heading reads a touch larger. */
+.page-chunk h1 + p,
+.page-chunk h2 + p {
+	font-size: 1.1em !important;
+	color: var(--prose-ink-soft) !important;
+}
+
+/* Headings — serif display face with optical-size axis, tighter tracking.
+ * font-size + color !important to defeat legacy inline styles. */
 .page-chunk h1,
 .page-chunk h2,
 .page-chunk h3,
 .page-chunk h4,
 .page-chunk h5,
 .page-chunk h6 {
-	color: #111 !important;
-	font-weight: 700;
-	line-height: 1.25 !important;
-	margin: 1.6em 0 0.6em;
+	font-family: var(--prose-serif) !important;
+	color: var(--prose-ink) !important;
+	font-weight: 600;
+	line-height: 1.2 !important;
+	letter-spacing: -0.015em;
+	margin: 1.8em 0 0.5em;
+	text-wrap: balance;
 }
-.page-chunk h1 { font-size: 2.25em !important; line-height: 1.15 !important; }
-.page-chunk h2 { font-size: 1.6em  !important; line-height: 1.2  !important; border-bottom: 1px solid #eee; padding-bottom: .3em; }
-.page-chunk h3 { font-size: 1.3em  !important; }
-.page-chunk h4 { font-size: 1.1em  !important; }
-.page-chunk h5 { font-size: 1em    !important; text-transform: uppercase; letter-spacing: .04em; }
-.page-chunk h6 { font-size: .9em   !important; color: #555 !important; text-transform: uppercase; letter-spacing: .05em; }
+.page-chunk h1 {
+	font-size: 2.5em !important;
+	line-height: 1.1 !important;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	margin-top: 0.4em;
+}
+.page-chunk h2 {
+	font-size: 1.75em !important;
+	letter-spacing: -0.02em;
+	padding-bottom: .25em;
+	border-bottom: 1px solid var(--prose-rule);
+}
+.page-chunk h3 { font-size: 1.35em !important; }
+.page-chunk h4 { font-size: 1.15em !important; }
+.page-chunk h5 {
+	font-family: var(--prose-sans) !important;
+	font-size: .95em !important;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: var(--prose-ink-soft) !important;
+}
+.page-chunk h6 {
+	font-family: var(--prose-sans) !important;
+	font-size: .85em !important;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+	color: var(--prose-ink-mute) !important;
+}
 
 /* Inline */
 .page-chunk strong,
-.page-chunk b { font-weight: 700; color: #111; }
+.page-chunk b { font-weight: 700; color: var(--prose-ink); }
 .page-chunk em,
 .page-chunk i { font-style: italic; }
-.page-chunk small { font-size: .85em; color: #555; }
-.page-chunk mark  { background: #fef3a8; color: inherit; padding: 0 .15em; border-radius: 2px; }
+.page-chunk small { font-size: .85em; color: var(--prose-ink-mute); }
+.page-chunk mark {
+	background: var(--prose-mark);
+	color: inherit;
+	padding: 0 .2em;
+	border-radius: 2px;
+	box-decoration-break: clone;
+}
+.page-chunk abbr[title] {
+	text-decoration: underline dotted;
+	text-underline-offset: 3px;
+	cursor: help;
+}
 
 /* Links — color !important so legacy <font color="..."> wrappers we missed
  * don't visually leak. */
 .page-chunk a {
-	color: #2563eb !important;
+	color: var(--prose-accent) !important;
 	text-decoration: underline;
-	text-underline-offset: 2px;
+	text-decoration-color: rgba(29, 78, 216, 0.35);
 	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: color .15s ease, text-decoration-color .15s ease;
 }
-.page-chunk a:hover { color: #1d4ed8 !important; }
+.page-chunk a:hover {
+	color: var(--prose-accent-hi) !important;
+	text-decoration-color: currentColor;
+	text-decoration-thickness: 2px;
+}
 
 /* Lists */
 .page-chunk ul,
 .page-chunk ol {
 	margin: 1.25em 0;
-	padding-left: 1.6em;
+	padding-left: 1.5em;
 }
 .page-chunk ul { list-style-type: disc; }
 .page-chunk ol { list-style-type: decimal; }
@@ -83,87 +162,128 @@
 .page-chunk ol ul { list-style-type: circle; }
 .page-chunk ul ul ul,
 .page-chunk ol ol ul { list-style-type: square; }
-.page-chunk li { margin: .4em 0; }
-.page-chunk li > p { margin: .5em 0; }
+.page-chunk li { margin: .35em 0; padding-left: .25em; }
+.page-chunk li::marker { color: var(--prose-ink-mute); }
+.page-chunk ol li::marker { font-variant-numeric: tabular-nums; font-weight: 600; }
+.page-chunk li > p { margin: .4em 0; }
 .page-chunk li > ul,
-.page-chunk li > ol { margin: .4em 0; }
+.page-chunk li > ol { margin: .35em 0; }
 
 /* Definition lists */
 .page-chunk dl { margin: 1.25em 0; }
-.page-chunk dt { font-weight: 700; margin-top: .8em; }
-.page-chunk dd { margin: .2em 0 .8em 1.4em; }
+.page-chunk dt { font-weight: 700; color: var(--prose-ink); margin-top: .8em; }
+.page-chunk dd { margin: .2em 0 .8em 1.4em; color: var(--prose-ink-soft); }
 
-/* Blockquote */
+/* Blockquote — editorial pull-quote feel. */
 .page-chunk blockquote {
-	margin: 1.5em 0;
-	padding: .25em 1.1em;
-	border-left: 4px solid #d1d5db;
-	color: #4b5563;
+	margin: 1.75em 0;
+	padding: .9em 1.4em;
+	border-left: 3px solid var(--prose-quote-bar);
+	background: var(--prose-quote-bg);
+	border-radius: 0 6px 6px 0;
+	color: var(--prose-ink-soft);
+	font-family: var(--prose-serif);
 	font-style: italic;
+	font-size: 1.05em;
+	font-weight: 400;
 }
-.page-chunk blockquote p:first-of-type::before { content: "\201C"; }
-.page-chunk blockquote p:last-of-type::after   { content: "\201D"; }
+.page-chunk blockquote p { margin: .5em 0; }
+.page-chunk blockquote p:first-of-type::before { content: "\201C"; margin-right: .05em; }
+.page-chunk blockquote p:last-of-type::after   { content: "\201D"; margin-left: .05em; }
+.page-chunk blockquote cite {
+	display: block;
+	margin-top: .5em;
+	font-size: .9em;
+	font-style: normal;
+	color: var(--prose-ink-mute);
+}
+.page-chunk blockquote cite::before { content: "— "; }
 
 /* Inline code + code blocks */
 .page-chunk code,
 .page-chunk kbd,
 .page-chunk samp {
-	font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-	font-size: .9em;
+	font-family: var(--prose-mono);
+	font-size: .92em;
 }
 .page-chunk :not(pre) > code {
-	background: #f3f4f6;
-	padding: .15em .35em;
-	border-radius: 3px;
-	color: #b91c1c;
+	background: var(--prose-code-bg);
+	padding: .15em .4em;
+	border-radius: 4px;
+	color: var(--prose-code-ink);
+	border: 1px solid rgba(0,0,0,0.04);
 }
 .page-chunk pre {
-	background: #0f172a;
-	color: #e2e8f0;
-	padding: 1em 1.2em;
-	border-radius: 6px;
+	background: var(--prose-pre-bg);
+	color: var(--prose-pre-ink);
+	padding: 1.1em 1.3em;
+	border-radius: 8px;
 	overflow-x: auto;
-	line-height: 1.55;
-	margin: 1.5em 0;
+	line-height: 1.6;
+	font-size: .92em;
+	margin: 1.6em 0;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.08);
 }
-.page-chunk pre code { background: transparent; padding: 0; color: inherit; }
+.page-chunk pre code {
+	background: transparent;
+	padding: 0;
+	color: inherit;
+	border: 0;
+	font-size: 1em;
+}
 
 .page-chunk kbd {
-	background: #f9fafb;
-	border: 1px solid #d1d5db;
+	background: #fafafa;
+	border: 1px solid var(--prose-rule);
 	border-bottom-width: 2px;
-	border-radius: 3px;
-	padding: .05em .4em;
+	border-radius: 4px;
+	padding: .1em .45em;
 	font-size: .85em;
+	color: var(--prose-ink);
+	box-shadow: 0 1px 0 rgba(0,0,0,0.04);
 }
 
-/* Horizontal rule */
+/* Horizontal rule — three centered dots, an old print convention. */
 .page-chunk hr {
 	border: 0;
-	border-top: 1px solid #e5e7eb;
-	margin: 2.5em 0;
+	margin: 2.75em auto;
+	width: 100%;
+	text-align: center;
+	overflow: visible;
+}
+.page-chunk hr::before {
+	content: "·  ·  ·";
+	display: inline-block;
+	color: var(--prose-ink-mute);
+	font-size: 1.25em;
+	letter-spacing: .35em;
 }
 
 /* Tables */
 .page-chunk table {
 	width: 100%;
 	border-collapse: collapse;
-	margin: 1.5em 0;
+	margin: 1.6em 0;
 	font-size: .95em;
+	font-variant-numeric: tabular-nums;
 }
 .page-chunk th,
 .page-chunk td {
-	border-bottom: 1px solid #e5e7eb;
-	padding: .55em .75em;
+	border-bottom: 1px solid var(--prose-rule);
+	padding: .65em .85em;
 	text-align: left;
 	vertical-align: top;
 }
 .page-chunk th {
 	font-weight: 700;
-	color: #111;
-	border-bottom-width: 2px;
+	color: var(--prose-ink);
+	border-bottom: 2px solid var(--prose-ink);
+	font-size: .85em;
+	text-transform: uppercase;
+	letter-spacing: .04em;
 }
-.page-chunk tbody tr:hover { background: #f9fafb; }
+.page-chunk tbody tr { transition: background .12s ease; }
+.page-chunk tbody tr:hover { background: var(--prose-rule-soft); }
 
 /* Media — !important defends against width/height attrs TinyMCE adds when
  * inserting an image. The image must never blow out its container. */
@@ -171,15 +291,75 @@
 .page-chunk video {
 	max-width: 100% !important;
 	height: auto !important;
-	margin: 1.5em 0;
-	border-radius: 4px;
+	margin: 1.75em 0;
+	border-radius: 6px;
 }
-.page-chunk figure { margin: 1.75em 0; }
+.page-chunk figure { margin: 1.9em 0; }
+.page-chunk figure img,
+.page-chunk figure video { margin: 0; }
 .page-chunk figcaption {
-	font-size: .85em;
-	color: #6b7280;
+	font-family: var(--prose-sans);
+	font-size: .87em;
+	color: var(--prose-ink-mute);
 	text-align: center;
-	margin-top: .5em;
+	margin-top: .7em;
+	font-style: italic;
 }
 
-.page-chunk ::selection { background: #c7d2fe; color: #111; }
+.page-chunk ::selection { background: #c7d2fe; color: var(--prose-ink); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Wysiwyg image classes — unscoped on purpose.
+ *
+ * The TinyMCE/CKEditor pyroimages plugin inserts <img class="pyro-image
+ * alignment-{none|left|right}" width="N" style="float:left|right">. Themes
+ * that don't wrap content in .page-chunk (e.g. bockavel's .panel-body) still
+ * need these images to be responsive, so the rules apply globally to the
+ * pyro-image class itself rather than under .page-chunk.
+ *
+ * !important defeats the inline width="N" attribute the editor writes — that
+ * attribute would otherwise lock the image to its desktop pixel width and
+ * overflow narrow viewports.
+ * ───────────────────────────────────────────────────────────────────────── */
+img.pyro-image {
+	max-width: 100% !important;
+	height: auto !important;
+	border-radius: 4px;
+}
+
+/* Floated images — give them breathing room from the surrounding text. */
+img.pyro-image.alignment-left,
+img.pyro-image[style*="float:left"],
+img.pyro-image[style*="float: left"] {
+	margin: .35em 1.25em 1em 0;
+	max-width: 50% !important;
+}
+img.pyro-image.alignment-right,
+img.pyro-image[style*="float:right"],
+img.pyro-image[style*="float: right"] {
+	margin: .35em 0 1em 1.25em;
+	max-width: 50% !important;
+}
+img.pyro-image.alignment-none {
+	display: block;
+	margin: 1.25em auto;
+}
+
+/* Narrow viewports: drop floats and let images take the full column. A
+ * portrait image floated next to a 320px-wide article squeezes text into a
+ * 60px gutter and looks broken. */
+@media (max-width: 640px) {
+	img.pyro-image,
+	img.pyro-image.alignment-left,
+	img.pyro-image.alignment-right,
+	img.pyro-image[style*="float:left"],
+	img.pyro-image[style*="float: left"],
+	img.pyro-image[style*="float:right"],
+	img.pyro-image[style*="float: right"] {
+		float: none !important;
+		display: block;
+		margin: 1em auto !important;
+		max-width: 100% !important;
+	}
+}
+
